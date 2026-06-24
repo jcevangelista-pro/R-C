@@ -1,0 +1,157 @@
+body{
+    margin: 0px;
+}
+
+.Navbar{
+    background-color: white;
+    border-bottom: 1px solid #F868AA;
+    box-shadow: inset 0 -2px 8px rgba(0, 0, 0, 0.1);
+    display: flex;
+    justify-content: space-between;
+}
+
+.Navbar ul {
+    list-style-type: none;
+    padding: 0rem;
+    margin: 0rem;
+    overflow: hidden;
+}
+
+.Navbar a{
+    color: #F868AA;
+    text-decoration: none;
+    padding: 15px;
+    display: block;
+    text-align: left;
+}
+
+.Navbar a:hover{
+    color: #f3a4c8;
+}
+
+.Navbar li{
+    float: left;
+}
+
+.Img{
+    width: 1.2vw;
+    height: 2.5vh;
+}
+
+.RContainer {
+    margin: 0;
+    padding: 1.5rem 0 0 0;
+    background: radial-gradient(farthest-corner at 0px 10px, #AABCEB, #FFB2E9, #ffffff, #FFB2E9);
+    height: 55vh;
+}
+
+.WSContainer {
+    width: 96.5vw;
+    height: 50vh;
+    margin: 0 1rem 0 1rem;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    background-color: rgba(0, 4, 221, 0.2);
+    display: flex;
+}
+
+#BName {
+
+}
+
+.TextContainer {
+    color: white;
+    opacity: 100;
+    /*border: 1px solid pink;*/
+    width: 50vw;
+    height: 30vh;
+    margin: 0 0 0 5vw;
+    padding-top: 13vh;
+}
+
+.PicContainer {
+    padding-top: 2.5vh;
+    width: 55vw;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.PC1 {
+    margin: 0;
+    width: 21vw;
+}
+
+
+.Pictures {
+    width: 20vw;
+    height: 21vh;
+    border-radius: 20px;
+}
+
+#Picture2 {
+    margin-top: 2vh;
+}
+
+#Picture3 {
+    width: 25vw;
+    height: 45vh;
+    margin-right: 2.5vw;
+}
+
+
+.Statement{
+    margin: 0 0 0 0;
+    font-size: 2.5rem;
+}
+
+
+.PContainer {
+    width: 99vw;
+    height: 70vh;
+    background-color: #ffffff;
+}
+
+.BSProducts {
+    color: #1E3163;
+    padding: 2vh 2vw 0 2vw;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.CardProducts{
+    margin: 0 0vw 0 1vw;
+    width: 15vw;
+    height: 40vh;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    background-color: #cbc9f9;
+}
+
+.Picture {
+    width: 14vw;
+    height: 22vh;
+    padding: 1vh 0.5vw 0 0.5vw;
+    border-radius: 20px;
+}
+
+.CardText {
+    padding: 0 0 0 0.5vw;
+}
+
+.CardText h2 {
+    margin: 0;
+    padding: 1vh 0 0 0;
+}
+
+.CardText h3 {
+    margin: 0;
+    padding: 0;
+}
+
+.Cards{
+    display: flex;
+    justify-content: flex-start;
+    margin-left: 10px;
+}
+
