@@ -1,0 +1,516 @@
+<!doctype html>
+
+<html class="light" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title> R&C Printing Services</title>
+    <link rel="stylesheet" href="../Portfolio/PortfolioPage.css">
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;family=JetBrains+Mono:wght@500&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "tertiary-container": "#531800",
+              "surface-container-lowest": "#ffffff",
+              "surface-bright": "#f8f9ff",
+              "secondary-container": "#00e3fd",
+              "primary-container": "#002b5b",
+              "surface-tint": "#405f91",
+              outline: "#747780",
+              "tertiary-fixed-dim": "#ffb59a",
+              "on-tertiary": "#ffffff",
+              "on-surface-variant": "#43474f",
+              "on-error-container": "#93000a",
+              surface: "#f8f9ff",
+              "outline-variant": "#c4c6d0",
+              "on-secondary-fixed-variant": "#004f58",
+              "on-secondary": "#ffffff",
+              "secondary-fixed": "#9cf0ff",
+              "surface-container-high": "#dce9ff",
+              "on-tertiary-fixed": "#370e00",
+              "inverse-on-surface": "#eaf1ff",
+              tertiary: "#300b00",
+              "on-secondary-container": "#00616d",
+              background: "#f8f9ff",
+              "surface-container-highest": "#d3e4fe",
+              error: "#ba1a1a",
+              "secondary-fixed-dim": "#00daf3",
+              "inverse-primary": "#a9c7ff",
+              "surface-container": "#e5eeff",
+              "on-primary-fixed": "#001b3d",
+              "primary-fixed": "#d6e3ff",
+              "error-container": "#ffdad6",
+              "on-primary-container": "#7594ca",
+              "on-primary": "#ffffff",
+              "primary-fixed-dim": "#a9c7ff",
+              "on-error": "#ffffff",
+              "tertiary-fixed": "#ffdbce",
+              "surface-dim": "#cbdbf5",
+              primary: "#001736",
+              "on-primary-fixed-variant": "#264778",
+              "on-tertiary-container": "#ff5d06",
+              secondary: "#006875",
+              "surface-container-low": "#eff4ff",
+              "on-background": "#0b1c30",
+              "surface-variant": "#d3e4fe",
+              "on-tertiary-fixed-variant": "#802a00",
+              "inverse-surface": "#213145",
+              "on-surface": "#0b1c30",
+              "on-secondary-fixed": "#001f24",
+            },
+            borderRadius: {
+              DEFAULT: "0.125rem",
+              lg: "0.25rem",
+              xl: "0.5rem",
+              full: "0.75rem",
+            },
+            spacing: {
+              xs: "4px",
+              "margin-desktop": "64px",
+              gutter: "24px",
+              md: "16px",
+              xl: "32px",
+              xxl: "48px",
+              sm: "8px",
+              lg: "24px",
+              base: "4px",
+              "max-width": "1280px",
+              "margin-mobile": "16px",
+            },
+            fontFamily: {
+              "display-lg-mobile": ["Inter"],
+              "headline-sm": ["Inter"],
+              "headline-md": ["Inter"],
+              "label-md": ["JetBrains Mono"],
+              "display-lg": ["Inter"],
+              "body-lg": ["Inter"],
+              "label-sm": ["JetBrains Mono"],
+              "body-md": ["Inter"],
+            },
+            fontSize: {
+              "display-lg-mobile": [
+                "36px",
+                {
+                  lineHeight: "42px",
+                  letterSpacing: "-0.02em",
+                  fontWeight: "700",
+                },
+              ],
+              "headline-sm": [
+                "24px",
+                { lineHeight: "32px", letterSpacing: "0em", fontWeight: "600" },
+              ],
+              "headline-md": [
+                "30px",
+                {
+                  lineHeight: "38px",
+                  letterSpacing: "-0.01em",
+                  fontWeight: "600",
+                },
+              ],
+              "label-md": [
+                "14px",
+                {
+                  lineHeight: "20px",
+                  letterSpacing: "0.02em",
+                  fontWeight: "500",
+                },
+              ],
+              "display-lg": [
+                "48px",
+                {
+                  lineHeight: "56px",
+                  letterSpacing: "-0.02em",
+                  fontWeight: "700",
+                },
+              ],
+              "body-lg": ["18px", { lineHeight: "28px", fontWeight: "400" }],
+              "label-sm": [
+                "12px",
+                {
+                  lineHeight: "16px",
+                  letterSpacing: "0.05em",
+                  fontWeight: "500",
+                },
+              ],
+              "body-md": ["16px", { lineHeight: "24px", fontWeight: "400" }],
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      .material-symbols-outlined {
+        font-variation-settings:
+          "FILL" 0,
+          "wght" 400,
+          "GRAD" 0,
+          "opsz" 24;
+      }
+      .hero-gradient {
+        background: radial-gradient(
+          farthest-corner at 0px 10px,
+          #aabceb,
+          #ffb2e9,
+          #ffffff,
+          #ffb2e9
+        );
+      }
+      .card-hover-effect {
+        transition: all 0.3s ease;
+      }
+      .card-hover-effect:hover {
+        transform: translateY(-4px);
+        box-shadow: 0px 4px 12px rgba(0, 43, 91, 0.08);
+      }
+      .card-active-effect:active {
+        transform: translateY(0);
+        border-color: #00e5ff;
+        border-width: 2px;
+      }
+
+      .nav-custom {
+        background-color: white;
+        border-bottom: 1px solid #f868aa;
+        box-shadow: inset 0 -2px 8px rgba(0, 0, 0, 0.1);
+      }
+      .nav-link {
+        color: #f868aa;
+        transition: color 0.2s;
+      }
+      .nav-link:hover {
+        color: #f3a4c8;
+      }
+
+      .hero-content-custom {
+        background-color: rgba(0, 4, 221, 0.2);
+        border: 1px solid #ddd;
+        border-radius: 10px;
+      }
+
+      .product-card-custom {
+        background-color: #cbc9f9;
+        border: 1px solid #ddd;
+        border-radius: 10px;
+      }
+
+      .product-text-custom {
+        color: #1e3163;
+      }
+    </style>
+  </head>
+  <body
+    class="bg-background text-on-background font-body-md min-h-screen flex flex-col"
+  >
+   <nav class="Navbar">
+    <a href="#" id="BName">R&C PRINTING SERVICES</a>
+    <ul>
+        <li><a href=""><img src="search.png" alt="" class="Img"></a></li>
+        <li><a href=""><img src="typing.png" alt="" class="Img"></a></li>
+        <li><a href=""><img src="trolley.png" alt="" class="Img"></a></li>
+        <li><a href="">HOME</a></li>
+        <li><a href="">PRODUCTS</a></li>
+        <li><a href="">PORTFOLIO</a></li>
+        <li><a href=""><img src="user.png" alt="" class="Img"></a></li>
+    </ul>
+</nav>
+    <main class="flex-grow">
+      <!-- Hero Section -->
+      <section
+        class="hero-gradient py-xxl px-margin-mobile md:px-margin-desktop overflow-hidden"
+      >
+        <div class="w-full">
+          <div
+            class="hero-content-custom p-8 md:p-12 grid grid-cols-1 md:grid-cols-2 gap-xl items-center w-full"
+          >
+            <div class="space-y-lg z-10">
+              <h1 class="font-display-lg text-[3.5rem] text-white">
+                YOUR VISION, WE DELIVER
+              </h1>
+              <p class="font-body-lg text-body-lg text-white max-w-lg">
+                We provide reliable and professional printing services focused on
+supporting businesses with high-quality marketing materials,
+branded products, and custom print solutions while also serving
+personal and academic needs.
+              </p>
+              <div class="flex gap-md pt-sm">
+                <button
+                  class="border border-white text-white bg-transparent px-6 py-3 rounded-lg font-label-md text-label-md hover:bg-white/10 transition-colors"
+                >
+                  Explore Portfolio
+                </button>
+              </div>
+            </div>
+            <div class="relative grid grid-cols-2 gap-sm">
+              <div
+                class="col-span-2 rounded-[20px] overflow-hidden border border-outline-variant bg-surface-container-lowest h-64 relative card-hover-effect"
+              >
+                <img
+                  class="w-full h-full object-cover"
+                  src="MugPicture.jpg"
+                />
+              </div>
+              <div
+                class="rounded-[20px] overflow-hidden border border-outline-variant bg-surface-container-lowest h-48 relative card-hover-effect"
+              >
+                <img
+                  class="w-full h-full object-cover"
+                  data-alt="A sleek, modern insulated tumbler with a custom corporate logo printed on its side. The tumbler is placed on a minimalist, light-grey surface. The image uses sharp focus and high contrast, emphasizing the precise details of the print and the metallic finish of the tumbler, conveying reliability and quality."
+                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuCzn7vckZN2sGZpRuURK41gvqHUmxMjtPrucxTuOJ3uUVHn60soxWA2dehY-W54O5DnDHUDGpwh85YmWwb38hOuEnqXRHBpnWQosVjYNDkGk1cGaAIFn0het6rkUvKLxiUxywou3Y7zQHXGHUzzwvM55pb91N73KTkM9nsqkyug2fbQ33W0A71D5WeaedDkq92zfEbQw_RVTPp1nbp0WixvDCS_A1-jEQ6swHFawaYPXBeKo3jnAwTCe-ltwgixHVTZCFpGLXo2oLiX"
+                />
+              </div>
+              <div
+                class="rounded-[20px] overflow-hidden border border-outline-variant bg-surface-container-lowest h-48 relative card-hover-effect"
+              >
+                <img
+                  class="w-full h-full object-cover"
+                  data-alt="A collection of beautifully designed, vibrant business cards fanned out on a white studio background. The colors pop intensely, simulating a perfect CMYK print output. The lighting is bright and even, highlighting the clean, sharp edges of the cards and the premium matte texture, perfectly aligned with a professional printing service brand."
+                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuCJd6G7Rd1fg1kyrk6aP51Mt0hH0d0kfGx5xCLzyraXIRv9N7pHXxwM8jv2NsJphUt2CgB-CmV7N-iaXq2wNYRaTPcY-9egqIDnjsRv56s5Ntq5n5nWW7Ci2Hj66k67vchK1H0WAuyRTg8PgR7MJSrru_3MSqZSkPbEOMfOcdSrm3FPevM42rYoh1BG1EqGbDxgUtTscqfkNNb5XqSerMluXupTn8LoF49AMULtIW0NxP5t_emQx2vLeh2NBe768c9GWIcWGD_mOghl"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      <!-- Best Selling Products -->
+      <section class="py-xxl px-margin-mobile md:px-margin-desktop bg-surface">
+        <div class="w-full">
+          <h2
+            class="font-headline-md text-headline-sm md:text-headline-md text-primary mb-xl text-left"
+          >
+            BEST SELLING PRODUCTS
+          </h2>
+          <div
+            class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-gutter"
+          >
+            <!-- Product Card 1 -->
+            <div
+              class="product-card-custom overflow-hidden card-hover-effect card-active-effect flex flex-col cursor-pointer group"
+            >
+              <div class="h-48 relative p-4 flex justify-center items-center">
+                <img
+                  class="max-h-full object-contain drop-shadow-md group-hover:scale-105 transition-transform duration-300"
+                  data-alt="A top-down view of a modern, sleek white coffee tumbler placed on a pastel purple background. The image is brightly lit, emphasizing the pristine quality of the product. The style is clean, minimalistic, and highly professional, perfectly suited for a premium print-on-demand service catalog."
+                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuCfTAa425_gXjdS6QSm8vreT8yn3FR2HVmqUajrdhts7Bcsmh0zEHDgjqgzFjpExbLxnZRpkHZEiK635OBnq390neit3JphXg1FHvpnm8p9qMw7WAllpHeGLV4NYriEFCOYSlJ4VJXWK0XEznN2fSxkOoZ1_CoHLCcqTaQdOkydUTI-ajAMt6isZAGkq0NvJ67oMjIYaVKUK3M56VPLumgEOiGzoKnn1OhdEp7MFyhYgtCw8uAVBOG_8kimYig4yqv7WIjhF5Vs0_lp"
+                />
+              </div>
+              <div class="p-md flex-grow">
+                <div
+                  class="font-label-sm text-label-sm product-text-custom mb-xs uppercase tracking-wider"
+                >
+                  Mug &amp; Tumbler
+                </div>
+                <h3
+                  class="font-headline-sm text-headline-sm product-text-custom mb-sm"
+                >
+                  Tumbler (360ml)
+                </h3>
+                <p
+                  class="font-body-md text-body-md product-text-custom text-sm line-clamp-2 mb-md"
+                >
+                  High-quality insulated tumbler with precision printing.
+                </p>
+                <div class="flex justify-between items-center mt-auto">
+                  <span
+                    class="font-label-md text-label-md product-text-custom font-bold"
+                    >From P12.99</span
+                  >
+                  <button
+                    class="product-text-custom hover:opacity-80 transition-opacity"
+                  >
+                    <span
+                      class="material-symbols-outlined"
+                      data-icon="add_circle"
+                      >add_circle</span
+                    >
+                  </button>
+                </div>
+              </div>
+            </div>
+            <!-- Product Card 2 -->
+            <div
+              class="product-card-custom overflow-hidden card-hover-effect card-active-effect flex flex-col cursor-pointer group"
+            >
+              <div class="h-48 relative p-4 flex justify-center items-center">
+                <img
+                  class="max-h-full object-contain drop-shadow-md group-hover:scale-105 transition-transform duration-300"
+                  data-alt="A close-up shot of a classic white ceramic mug featuring a crisp, vibrant custom graphic print. The mug sits on a soft, light purple surface under bright, studio-quality lighting that highlights the glossy finish and the sharpness of the print, showcasing high-quality printing capabilities."
+                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuAYQVXe_PVXCHzBwICgAT7nnnHEfjZit3Jpl9SuciFHWkjf0_5wncT6kYtbh0alNLkX-3l6ue70svV6Q_U3-zYQX-vzzh3CtwQYTrx6IDF3WA7Vq1HvPU0wEc-y9D5oORiD8IJm09-YcaT5IxQlN17AHXRAdZBLozbFXDxEMwAsJnFHgvCQrxJonb6ok_fovw427EeFh9ConL_csUGvugA54aiUs7t4huEM0q-scSL7SqquzuqDqw1ZdADjPMqnzxN20BFBu_ujUOPT"
+                />
+              </div>
+              <div class="p-md flex-grow">
+                <div
+                  class="font-label-sm text-label-sm product-text-custom mb-xs uppercase tracking-wider"
+                >
+                  Mug &amp; Tumbler
+                </div>
+                <h3
+                  class="font-headline-sm text-headline-sm product-text-custom mb-sm"
+                >
+                  Classic Mug (11oz)
+                </h3>
+                <p
+                  class="font-body-md text-body-md product-text-custom text-sm line-clamp-2 mb-md"
+                >
+                  Standard ceramic mug with full-color wrap printing.
+                </p>
+                <div class="flex justify-between items-center mt-auto">
+                  <span
+                    class="font-label-md text-label-md product-text-custom font-bold"
+                    >From P8.50</span
+                  >
+                  <button
+                    class="product-text-custom hover:opacity-80 transition-opacity"
+                  >
+                    <span
+                      class="material-symbols-outlined"
+                      data-icon="add_circle"
+                      >add_circle</span
+                    >
+                  </button>
+                </div>
+              </div>
+            </div>
+            <!-- Product Card 3 -->
+            <div
+              class="product-card-custom overflow-hidden card-hover-effect card-active-effect flex flex-col cursor-pointer group"
+            >
+              <div class="h-48 relative p-4 flex justify-center items-center">
+                <img
+                  class="max-h-full object-contain drop-shadow-md group-hover:scale-105 transition-transform duration-300"
+                  data-alt="A professional photograph of a premium, matte-black travel tumbler with a precise white laser-engraved logo. The tumbler is displayed on a minimalist light purple background with bright, clear lighting. The aesthetic is corporate, sleek, and highlights the precision of the engraving service."
+                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuD-0Nw_P5DZrmY9H6--nZz8sCXtaDoFcT82wtKuCgB86s93k3wNuPQYBfhaE_dkNWVucqmppEeR6Eg8-fa2eDPOL44vW1A5GJFV4DGmmuyaX2DXaRy-PatGQCJHK6JOO0lW5sC5g8uOowQFaZzrT136_OgYFy__wuTrrzqvRiH_Hj5D2F64dWB1ZqYZ9ypZZfAZ3F-yXwASaqkOwOZfd6-Td7hfyDOzrbImfni9T2ovafnsBGQ-c5cIKFSTT9FnknBwdfAFvwG0rCel"
+                />
+              </div>
+              <div class="p-md flex-grow">
+                <div
+                  class="font-label-sm text-label-sm product-text-custom mb-xs uppercase tracking-wider"
+                >
+                  Mug &amp; Tumbler
+                </div>
+                <h3
+                  class="font-headline-sm text-headline-sm product-text-custom mb-sm"
+                >
+                  Travel Tumbler
+                </h3>
+                <p
+                  class="font-body-md text-body-md product-text-custom text-sm line-clamp-2 mb-md"
+                >
+                  Durable travel companion with custom engraving options.
+                </p>
+                <div class="flex justify-between items-center mt-auto">
+                  <span
+                    class="font-label-md text-label-md product-text-custom font-bold"
+                    >From P18.00</span
+                  >
+                  <button
+                    class="product-text-custom hover:opacity-80 transition-opacity"
+                  >
+                    <span
+                      class="material-symbols-outlined"
+                      data-icon="add_circle"
+                      >add_circle</span
+                    >
+                  </button>
+                </div>
+              </div>
+            </div>
+            <!-- Product Card 4 -->
+            <div
+              class="product-card-custom overflow-hidden card-hover-effect card-active-effect flex flex-col cursor-pointer group hidden md:flex"
+            >
+              <div class="h-48 relative p-4 flex justify-center items-center">
+                <img
+                  class="max-h-full object-contain drop-shadow-md group-hover:scale-105 transition-transform duration-300"
+                  data-alt="A beautifully printed set of professional business cards, fanned out slightly on a clean, light pastel purple background. The lighting is crisp and even, highlighting the sharp edges and rich, CMYK colors of the print. The image conveys premium quality and corporate professionalism."
+                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuAQlO7EGTSOrxx1JgvMGSWOUId6PPDEilTZC18Wd6ig77SLhbri93x4XegjaYXVG1xwQ0ePhpevq1Aqvi1YOihcrNcE-k2_GsD2Ft3VQExYAnlYuyXPbzlPvfgWrCYfI9EGco6zplJNitcXKf3NV2Me5zui0Qkl6I_Yaq-N01IEx9sI8kXc4njQCfUrUXAx1LDwuBcPFO2BHo5U4aO6cQHOH0D9cLcFYglQZfCuwrd6_jWwgL_DCuFk3pNRkXG6i7dG8d2qRDVdD0lt"
+                />
+              </div>
+              <div class="p-md flex-grow">
+                <div
+                  class="font-label-sm text-label-sm product-text-custom mb-xs uppercase tracking-wider"
+                >
+                  Corporate Print
+                </div>
+                <h3
+                  class="font-headline-sm text-headline-sm product-text-custom mb-sm"
+                >
+                  Premium Cards
+                </h3>
+                <p
+                  class="font-body-md text-body-md product-text-custom text-sm line-clamp-2 mb-md"
+                >
+                  Heavyweight stock business cards with precision cuts.
+                </p>
+                <div class="flex justify-between items-center mt-auto">
+                  <span
+                    class="font-label-md text-label-md product-text-custom font-bold"
+                    >From P25.00</span
+                  >
+                  <button
+                    class="product-text-custom hover:opacity-80 transition-opacity"
+                  >
+                    <span
+                      class="material-symbols-outlined"
+                      data-icon="add_circle"
+                      >add_circle</span
+                    >
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+    <!-- Footer -->
+    <footer
+      class="bg-primary text-on-primary border-t border-outline-variant w-full"
+    >
+      <div
+        class="flex flex-col md:flex-row justify-between items-center px-margin-mobile md:px-margin-desktop py-xl w-full gap-md"
+      >
+        <div class="font-headline-sm text-headline-sm text-on-primary">
+          R&C PRINTING SERVICES
+        </div>
+        <nav
+          class="flex flex-wrap justify-center gap-md md:gap-lg font-label-sm text-label-sm"
+        >
+          <a
+            class="text-on-primary/80 hover:text-on-primary hover:underline transition-all opacity-100 hover:opacity-80"
+            href="#"
+            >Privacy Policy</a
+          >
+          <a
+            class="text-on-primary/80 hover:text-on-primary hover:underline transition-all opacity-100 hover:opacity-80"
+            href="#"
+            >Terms of Service</a
+          >
+          <a
+            class="text-on-primary/80 hover:text-on-primary hover:underline transition-all opacity-100 hover:opacity-80"
+            href="#"
+            >Contact Us</a
+          >
+        </nav>
+        <div class="font-label-sm text-label-sm text-on-primary/60">
+          © 2024 R&C PRINTING SERVICES Inc. All rights reserved.
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>
