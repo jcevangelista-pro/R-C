@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Inventory - R&C Printing Services</title>
+<link rel="stylesheet" href="inventory.css">
+
+</head>
+<body>
+
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="brand">
+       <img src="imgs/image 2.png" alt="">
+      <div class="brand-text">R&amp;C PRINTING<br>SERVICES</div>
+    </div>
+
+    <div class="nav-label">MAIN</div>
+    <a class="nav-item" href="../Inventory/"><span>Dashboard</span> <span class="nav-icon"><img src="imgs/Performance Macbook.png" alt=""></span></a>
+    <a class="nav-item active" href="../Inventory/"><span>Inventory</span> <span class="nav-icon"><img src="imgs/Boxes.png" alt=""></span></a>
+    <a class="nav-item" href="../Order/order-owner.html"><span>Orders</span> <span class="nav-icon"><img src="imgs/Shopping Cart.png" alt=""></span></a>
+    <a class="nav-item" href="../Inventory/"><span>Customer</span> <span class="nav-icon"><img src="imgs/User Male.png" alt=""></span></a>
+    <a class="nav-item" href="../Inventory/"><span>Products</span> <span class="nav-icon"><img src="imgs/Product.png" alt=""></span></a>
+  </div>
+
+  <!-- Main -->
+  <div class="main">
+
+    <div class="topbar">
+      <h1 style="font-size: 40px;">Inventory</h1>
+      <div class="owner-tag">
+        <span>Owner</span> <div class="owner"><img src="imgs/Test Account.png" alt=""></div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="toolbar">
+        <div class="search-box">
+           <input type="text" placeholder=""><img src="imgs/Search.png" alt="">
+        </div>
+        <button class="btn-add" onclick="openCreateItemModal()">+ Product</button>
+        <div class="filter-link"><img src="imgs/Funnel.png" alt=""> Filter</div>
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th>ITEM</th>
+            <th>CATEGORY</th>
+            <th>STOCK</th>
+            <th>UNIT</th>
+            <th>STATUS</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>White Mug</td>
+            <td>Mugs</td>
+            <td>50</td>
+            <td>Pcs</td>
+            <td><span class="status-badge status-normal">Normal Stock</span></td>
+            <td>
+              <div class="action-icons">
+                <button class="icon-btn" onclick="openModal('White Mug', '50')"><img src="imgs/Edit Pencil.png" alt=""></button>
+                <button class="icon-btn" onclick="openArchiveModal('White Mug')"><img src="imgs/Archive.png" alt=""></button>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td>White T-shirts</td>
+            <td>Shirts</td>
+            <td>20</td>
+            <td>Pcs</td>
+            <td><span class="status-badge status-low">Low Stock</span></td>
+            <td>
+              <div class="action-icons">
+                <button class="icon-btn" onclick="openModal('White T-shirts', '20')"><img src="imgs/Edit Pencil.png" alt=""></button>
+                <button class="icon-btn" onclick="openArchiveModal('White T-shirts')"><img src="imgs/Archive.png" alt=""></button>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td>A4 Glossy Paper (500s)</td>
+            <td>Paper</td>
+            <td>100</td>
+            <td>Reams</td>
+            <td><span class="status-badge status-high">High Stock</span></td>
+            <td>
+              <div class="action-icons">
+                <button class="icon-btn" onclick="openModal('A4 Glossy Paper (500s)', '100')"><img src="imgs/Edit Pencil.png" alt=""></button>
+                <button class="icon-btn" onclick="openArchiveModal('A4 Glossy Paper (500s)')"><img src="imgs/Archive.png" alt=""></button>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td>Laminating Film (A4)</td>
+            <td>Supply</td>
+            <td>100</td>
+            <td>Pcs</td>
+            <td><span class="status-badge status-high">High Stock</span></td>
+            <td>
+              <div class="action-icons">
+                <button class="icon-btn" onclick="openModal('Laminating Film (A4)', '100')"><img src="imgs/Edit Pencil.png" alt=""></button>
+                <button class="icon-btn" onclick="openArchiveModal('Laminating Film (A4)')"><img src="imgs/Archive.png" alt=""></button>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td>A4 Bond paper</td>
+            <td>Paper</td>
+            <td>100</td>
+            <td>Reams</td>
+            <td><span class="status-badge status-high">High Stock</span></td>
+            <td>
+              <div class="action-icons">
+                <button class="icon-btn" onclick="openModal('A4 Bond paper', '100')"><img src="imgs/Edit Pencil.png" alt=""></button>
+                <button class="icon-btn" onclick="openArchiveModal('A4 Bond paper')"><img src="imgs/Archive.png" alt=""></button>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td>Click pen</td>
+            <td>Pen</td>
+            <td>0</td>
+            <td>Pcs</td>
+            <td><span class="status-badge status-out">Out of Stock</span></td>
+            <td>
+              <div class="action-icons">
+                <button class="icon-btn" onclick="openModal('Click pen', '0')"> <img src="imgs/Edit Pencil.png" alt=""></button>
+                <button class="icon-btn" onclick="openArchiveModal('Click pen')"><img src="imgs/Archive.png" alt=""></button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+<!-- Archive history table -->
+
+    <div class="history-panel">
+      <div class="history-header">
+        <h2>Archive History</h2>
+        <div class="history-search">
+          <img src="imgs/Search.png" alt=""> <input type="text" placeholder="">
+        </div>
+      </div>
+      <table class="history-table">
+        <thead>
+          <tr>
+            <th>ITEM</th>
+            <th>CATEGORY</th>
+            <th>UNIT</th>
+            <th>DATE ARCHIVED</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>White Mug</td>
+            <td>MUGS</td>
+            <td>Pieces</td>
+            <td>May 26, 2026</td>
+            <td class="history-arrow" style="cursor:pointer;" onclick="openUnarchiveModal('White Mug')">&gt;</td>
+          </tr>
+          <tr class="history-empty-row">
+            <td colspan="5"></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Update history table -->
+
+     <div class="history-panel">
+      <div class="history-header">
+        <h2>Update History</h2>
+        <div class="history-search">
+          <img src="imgs/Search.png" alt=""> <input type="text" placeholder="">
+        </div>
+      </div>
+      <table class="history-table">
+        <thead>
+          <tr>
+            <th>ITEM NAME</th>
+            <th>ACTION</th>
+            <th>QUANTITY</th>
+            <th>UPDATED BY</th>
+            <th>DATE</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>White Mug</td>
+            <td>Add Stock</td>
+            <td>10</td>
+            <td>Admin (Damored M.)</td>
+            <td>May 26, 2026</td>
+            <!-- ===== ADDED: arrow now opens Update Detail modal ===== -->
+            <td class="history-arrow" style="cursor:pointer;"
+                onclick="openUpdateDetailModal('White Mug','50','ADD STOCK','10','60','Ordered Stock Arrived','Damored, Moiraine','MAY 26, 2026','3:52 PM')">&gt;</td>
+            <!-- ===== END ADDED ===== -->
+          </tr>
+          <tr>
+            <td>A4 Bond Paper</td>
+            <td>Add Stock</td>
+            <td>100</td>
+            <td>Admin (Mendragoran L.)</td>
+            <td>May 25, 2026</td>
+            <!-- ===== ADDED: arrow now opens Update Detail modal ===== -->
+            <td class="history-arrow" style="cursor:pointer;"
+                onclick="openUpdateDetailModal('A4 Bond Paper','200','ADD STOCK','100','300','Restocked for bulk order','Mendragoran, Luis','MAY 25, 2026','1:15 PM')">&gt;</td>
+            <!-- ===== END ADDED ===== -->
+          </tr>
+          <tr class="history-empty-row">
+            <td colspan="6"></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+
+<!-- Update Item Modal -->
+  <div class="overlay" id="updateOverlay">
+    <div class="modal">
+      <button class="back-btn" onclick="closeModal()">&lt;</button>
+      <div class="modal-title">Update Item</div>
+      <hr>
+ 
+      <div class="row">
+        <div>
+          <div class="label">ITEM NAME:</div>
+          <div class="value" id="modalItemName">White Mug</div>
+        </div>
+        <div>
+          <div class="label">CURRENT STOCK</div>
+          <div class="value" id="modalCurrentStock">50</div>
+        </div>
+      </div>
+ 
+      <div class="section">
+        <div class="label">ADD / DEDUCT STOCK</div>
+        <div class="radio-row">
+          <div class="radio-option">
+            <div class="radio-box filled"></div> ADD STOCK
+          </div>
+          <div class="radio-option">
+            <div class="radio-box"></div> DEDUCT STOCK
+          </div>
+        </div>
+      </div>
+ 
+      <div class="section stepper-row">
+        <div>
+          <div class="label">QUANTITY</div>
+          <div class="stepper">
+            <button>-</button>
+            <div class="qty">10</div>
+            <button>+</button>
+          </div>
+        </div>
+        <div class="new-total">
+          <div class="label">NEW TOTAL STOCK:</div>
+          <div class="value">60</div>
+        </div>
+      </div>
+ 
+      <div class="section">
+        <div class="label">REMARKS</div>
+        <div class="remarks-box"></div>
+      </div>
+ 
+      <div class="section">
+        <div class="label">UPDATED BY</div>
+        <div class="value">Damored, Moiraine</div>
+      </div>
+ 
+      <div class="section">
+        <div class="label">DATE UPDATED</div>
+        <div class="value" style="font-size:14px;">MAY 26, 2026</div>
+        <div class="date-small">3:52 PM</div>
+      </div>
+ 
+      <div class="btn-row">
+        <div class="btn btn-cancel" onclick="closeModal()">CANCEL</div>
+        <div class="btn btn-update" onclick="closeModal()">UPDATE</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Archive Confirmation Modal -->
+  <div class="overlay" id="archiveOverlay">
+    <div class="archive-modal">
+      <h2>ARE YOU SURE TO ARCHIVE<br>THIS ITEM?</h2>
+      <div class="archive-item-name" id="archiveItemName">White Mug</div>
+      <div class="archive-btn-row">
+        <div class="archive-btn archive-btn-cancel" onclick="closeArchiveModal()">CANCEL</div>
+        <div class="archive-btn archive-btn-confirm" onclick="closeArchiveModal()">ARCHIVE</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Unarchive Confirmation Modal -->
+  <div class="overlay" id="unarchiveOverlay">
+    <div class="unarchive-modal">
+      <h2>UNARCHIVE THIS ITEM?</h2>
+      <div class="unarchive-item-name" id="unarchiveItemName">White Mug</div>
+      <div class="unarchive-btn-row">
+        <div class="unarchive-btn unarchive-btn-cancel" onclick="closeUnarchiveModal()">CANCEL</div>
+        <div class="unarchive-btn unarchive-btn-confirm" onclick="closeUnarchiveModal()">UNARCHIVE</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Update Detail Modal -->
+     <div class="overlay" id="detailOverlay">
+    <div class="detail-modal">
+      <button class="back-btn" onclick="closeUpdateDetailModal()">&lt;</button>
+      <div class="modal-title">Update Detail</div>
+      <hr>
+ 
+      <div class="detail-row">
+        <div>
+          <div class="detail-label">ITEM NAME:</div>
+          <div class="detail-value" id="detailItemName">White Mug</div>
+        </div>
+        <div>
+          <div class="detail-label">CURRENT STOCK:</div>
+          <div class="detail-value" id="detailCurrentStock">50</div>
+        </div>
+      </div>
+ 
+      <div class="detail-section">
+        <div class="detail-label">ACTION</div>
+        <div class="detail-value" id="detailAction">ADD STOCK</div>
+      </div>
+ 
+      <div class="detail-row">
+        <div>
+          <div class="detail-label">QUANTITY</div>
+          <div class="detail-value" id="detailQuantity">10</div>
+        </div>
+        <div>
+          <div class="detail-label">NEW TOTAL STOCK:</div>
+          <div class="detail-value large" id="detailNewTotal">60</div>
+        </div>
+      </div>
+ 
+      <div class="detail-section">
+        <div class="detail-label">REMARKS</div>
+        <div class="detail-value" id="detailRemarks">Ordered Stock Arrived</div>
+      </div>
+ 
+      <div class="detail-section">
+        <div class="detail-label">UPDATED BY</div>
+        <div class="detail-value" id="detailUpdatedBy">Damored, Moiraine</div>
+      </div>
+ 
+      <div class="detail-section">
+        <div class="detail-label">DATE UPDATED</div>
+        <div class="detail-value" id="detailDate">MAY 26, 2026</div>
+        <div class="detail-date-small" id="detailTime">3:52 PM</div>
+      </div>
+    </div>
+  </div>
+  
+
+  <!-- ===== ADDED: Create Item Modal ===== -->
+
+  <div class="overlay" id="createItemOverlay">
+    <div class="modal create-modal">
+      <button class="back-btn" onclick="closeCreateItemModal()">&lt;</button>
+      <div class="modal-title">Create Item</div>
+      <hr>
+ 
+      <div class="form-grid">
+        <div>
+          <div class="form-label">Item Name:</div>
+          <input type="text" class="form-input" id="createItemName" placeholder="e.g. White Fans">
+        </div>
+        <div>
+          <div class="form-label">Starting Stock</div>
+          <input type="number" class="form-input" id="createStartingStock" placeholder="0">
+        </div>
+      </div>
+ 
+      <div class="form-grid">
+        <div>
+          <div class="form-label">Category:</div>
+          <select class="form-select" id="createCategory">
+            <option value="">Select</option>
+            <option value="MUGS">MUGS</option>
+            <option value="SHIRTS">SHIRTS</option>
+            <option value="PAPER">PAPER</option>
+            <option value="SUPPLY">SUPPLY</option>
+            <option value="PEN">PEN</option>
+            <option value="FANS">FANS</option>
+          </select>
+        </div>
+        <div>
+          <div class="form-label">Unit of Measurement:</div>
+          <select class="form-select" id="createUnit">
+            <option value="">Select</option>
+            <option value="Pieces">Pieces</option>
+            <option value="Reams">Reams</option>
+            <option value="Boxes">Boxes</option>
+            <option value="Rolls">Rolls</option>
+          </select>
+        </div>
+      </div>
+ 
+      <div class="form-grid">
+        <div>
+          <div class="form-label">Low Stock When:</div>
+          <input type="number" class="form-input" id="createLowStock" placeholder="0">
+        </div>
+        <div>
+          <div class="form-label">High Stock When:</div>
+          <input type="number" class="form-input" id="createHighStock" placeholder="0">
+        </div>
+      </div>
+ 
+      <div class="form-section">
+        <div class="form-label">Remarks</div>
+        <div class="remarks-box" id="createRemarks" contenteditable="true"></div>
+      </div>
+ 
+      <div class="detail-section">
+        <div class="detail-label">Created By</div>
+        <div class="detail-value large" id="createCreatedBy">Damored, Moiraine</div>
+      </div>
+ 
+      <div class="detail-section">
+        <div class="detail-label">Date Created</div>
+        <div class="detail-value" id="createDate">MAY 26, 2026</div>
+        <div class="detail-date-small" id="createTime">3:52 PM</div>
+      </div>
+ 
+      <div class="btn-row">
+        <div class="btn btn-cancel" onclick="closeCreateItemModal()">CANCEL</div>
+        <div class="btn btn-update" onclick="submitCreateItem()">CREATE</div>
+      </div>
+    </div>
+  </div>
+  <!-- ===== END ADDED: Create Item Modal ===== -->
+
+  <script>
+
+    // edit function
+    function openModal(itemName, currentStock) {
+      // document.getElementById('modalItemName').textContent = itemName;
+      document.getElementById('modalItemName').innerHTML = `<input type="text" value="${itemName}">`;
+      document.getElementById('modalCurrentStock').textContent = currentStock;
+      document.getElementById('updateOverlay').classList.add('show');
+    }
+ 
+    function closeModal() {
+      document.getElementById('updateOverlay').classList.remove('show');
+    }
+
+    // archive function
+    function openArchiveModal(itemName) {
+      document.getElementById('archiveItemName').textContent = itemName;
+      document.getElementById('archiveOverlay').classList.add('show');
+    }
+ 
+    function closeArchiveModal() {
+      document.getElementById('archiveOverlay').classList.remove('show');
+    }
+
+
+    // unarchive function
+    function openUnarchiveModal(itemName) {
+      document.getElementById('unarchiveItemName').textContent = itemName;
+      document.getElementById('unarchiveOverlay').classList.add('show');
+    }
+ 
+    function closeUnarchiveModal() {
+      document.getElementById('unarchiveOverlay').classList.remove('show');
+    }
+
+    // update history function
+       function openUpdateDetailModal(itemName, currentStock, action, quantity, newTotal, remarks, updatedBy, date, time) {
+      document.getElementById('detailItemName').textContent = itemName;
+      document.getElementById('detailCurrentStock').textContent = currentStock;
+      document.getElementById('detailAction').textContent = action;
+      document.getElementById('detailQuantity').textContent = quantity;
+      document.getElementById('detailNewTotal').textContent = newTotal;
+      document.getElementById('detailRemarks').textContent = remarks;
+      document.getElementById('detailUpdatedBy').textContent = updatedBy;
+      document.getElementById('detailDate').textContent = date;
+      document.getElementById('detailTime').textContent = time;
+      document.getElementById('detailOverlay').classList.add('show');
+    }
+ 
+    function closeUpdateDetailModal() {
+      document.getElementById('detailOverlay').classList.remove('show');
+    }
+
+        /* ============================================================ */
+    /* ===== ADDED: Create Item modal functions ===== */
+    /* ============================================================ */
+    function openCreateItemModal() {
+      // Reset the form fields each time the modal is opened
+      document.getElementById('createItemName').value = '';
+      document.getElementById('createStartingStock').value = '';
+      document.getElementById('createCategory').value = '';
+      document.getElementById('createUnit').value = '';
+      document.getElementById('createLowStock').value = '';
+      document.getElementById('createHighStock').value = '';
+      document.getElementById('createRemarks').textContent = '';
+ 
+      document.getElementById('createItemOverlay').classList.add('show');
+    }
+ 
+    function closeCreateItemModal() {
+      document.getElementById('createItemOverlay').classList.remove('show');
+    }
+ 
+    // Placeholder handler for the CREATE button.
+    // TODO: replace this with an actual POST request to the Laravel
+    // backend (e.g. POST /api/inventory) once the API is wired up.
+    function submitCreateItem() {
+      const newItem = {
+        name: document.getElementById('createItemName').value,
+        startingStock: document.getElementById('createStartingStock').value,
+        category: document.getElementById('createCategory').value,
+        unit: document.getElementById('createUnit').value,
+        lowStock: document.getElementById('createLowStock').value,
+        highStock: document.getElementById('createHighStock').value,
+        remarks: document.getElementById('createRemarks').textContent,
+        createdBy: document.getElementById('createCreatedBy').textContent,
+        date: document.getElementById('createDate').textContent,
+        time: document.getElementById('createTime').textContent
+      };
+ 
+      console.log('New item to create:', newItem);
+      closeCreateItemModal();
+    }
+    /* ===== END ADDED: Create Item modal functions ===== */
+  </script>
+
+</body>
+</html>
