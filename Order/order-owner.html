@@ -424,6 +424,118 @@
     color: #1b1f4b;
     text-align: center;
   }
+
+    /* ===== ADDED: Order Details Modal ===== */
+  /* ============================================================ */
+  .overlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.4);
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+  }
+ 
+  .overlay.show {
+    display: flex;
+  }
+ 
+  .order-detail-modal {
+    width: 340px;
+    background: #fdf1f6;
+    border: 3px solid #ec4899;
+    border-radius: 25px;
+    padding: 22px 26px;
+    position: relative;
+  }
+ 
+  .order-detail-modal .back-btn {
+    position: absolute;
+    top: 18px;
+    left: 18px;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: #fff;
+    border: none;
+    color: #ec4899;
+    font-size: 16px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+  }
+ 
+  .order-detail-modal .modal-title {
+    text-align: center;
+    color: #ec4899;
+    font-size: 24px;
+    font-weight: 800;
+    padding: 5px 0 15px;
+  }
+ 
+  .order-detail-modal hr {
+    border: none;
+    border-top: 1px solid #f3c6dc;
+    margin-bottom: 18px;
+  }
+ 
+  .order-detail-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    margin-bottom: 18px;
+  }
+ 
+  .order-detail-row > div {
+    flex: 1;
+  }
+ 
+  .order-detail-section {
+    margin-bottom: 18px;
+  }
+ 
+  .order-detail-label {
+    font-size: 11px;
+    font-weight: 800;
+    color: #ec4899;
+    letter-spacing: 0.3px;
+    margin-bottom: 4px;
+    text-transform: uppercase;
+  }
+ 
+  .order-detail-value {
+    font-size: 16px;
+    color: #ec4899;
+    font-weight: 700;
+  }
+ 
+  .order-detail-date-small {
+    font-size: 11px;
+    color: #ec4899;
+    font-weight: 600;
+    margin-top: 2px;
+  }
+ 
+  .order-status-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+ 
+  /* small pink flag/arrow next to the status badge, as in the design */
+  .order-status-flag {
+    width: 0;
+    height: 0;
+    border-top: 9px solid transparent;
+    border-bottom: 9px solid transparent;
+    border-left: 12px solid #ec4899;
+  }
+  /* ===== END ADDED: Order Details Modal ===== */
+
 </style>
 </head>
 <body>
@@ -588,7 +700,7 @@
       </table>
     </div>
 
-    <!-- Order History -->
+    <!-- ===== Orders History Table ===== -->
     <div class="panel" style="margin-top: 20px;">
       <div class="panel-header">
         <h2>Orders History</h2>
@@ -617,7 +729,10 @@
             <td>Tumbler (360 ml)</td>
             <td>P90.00</td>
             <td><span class="order-status-badge order-status-delivered">DELIVERED</span></td>
-            <td><span class="order-arrow" onclick="viewOrderHistory('ORD-2026-00124')">&gt;</span></td>
+            <td>
+              <span class="order-arrow"
+                onclick="openOrderDetailModal('ORD-2026-00124','Tumbler (360 ml)','Jane Doe','P90.00','DELIVERED','Damored, Moiraine','MAY 26, 2026','3:52 PM','MAY 26, 2026','3:52 PM','MAY 26, 2026','3:52 PM')">&gt;</span>
+            </td>
           </tr>
           <tr>
             <td>ORD-2026-00125</td>
@@ -626,7 +741,10 @@
             <td>Tumbler (360 ml)</td>
             <td>P90.00</td>
             <td><span class="order-status-badge order-status-delivered">DELIVERED</span></td>
-            <td><span class="order-arrow" onclick="viewOrderHistory('ORD-2026-00125')">&gt;</span></td>
+            <td>
+              <span class="order-arrow"
+                onclick="openOrderDetailModal('ORD-2026-00125','Tumbler (360 ml)','Janey Doe','P90.00','DELIVERED','Damored, Moiraine','MAY 26, 2026','3:52 PM','MAY 26, 2026','3:52 PM','MAY 26, 2026','3:52 PM')">&gt;</span>
+            </td>
           </tr>
           <tr>
             <td>ORD-2026-00126</td>
@@ -634,8 +752,11 @@
             <td>Janie Doe</td>
             <td>Tumbler (360 ml)</td>
             <td>P90.00</td>
-            <td><span class="order-status-badge order-status-delivered">DELIVERED</span></td>
-            <td><span class="order-arrow" onclick="viewOrderHistory('ORD-2026-00126')">&gt;</span></td>
+            <td><span class="order-status-badge order-status-cancelled">CANCELLED</span></td>
+            <td>
+              <span class="order-arrow"
+                onclick="openOrderDetailModal('ORD-2026-00126','Tumbler (360 ml)','Janie Doe','P90.00','CANCELLED','Damored, Moiraine','MAY 26, 2026','3:52 PM','MAY 26, 2026','3:52 PM','MAY 26, 2026','3:52 PM')">&gt;</span>
+            </td>
           </tr>
           <tr class="table-empty-row">
             <td colspan="7"></td>
@@ -643,6 +764,7 @@
         </tbody>
       </table>
     </div>
+
 
     <!-- Order Process -->
      <div class="history-panel">
@@ -670,7 +792,7 @@
             <td>Tumbler (360 ml)</td>
             <td>P90.00</td>
             <td><span class="order-status-badge-process order-status-brown">PENDING VERIFICATION</span></td>
-            <td><span class="order-arrow" onclick="">&gt;</span></td>
+            <td><span class="order-arrow" onclick="openOrderReviewModal('ORD-2026-00124', '2')">&gt;</span></td>
           </tr>
           <tr class="history-empty-row">
             <td colspan="5"></td>
@@ -681,6 +803,69 @@
 
   </div>
 
+    <div class="overlay" id="orderDetailOverlay">
+    <div class="order-detail-modal">
+      <button class="back-btn" onclick="closeOrderDetailModal()">&lt;</button>
+      <div class="modal-title">Order Details</div>
+      <hr>
+ 
+      <div class="order-detail-row">
+        <div>
+          <div class="order-detail-label">Order ID:</div>
+          <div class="order-detail-value" id="orderDetailId">ORD-2026-00124</div>
+        </div>
+        <div>
+          <div class="order-detail-label">Product Name:</div>
+          <div class="order-detail-value" id="orderDetailProduct">Tumbler (360 ml)</div>
+        </div>
+      </div>
+ 
+      <div class="order-detail-row">
+        <div>
+          <div class="order-detail-label">Customer Name:</div>
+          <div class="order-detail-value" id="orderDetailCustomer">Jane Doe</div>
+        </div>
+        <div>
+          <div class="order-detail-label">Total:</div>
+          <div class="order-detail-value" id="orderDetailTotal">P90.00</div>
+        </div>
+      </div>
+ 
+      <div class="order-detail-section">
+        <div class="order-detail-label">Order Status</div>
+        <div class="order-status-row">
+          <span class="order-status-badge order-status-delivered" id="orderDetailStatus">DELIVERED</span>
+          <span class="order-status-flag"></span>
+        </div>
+      </div>
+ 
+      <div class="order-detail-section">
+        <div class="order-detail-label">Accepted By</div>
+        <div class="order-detail-value" id="orderDetailAcceptedBy">Damored, Moiraine</div>
+      </div>
+ 
+      <div class="order-detail-row">
+        <div>
+          <div class="order-detail-label">Date Requested</div>
+          <div class="order-detail-value" id="orderDetailDateRequested">MAY 26, 2026</div>
+          <div class="order-detail-date-small" id="orderDetailTimeRequested">3:52 PM</div>
+        </div>
+        <div>
+          <div class="order-detail-label">Date Accepted</div>
+          <div class="order-detail-value" id="orderDetailDateAccepted">MAY 26, 2026</div>
+          <div class="order-detail-date-small" id="orderDetailTimeAccepted">3:52 PM</div>
+        </div>
+      </div>
+ 
+      <div class="order-detail-section">
+        <div class="order-detail-label">Date Finished</div>
+        <div class="order-detail-value" id="orderDetailDateFinished">MAY 26, 2026</div>
+        <div class="order-detail-date-small" id="orderDetailTimeFinished">3:52 PM</div>
+      </div>
+    </div>
+  </div>
+
+  
 
   <script>
     // TODO: replace these placeholder handlers with real API calls
@@ -699,9 +884,106 @@
       console.log('View order details:', orderId);
     }
 
-    function viewOrderHistory(orderId) {
-      console.log('View order history detail:', orderId);
+
+    
+    /* ===== ADDED: Order Details modal data + open/close functions ===== */
+
+    // Fills in the Order Details modal and shows it.
+    function openOrderDetailModal(orderId, product, customer, total, status, acceptedBy,
+                                   dateRequested, timeRequested, dateAccepted, timeAccepted,
+                                   dateFinished, timeFinished) {
+      document.getElementById('orderDetailId').textContent = orderId;
+      document.getElementById('orderDetailProduct').textContent = product;
+      document.getElementById('orderDetailCustomer').textContent = customer;
+      document.getElementById('orderDetailTotal').textContent = total;
+      document.getElementById('orderDetailAcceptedBy').textContent = acceptedBy;
+      document.getElementById('orderDetailDateRequested').textContent = dateRequested;
+      document.getElementById('orderDetailTimeRequested').textContent = timeRequested;
+      document.getElementById('orderDetailDateAccepted').textContent = dateAccepted;
+      document.getElementById('orderDetailTimeAccepted').textContent = timeAccepted;
+      document.getElementById('orderDetailDateFinished').textContent = dateFinished;
+      document.getElementById('orderDetailTimeFinished').textContent = timeFinished;
+
+      // Swap the status badge color to match the status being shown.
+      const statusEl = document.getElementById('orderDetailStatus');
+      statusEl.textContent = status;
+      statusEl.className = 'order-status-badge ' +
+        (status === 'DELIVERED' ? 'order-status-delivered' :
+         status === 'CANCELLED' ? 'order-status-cancelled' : 'order-status-processing');
+
+      document.getElementById('orderDetailOverlay').classList.add('show');
     }
+
+    function closeOrderDetailModal() {
+      document.getElementById('orderDetailOverlay').classList.remove('show');
+    }
+    /* ===== END ADDED: Order Details modal data + open/close functions ===== */
+
+    
+
+    // process
+    let reviewCurrentStep = 2;
+    let reviewQuantityValue = 2;
+ 
+    const reviewStepLabels = {
+      2: 'VERIFICATION',
+      3: 'INITIAL PAYMENT',
+      4: 'PROCESSING ORDER',
+      5: 'FINAL PAYMENT',
+      6: 'OUT FOR DELIVERY'
+    };
+ 
+    // Call this to open the modal, optionally starting on a specific step.
+    // e.g. openOrderReviewModal('ORD-2026-00124') or openOrderReviewModal('ORD-2026-00124', 4)
+    function openOrderReviewModal(orderId, startStep) {
+      // TODO: fetch the order's actual review data from the Laravel backend
+      // and populate the fields below instead of using the placeholder values.
+      goToOrderReviewStep(startStep || 2);
+      document.getElementById('orderReviewOverlay').classList.add('show');
+    }
+ 
+    function closeOrderReviewModal() {
+      document.getElementById('orderReviewOverlay').classList.remove('show');
+    }
+ 
+    // Shows the content for the given step (2-6) and hides the rest.
+    function goToOrderReviewStep(step) {
+      reviewCurrentStep = step;
+      for (let s = 2; s <= 6; s++) {
+        const stepEl = document.getElementById('reviewStep' + s);
+        if (stepEl) stepEl.style.display = (s === step) ? 'block' : 'none';
+      }
+      document.getElementById('reviewStepNumber').textContent = 'STEP ' + step + ':';
+      document.getElementById('reviewStepLabel').textContent = reviewStepLabels[step] || '';
+    }
+ 
+    // Called by the APPROVE button. Advances to the next step, or closes
+    // the modal once step 6 (Out for Delivery) has been approved.
+    function approveOrderReviewStep() {
+      // TODO: send the approval for reviewCurrentStep to the Laravel backend
+      // (e.g. PATCH /api/orders/{id}/review-step) before moving on.
+      if (reviewCurrentStep < 6) {
+        goToOrderReviewStep(reviewCurrentStep + 1);
+      } else {
+        closeOrderReviewModal();
+      }
+    }
+ 
+    // Quantity stepper on Step 2 (Verification).
+    function reviewChangeQuantity(delta) {
+      reviewQuantityValue = Math.max(1, reviewQuantityValue + delta);
+      document.getElementById('reviewQuantity').textContent = reviewQuantityValue;
+      // TODO: recalculate Price / Total Price / Amount Reducted / New Product Total
+      // based on the updated quantity once real pricing data is connected.
+    }
+ 
+    // "View Photo" links on Steps 3 and 5.
+    function reviewViewPhoto(which) {
+      // TODO: open the actual uploaded payment screenshot for `which`
+      // ('initialPayment' or 'finalPayment') once file storage is wired up.
+      console.log('View payment screenshot for:', which);
+    }
+    /* ===== END ADDED: Order Review Status modal functions ===== */
   </script>
 
 </body>
