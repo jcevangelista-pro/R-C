@@ -52,12 +52,15 @@
 
     
 
-    // PROCESS FUNCTION
-    
-    let reviewCurrentStep = 2;
-    let reviewQuantityValue = 2;
+    /* ============================================================ */
+    /* ===== ADDED: Order Review Status modal functions ===== */
+    /* ===== These are intentionally NOT attached to any button. */
+    /* ===== Call openOrderReviewModal() yourself wherever you   */
+    /* ===== want the wizard to start (e.g. an arrow/row click). */
+    /* ============================================================ */
+    let currentReviewStep = 2;
  
-    const reviewStepLabels = {
+    const reviewStepTitles = {
       2: 'VERIFICATION',
       3: 'INITIAL PAYMENT',
       4: 'PROCESSING ORDER',
@@ -65,12 +68,9 @@
       6: 'OUT FOR DELIVERY'
     };
  
-    // Call this to open the modal, optionally starting on a specific step.
-    // e.g. openOrderReviewModal('ORD-2026-00124') or openOrderReviewModal('ORD-2026-00124', 4)
-    function openOrderReviewModal(orderId, startStep) {
-      // TODO: fetch the order's actual review data from the Laravel backend
-      // and populate the fields below instead of using the placeholder values.
-      goToOrderReviewStep(startStep || 2);
+    function openOrderReviewModal() {
+      currentReviewStep = 2;
+      showReviewStep(currentReviewStep);
       document.getElementById('orderReviewOverlay').classList.add('show');
     }
  
@@ -78,41 +78,33 @@
       document.getElementById('orderReviewOverlay').classList.remove('show');
     }
  
-    // Shows the content for the given step (2-6) and hides the rest.
-    function goToOrderReviewStep(step) {
-      reviewCurrentStep = step;
-      for (let s = 2; s <= 6; s++) {
-        const stepEl = document.getElementById('reviewStep' + s);
-        if (stepEl) stepEl.style.display = (s === step) ? 'block' : 'none';
+    function showReviewStep(step) {
+      for (let i = 2; i <= 6; i++) {
+        const el = document.getElementById('reviewStep' + i);
+        if (el) el.classList.toggle('active', i === step);
       }
-      document.getElementById('reviewStepNumber').textContent = 'STEP ' + step + ':';
-      document.getElementById('reviewStepLabel').textContent = reviewStepLabels[step] || '';
+      document.getElementById('reviewStepLabel').innerHTML =
+        '<span class="step-number">STEP ' + step + ':</span> <span class="step-title">' + reviewStepTitles[step] + '</span>';
     }
  
-    // Called by the APPROVE button. Advances to the next step, or closes
-    // the modal once step 6 (Out for Delivery) has been approved.
-    function approveOrderReviewStep() {
-      // TODO: send the approval for reviewCurrentStep to the Laravel backend
-      // (e.g. PATCH /api/orders/{id}/review-step) before moving on.
-      if (reviewCurrentStep < 6) {
-        goToOrderReviewStep(reviewCurrentStep + 1);
+    function approveReviewStep() {
+      if (currentReviewStep < 6) {
+        currentReviewStep++;
+        showReviewStep(currentReviewStep);
       } else {
+        // Step 6 (Out for Delivery) approved — the review wizard is complete.
+        // TODO: hook this up to a real "mark order as delivered" API call.
+        console.log('Order review completed — all steps approved.');
         closeOrderReviewModal();
       }
     }
  
-    // Quantity stepper on Step 2 (Verification).
-    function reviewChangeQuantity(delta) {
-      reviewQuantityValue = Math.max(1, reviewQuantityValue + delta);
-      document.getElementById('reviewQuantity').textContent = reviewQuantityValue;
-      // TODO: recalculate Price / Total Price / Amount Reducted / New Product Total
-      // based on the updated quantity once real pricing data is connected.
-    }
- 
-    // "View Photo" links on Steps 3 and 5.
-    function reviewViewPhoto(which) {
-      // TODO: open the actual uploaded payment screenshot for `which`
-      // ('initialPayment' or 'finalPayment') once file storage is wired up.
-      console.log('View payment screenshot for:', which);
+    function backReviewStep() {
+      if (currentReviewStep > 2) {
+        currentReviewStep--;
+        showReviewStep(currentReviewStep);
+      } else {
+        closeOrderReviewModal();
+      }
     }
     /* ===== END ADDED: Order Review Status modal functions ===== */
