@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title>R&C Printing Services</title>
+    <link rel="stylesheet" href="LogInPage.css">
+    <link rel="stylesheet" href="ProductPage.css">
+</head>
+<body>
+
+    <!--Navigation Bar-->
+    <nav class="Navbar">
+            <a href="LandingPage.html" id="BName">R&C PRINTING SERVICES</a>
+        <ul>
+            <li><a href=""><img src="search.png" alt="" class="Img"></a></li>
+            <li><a href=""><img src="typing.png" alt="" class="Img"></a></li>
+            <li><a href=""><img src="trolley.png" alt="" class="Img"></a></li>
+            <li><a href="">HOME</a></li>
+            <li><a href="">PRODUCTS</a></li>
+            <li><a href="">PORTFOLIO</a></li>
+            <li><a href=""><img src="user.png" alt="" class="Img"></a></li>
+        </ul>
+    </nav>
+
+    <div class="RContainer">
+        <div class="WSContainer">
+            <div class="BBContainer">
+                <button id="BackButton">
+                    X
+                </button>
+            </div>
+
+            <div class="PIContainer">
+                <div class="ProductContainer">
+                    <img src="MugPicture.jpg" alt="" class="ProductImage">
+                </div>
+
+                <div class="ProductInformation">
+                    <p id="ProductName">Tumbler (360ml)</p>
+                    <p id="ProductType">Mug & Tumbler</p>
+                    <p id="ProductAvailability">Status: Avail/Not</p>
+
+                    <p id="ProductPrice">P45.00</p>
+
+                    <button id="OpenModal">
+                        Add to Cart
+                    </button>
+
+                    <p id="ProductDescription">For large or high-volume orders, prices may differ based on the quantity, product specifications, 
+                        materials, and customization requested. Orders meeting a certain volume may qualify for a custom 
+                        quotation. Customers are advised to contact us directly for exact pricing, discounted rates, and 
+                        additional assistance.
+                    </p>
+
+                    <div class="ModalContainer" id="Modal_Container">
+                        <div class="WSContainer">
+                            <div class="BBContainer">
+                                <button id="MBackButton">
+                                    X
+                                </button>
+                            </div>
+
+                            <div class="PIContainer">
+                                <div class="ProductContainer">
+                                    <img src="MugPicture.jpg" alt="" class="ProductImage">
+                                </div>
+
+                                <div class="ProductInformation">
+                                    <p id="ProductName">Tumbler (360ml)</p>
+                                    <p id="ProductType">Mug & Tumbler</p>
+                                    <p id="ProductAvailability">Status: Avail/Not</p>
+
+                                    <p id="ProductPrice">P45.00</p>
+
+                                <div class="Quantity">
+                                    <div class="label">QUANTITY</div>
+                                    <div class="stepper">
+                                        <button class="ButtonDA">-</button>
+                                        <div class="qty">10</div>
+                                        <button class="ButtonDA">+</button>
+                                    </div>
+                                </div>
+
+                                    <button id="OpenModal">
+                                        Add to Cart
+                                    </button>
+
+                                    <p id="ProductDescription">For large or high-volume orders, prices may differ based on the quantity, product specifications, 
+                                        materials, and customization requested. Orders meeting a certain volume may qualify for a custom 
+                                        quotation. Customers are advised to contact us directly for exact pricing, discounted rates, and 
+                                        additional assistance.
+                                    </p>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+    
+    <script src="Product.js"></script>
+</body>
+</html>

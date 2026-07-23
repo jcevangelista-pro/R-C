@@ -1,0 +1,165 @@
+.WSContainer {
+    width: 93vw;
+    height: 90vh;
+    margin: 1.5rem 3rem 0 3rem; /*top right bottom left*/
+    background-color: white;
+    box-shadow: 5px 5px 25px #1c1c1c3b; /*x y blur*/
+    
+}
+
+.BBContainer {
+    display: flex;
+    flex-direction: row-reverse ;
+    
+}
+
+#BackButton, 
+#MBackButton {
+    color: #F868AA;
+    font-size: 30px;
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+    text-align: center;
+    margin-top: 20px;
+    margin-right: 20px;
+    padding-top: 5px;
+    background-color: white;
+    width: 54px;
+    height: 54px;
+    border-radius: 50px;
+    box-shadow: 1px 5px 4px #1c1c1c60; /*x y blur*/
+    border: none;
+    
+}
+
+#BackButton:hover, #MBackButton:hover {
+    background-color: rgb(185, 184, 184);
+    box-shadow: 1px 5px 4px #ffdff6; /*x y blur*/
+    color: #ffb5d6;
+    cursor: pointer;
+}
+
+.PIContainer {
+    display: flex;
+    gap: 70px;
+}
+
+.ProductContainer {
+    margin: 0 0 0 3vw;
+    width: 45vw;
+    height: 70vh;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    background-color: #cbc9f9;
+    align-content: center;
+}
+
+.ProductImage {
+    border-radius: 10px;
+    margin-left: 20px;
+    margin-right: 20px;
+    height: 65vh;
+    width: 40vw;
+}
+
+.ProductInformation {
+    margin-right: 30px;
+    font-family: 'Franklin Gothic', 'Arial Narrow', Arial, sans-serif;
+    color: #1E3163;
+}
+
+#ProductName {
+    margin-top: 40px;
+    margin-bottom: 0;
+    font-size: 4rem;
+}
+
+#ProductType {
+    font-size: 2rem;
+    margin: 0;
+}
+
+#ProductAvailability {
+    font-family: 'Franklin Gothic Light', 'Arial Narrow', Arial, sans-serif;
+}
+
+#ProductPrice {
+    font-size: 2rem;
+    font-weight: bolder;
+    margin-bottom: 50px;
+}
+
+#OpenModal {
+    margin-left: 100px;
+    padding-top: 20px;
+    padding-bottom: 40px;
+    text-align: center;
+    color: white;
+    background-color: #1E3163;
+    width: 400px;
+    height: 40px;
+    font-size: 1.5rem;
+}
+
+#OpenModal:hover {
+    background-color: #3E43A0;
+    cursor: pointer; 
+}
+
+#ProductDescription {
+    margin-top: 50px;
+    margin-right: 50px;
+    text-align: justify;
+    font-size: 0.7rem;
+}
+
+.ModalContainer {
+    background-color: #1e32636e;
+    position: fixed;
+    opacity: 0;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none;
+}
+
+.ModalContainer.show {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.Modal {
+    background-color: #4969b976;
+}
+
+.Quantity {
+    margin-bottom: 30px;
+}
+
+.label {
+    margin-right: 30px;
+    font-family: 'Franklin Gothic', 'Arial Narrow', Arial, sans-serif;
+    font-weight: bold;
+    color: #1E3163;
+}
+
+.stepper {
+    height: 4rem;
+    width: 15rem;
+    border: 2px solid #1E3163;
+    display: flex;
+    gap: 65px;
+}
+
+.qty {
+    margin-top: 1vh ;
+    font-size: 2.5rem;
+}
+
+.ButtonDA {
+    cursor: pointer;
+    border: none;
+    background-color: white;
+    font-size: 2.5rem;
+    color: #1E3163;
+}

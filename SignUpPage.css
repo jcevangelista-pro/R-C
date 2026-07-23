@@ -1,0 +1,77 @@
+.RContainer {
+    height: 111vh;
+}
+
+.WSContainer {
+    height: 108vh;
+}
+
+.FormContainer {
+    width: 23vw;
+    height: 92vh;
+    margin: 5rem 35rem 0 35rem;
+    border-radius: 10px;
+    background-color: white;
+}
+
+.form {
+    position: absolute;
+    top: 60px;
+}
+
+.Input {
+    height: 4vh;
+}
+
+.TermsPolicy {
+    font-family: 'Franklin Gothic Light', 'Arial Narrow', Arial, sans-serif;
+    text-align: left;
+    font-size: 0.6rem;
+}
+
+.TermsPolicy a {
+    color: #3E43A0;
+    cursor: pointer; 
+}
+
+.TermsPolicy a:hover {
+    color: #6368cc; 
+}
+
+.Label a {
+    text-decoration: underline;
+}
+
+#TermsandPolicy {
+    width: 15px;
+    height: 15px;
+    position: relative;
+    top: 4px;
+    margin-right: 3px;
+}
+
+.Buttons {
+    margin-top: 1vh;
+    margin-bottom: 3vh;
+}
+
+.LogIn {
+    font-family: 'Franklin Gothic Light', 'Arial Narrow', Arial, sans-serif;
+    color: #3E43A0;
+    display: flex;
+    justify-content: center;
+    column-gap: 2em;
+    font-size: 0.6rem;  
+}
+
+#TLogIn {
+    margin: 0;
+}
+
+#BLogIn {
+    color: #3E43A0; 
+}
+
+#BLogIn:hover {
+    color: #6368cc;
+}

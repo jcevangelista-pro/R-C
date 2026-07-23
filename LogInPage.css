@@ -1,0 +1,218 @@
+
+body{
+    margin: 0px;
+}
+
+.Navbar{
+    background-color: white;
+    border-bottom: 1px solid #F868AA;
+    box-shadow: inset 0 -2px 8px rgba(0, 0, 0, 0.1);
+    display: flex;
+    justify-content: space-between;
+    position: sticky;        /* Toggles between relative and fixed based on scroll */
+    top: 0;                  /* Locks the element to the very top of the viewport */
+    z-index: 1000;  
+}
+
+.Navbar ul {
+    list-style-type: none;
+    padding: 0rem;
+    margin: 0rem;
+    overflow: hidden;
+}
+
+.Navbar a{
+    color: #F868AA;
+    text-decoration: none;
+    padding: 15px;
+    display: block;
+    text-align: left;
+}
+
+.Navbar a:hover{
+    color: #f3a4c8;
+}
+
+.Navbar li{
+    float: left;
+}
+
+.Img{
+    width: 1.2vw;
+    height: 2.5vh;
+}
+
+.RContainer {
+    position: relative;
+    margin: 0;
+    padding: 1.5rem 0 0 0;
+    background: radial-gradient(farthest-corner at 0px 10px, #AABCEB, #FFB2E9, #ffffff,#FFB2E9,#AABCEB);
+    height: 100vh;
+}
+
+.WSContainer {
+    width: 97vw;
+    height: 97vh;
+    margin: 0 1rem 0 1rem;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    background-color: rgba(0, 4, 221, 0.2);
+    
+}
+
+.FormContainer {
+    width: 23vw;
+    height: 75vh;
+    margin: 5rem 35rem 0 35rem;
+    border-radius: 10px;
+    background-color: white;
+    position: relative;
+}
+
+.Circle {
+    width: 10vw;
+    height: 20vh;
+    position: absolute;
+    top: -6vh;
+    left: 50%;
+    transform: translateX(-50%);
+    border-radius: 100%;
+    background-color: white;
+}
+
+.logo {
+    width: 9vw;
+    height: 19vh;
+    position: absolute;
+    top: 10%;
+    left: 50%;
+    transform: translateX(-50%);
+    border-radius: 100%;
+}
+
+.FormContent { 
+    position: relative;
+    width: 20vw;
+    top: 16.5vh;
+    left: 1.5vw;
+}
+
+.form {
+    position: absolute;
+    top: 105px;
+}
+
+
+.Greetings {
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    font-size: 2.5rem;
+    color: #3E43A0;
+    text-align: center;
+}
+
+.Label {
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    color: #3E43A0;
+}
+
+.Input {
+    border: none;
+    border-radius: 4px;
+    background-color: #EDEDED;
+    height: 5.5vh;
+    width: 19vw;
+    margin-top: 2.5px;
+    margin-bottom: 6px;
+    padding-left: 10px;
+}
+
+.Input::placeholder {
+    opacity: 0.3;
+}
+
+.FPass {
+    font-family: 'Franklin Gothic Light', 'Arial Narrow', Arial, sans-serif;
+    text-align: right;
+    font-size: 0.7rem;
+    font-weight: bold;
+}
+
+.FPass a {
+    color: #FF3939; 
+}
+
+.FPass a:hover {
+    color: #fc8686; 
+}
+
+
+.Buttons {
+    display: flex;
+    justify-content: center;
+    column-gap: 1.5em;
+    margin-top: 3vh;
+    margin-bottom: 6vh;
+}
+
+#BackImg {
+    position: relative;
+    top: 4px;
+    width: 25px;
+    height: 16px;
+    margin-right: 10px;
+    padding-top: 2px;
+}
+
+#BBack {
+    font-size: 0.8rem;
+    background-color: white;    
+    border-radius: 0.5rem;
+    height: 4.5vh;
+    width: 7vw;
+    padding-bottom: 10px;
+}
+
+#BBack:hover {
+    background-color: #6368cc;
+    color: white;
+    border: 1px #232992 solid;
+    cursor: pointer;  
+}
+
+#BSubmit {
+    font-size: 0.8rem;
+    background-color: #232992;
+    color: white;
+    font-weight: bold;    
+    border-radius: 0.5rem;
+    height: 4.5vh;
+    width: 7vw;
+    border: none;
+}
+
+#BSubmit:hover {
+    background-color: #6368cc;
+    cursor: pointer;
+}
+
+.SignUp {
+    font-family: 'Franklin Gothic Light', 'Arial Narrow', Arial, sans-serif;
+    color: #3E43A0;
+    display: flex;
+    justify-content: center;
+    column-gap: 2em;
+    font-size: 0.6rem;  
+}
+
+#TSignUp {
+    margin: 0;
+}
+
+#BSignUp {
+    font-weight: bold;
+    color: #3E43A0; 
+}
+
+#BSignUp:hover {
+    color: #6368cc;
+}

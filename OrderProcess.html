@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title>R&C Printing Services</title>
+    <link rel="stylesheet" href="LogInPage.css">
+    <link rel="stylesheet" href="OrderProcess.css">
+</head>
+<body>
+
+    <!--Navigation Bar-->
+    <nav class="Navbar">
+            <a href="LandingPage.html" id="BName">R&C PRINTING SERVICES</a>
+        <ul>
+            <li><a href=""><img src="search.png" alt="" class="Img"></a></li>
+            <li><a href=""><img src="typing.png" alt="" class="Img"></a></li>
+            <li><a href=""><img src="trolley.png" alt="" class="Img"></a></li>
+            <li><a href="">HOME</a></li>
+            <li><a href="">PRODUCTS</a></li>
+            <li><a href="">PORTFOLIO</a></li>
+            <li><a href=""><img src="user.png" alt="" class="Img"></a></li>
+        </ul>
+    </nav>
+
+    <div class="OPBackground">
+        <div class="OPContainer">
+            <div class="HContainer">
+                <div class="BBContainer">
+                    <button id="BackButton">
+                        X
+                    </button>
+                </div>
+                <div class="TextOP">ORDER PROCESS</div>
+            </div>
+            
+            <div class="ScrollableContent">
+                <div class="SCContent">
+                    <div class="SCContainer">
+                        <div class="SLContainer">
+                            <div class="SCircle">1</div>
+                            <div class="LCircle"><img src="OrderProcessImgs\billing.png" alt="" class="ProcessImg1"></div>
+                        </div>
+
+                        <div class="CSContainer">
+                            <div class="CText">ORDER DETAILS</div>
+                            <div class="SText">COMPLETED</div>
+                        </div>
+
+                        <div class="SInformation">
+                            <div class="UpperSInfo">
+                                <div class="UpperSImgContainer">
+                                    <div class="UpperSImg">
+                                        <img src="OrderProcessImgs\billing.png" alt="" class="ProcessImg2">
+                                    </div>
+                                </div>
+                                <div>
+                                    <p class="UpperSDetails">ORDER DETAILS</p>
+                                    <p class="UpperSInformation">You have submitted your order details, uploaded the necessary files, and information.</p>
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="LowerSDetails">
+                                <p class="LowerSText">COMPLETED ON:</p>
+                                <p class="LowerSDate">MAY 25, 2026  |  3:37 PM</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="SCContainer">
+                        <div class="SLContainer">
+                            <div class="SCircle">2</div>
+                            <div class="LCircle"><img src="OrderProcessImgs\billing.png" alt="" class="ProcessImg1"></div>
+                        </div>
+
+                        <div class="CSContainer">
+                            <div class="CText">VERIFICATION</div>
+                            <div class="SText">COMPLETED</div>
+                        </div>
+
+                        <div class="SInformation">
+                            <div class="UpperSInfo">
+                                <div class="UpperSImgContainer">
+                                    <div class="UpperSImg">
+                                        <img src="OrderProcessImgs\billing.png" alt="" class="ProcessImg2">
+                                    </div>
+                                </div>
+                                <div>
+                                    <p class="UpperSDetails">VERIFICATION</p>
+                                    <p class="UpperSInformation" id="USI2">We have reviewed your order, negotiated the details, and finalized the design and price with you.</p>
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="LowerSDetails">
+                                <p class="LowerSText">COMPLETED ON:</p>
+                                <p class="LowerSDate">MAY 25, 2026  |  5:30 PM</p>
+                            </div>
+                        </div>
+                    </div>
+
+
+
+                    <div class="SCContainer" id="PaymentMethodButton">
+                        <div class="SLContainer">
+                            <div class="SCircle">3</div>
+                            <div class="LCircle"><img src="OrderProcessImgs\billing.png" alt="" class="ProcessImg1"></div>
+                        </div>
+
+                        <div class="CSContainer">
+                            <div class="CText">PAYMENT METHOD</div>
+                            <div class="SText">COMPLETED</div>
+                        </div>
+
+                        <div class="SInformation">
+                            <div class="UpperSInfo">
+                                <div class="UpperSImgContainer">
+                                    <div class="UpperSImg">
+                                        <img src="OrderProcessImgs\billing.png" alt="" class="ProcessImg2">
+                                    </div>
+                                </div>
+                                <div>
+                                    <p class="UpperSDetails">PAYMENT METHOD</p>
+                                    <p class="UpperSInformation">Choose your preferred payment method and complete the payment to complete your order.</p>
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="LowerSDetails">
+                                <p class="LowerSText">COMPLETED ON:</p>
+                                <p class="LowerSDate">MAY 25, 2026  |  7:00 PM</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="ModalBackground" id="PaymentMethodModal">
+                        <div class="ModalContainer">
+                            <div class="MBContainer">
+                                <div class="BBContainer">
+                                    <button id="PMBackButton">
+                                        X
+                                    </button>
+                                </div>
+                                <div class="TextPM">PAYMENT METHOD</div>
+                            </div>
+
+                            <div class="MHr">
+                                <div class="mhr"></div>
+                            </div>
+
+                            <div class="ModalContent">
+                                <div class="PaymentRequirements">
+
+                                    <div>
+                                        <div class="TextCategory">MODE OF PAYMENT:</div>
+                                        <div class="ModePayment">
+                                           <div>
+                                                <input type="radio" value="GCash" name="ModePayment" class="RadioButton" required>
+                                                <label for="GCash" class="MTPayment"> Gcash </label>
+                                            
+                                                <input type="radio" value="Bank" name="ModePayment" class="RadioButton" required>
+                                                <label for="Bank" class="MTPayment"> Bank </label>
+                                            </div> 
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <div class="TextCategory">PAYMENT TYPE:</div>
+                                        <div class="PaymentType">
+                                           <div>
+                                                <input type="radio" value="FullPayment" name="PaymentType" class="RadioButton" required>
+                                                <label for="FullPayment" class="MTPayment"> Full Payment </label>
+                                            
+                                                <input type="radio" value="DownPayment" name="PaymentType" class="RadioButton" required>
+                                                <label for="DownPayment" class="MTPayment"> 50% Down Payment </label>
+                                            </div> 
+                                        </div>
+                                    </div>
+
+                                    <div class="TAPayment">
+                                        <div>
+                                            <div class="TextCategory" >PRODUCT TOTAL:</div>
+                                            <div class="TPAmount">P90.00</div>
+                                        </div>
+                                        
+                                        <div>
+                                            <div class="TextCategory" >AMOUNT TO PAY:</div>
+                                            <div class="TPAmount">P90.00</div>
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <label for="" class="TextCategory">Reference Number:</label> <br>
+                                        <input type="text" class="RNInput">
+                                    </div>
+
+                                    <div>
+                                        <label for="photo-upload" class="TextCategory">Screenshot of Payment:</label> <br>
+                                        <input type="file" id="photo-upload" name="photo" accept="image/*" class="SPUpload"><img src="OrderProcessImgs\add-image.png" alt="" class="AddImg">
+                                    </div>
+                                </div>
+
+                                <div class="PaymentDetails">
+                                    <img src="OrderProcessImgs\GCash_logo.svg 1.png" alt="" class="GCLogo">
+                                    <img src="OrderProcessImgs\QR_code_for_mobile_English_Wikipedia 1.png" alt="" class="GCQr">
+                                    <div class="PDText">
+                                        <p class="GCName">SERVICES R.</p>
+                                        <p class="GCNum">099******21</p>
+                                    </div>
+                                    <button class="PSButton">SUBMIT</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="SCContainer">
+                        <div class="SLContainer">
+                            <div class="SCircle">4</div>
+                            <div class="LCircle"><img src="OrderProcessImgs\billing.png" alt="" class="ProcessImg1"></div>
+                        </div>
+
+                        <div class="CSContainer">
+                            <div class="CText">PROCESSING</div>
+                            <div class="SText">COMPLETED</div>
+                        </div>
+
+                        <div class="SInformation">
+                            <div class="UpperSInfo">
+                                <div class="UpperSImgContainer">
+                                    <div class="UpperSImg">
+                                        <img src="OrderProcessImgs\billing.png" alt="" class="ProcessImg2">
+                                    </div>
+                                </div>
+                                <div>
+                                    <p class="UpperSDetails">PROCESSING</p>
+                                    <p class="UpperSInformation">Your order is now being prepared and customized based on your requested specifications.</p>
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="LowerSDetails">
+                                <p class="LowerSText">COMPLETED ON:</p>
+                                <p class="LowerSDate">MAY 25, 2026  |  10:00 PM</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="SCContainer" id="FinalPaymentButton">
+                        <div class="SLContainer">
+                            <div class="SCircle">5</div>
+                            <div class="LCircle"><img src="OrderProcessImgs\billing.png" alt="" class="ProcessImg1"></div>
+                        </div>
+
+                        <div class="CSContainer">
+                            <div class="CText">FINAL PAYMENT</div>
+                            <div class="SText">COMPLETED</div>
+                        </div>
+
+                        <div class="SInformation">
+                            <div class="UpperSInfo">
+                                <div class="UpperSImgContainer">
+                                    <div class="UpperSImg">
+                                        <img src="OrderProcessImgs\billing.png" alt="" class="ProcessImg2">
+                                    </div>
+                                </div>
+                                <div>
+                                    <p class="UpperSDetails">FINAL PAYMENT</p>
+                                    <p class="UpperSInformation">Please settle the remaining balance and delivery fee, if applicable, before pickup or delivery.</p>
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="LowerSDetails">
+                                <p class="LowerSText">COMPLETED ON:</p>
+                                <p class="LowerSDate">MAY 25, 2026  |  11:00 PM</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="ModalBackground2" id="FinalPaymentModal">
+                        <div class="ModalContainer2">
+                            <div class="MBContainer">
+                                <div class="BBContainer">
+                                    <button id="FPMBackButton">
+                                        X
+                                    </button>
+                                </div>
+                                <div class="TextPM">FINAL PAYMENT</div>
+                            </div>
+
+                            <div class="MHr">
+                                <div class="mhr"></div>
+                            </div>
+
+                            <div class="ModalContent">
+                                <div class="PaymentRequirements">
+
+                                    <div>
+                                        <div class="TextCategory">MODE OF PAYMENT:</div>
+                                        <div class="ModePayment">
+                                           <div>
+                                                <input type="radio" value="GCash" name="ModePayment" class="RadioButton" required>
+                                                <label for="GCash" class="MTPayment"> Gcash </label>
+                                            
+                                                <input type="radio" value="Bank" name="ModePayment" class="RadioButton" required>
+                                                <label for="Bank" class="MTPayment"> Bank </label>
+                                            </div> 
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <div class="TextCategory">PAYMENT TYPE:</div>
+                                        <div class="PaymentType">
+                                           <div>
+                                                <input type="radio" value="FullPayment" name="PaymentType" class="RadioButton" required>
+                                                <label for="FullPayment" class="MTPayment"> Full Payment </label>
+                                            
+                                                <input type="radio" value="DownPayment" name="PaymentType" class="RadioButton" required>
+                                                <label for="DownPayment" class="MTPayment"> 50% Down Payment </label>
+                                            </div> 
+                                        </div>
+                                    </div>
+
+                                    <div class="FTAPayment">
+                                        <div>
+                                            <div>
+                                                <div class="TextCategory" >PRODUCT BALANCE:</div>
+                                                <div class="FTPAmount">P40.50</div>
+                                            </div>
+                                            <div>
+                                                <div class="TextCategory" >DELIVERY FEE:</div>
+                                                <div class="FTPAmount">P50.00</div>
+                                            </div>
+                                            <div>
+                                                <div class="TextCategory" >AMOUNT TO PAY:</div>
+                                                <div class="TPAmount">P90.50</div>
+                                            </div>
+                                        </div>
+
+                                        <div class="TPContainer">
+                                            <div class="TextCategory">DELIVERY FEE PHOTO:</div>
+                                            <div class="DPContainer"><img src="OrderProcessImgs\Expand.png" alt=""></div>
+                                        </div>
+                                        
+                                    </div>
+
+                                    <div>
+                                        <label for="" class="TextCategory">Reference Number:</label> <br>
+                                        <input type="text" class="RNInput">
+                                    </div>
+
+                                    <div>
+                                        <label for="photo-upload" class="TextCategory">Screenshot of Payment:</label> <br>
+                                        <input type="file" id="photo-upload" name="photo" accept="image/*" class="SPUpload"><img src="OrderProcessImgs\add-image.png" alt="" class="AddImg">
+                                    </div>
+                                </div>
+
+                                <div class="PaymentDetails">
+                                    <img src="OrderProcessImgs\GCash_logo.svg 1.png" alt="" class="GCLogo">
+                                    <img src="OrderProcessImgs\QR_code_for_mobile_English_Wikipedia 1.png" alt="" class="GCQr">
+                                    <div class="PDText">
+                                        <p class="GCName">SERVICES R.</p>
+                                        <p class="GCNum">099******21</p>
+                                    </div>
+                                    <button class="FPButton">SUBMIT</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="SCContainer">
+                        <div class="SLContainer">
+                            <div class="SCircle">6</div>
+                            <div class="LCircle"><img src="OrderProcessImgs\billing.png" alt="" class="ProcessImg1"></div>
+                        </div>
+
+                        <div class="CSContainer">
+                            <div class="CText">OUT FOR DELIVERY</div>
+                            <div class="SText">COMPLETED</div>
+                        </div>
+
+                        <div class="SInformation">
+                            <div class="UpperSInfo">
+                                <div class="UpperSImgContainer">
+                                    <div class="UpperSImg">
+                                        <img src="OrderProcessImgs\billing.png" alt="" class="ProcessImg2">
+                                    </div>
+                                </div>
+                                <div>
+                                    <p class="UpperSDetails">OUT FOR DELIVERY</p>
+                                    <p class="UpperSInformation">Your order has left our facility and is now on the way to your delivery address.</p>
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="LowerSDetails">
+                                <p class="LowerSText">COMPLETED ON:</p>
+                                <p class="LowerSDate">MAY 26, 2026  |  12:00 PM</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="SCContainer" id="OrderCompleteButton">
+                        <div class="SLContainer">
+                            <div class="SCircle">7</div>
+                            <div class="LCircle"><img src="OrderProcessImgs\billing.png" alt="" class="ProcessImg1"></div>
+                        </div>
+
+                        <div class="CSContainer">
+                            <div class="CText">ORDER COMPLETE</div>
+                            <div class="SText">COMPLETED</div>
+                        </div>
+
+                        <div class="SInformation"  id="OrderSummaryButton">
+                            <div class="UpperSInfo">
+                                <div class="UpperSImgContainer">
+                                    <div class="UpperSImg">
+                                        <img src="OrderProcessImgs\billing.png" alt="" class="ProcessImg2">
+                                    </div>
+                                </div>
+                                <div>
+                                    <p class="UpperSDetails">ORDER COMPLETE</p>
+                                    <p class="UpperSInformation">Your Order is now complete! Thank you for ordering at R&C Printing Services!</p>
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="LowerSDetails">
+                                <p class="LowerSText">COMPLETED ON:</p>
+                                <p class="LowerSDate">MAY 26, 2026  |  2:00 PM</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="ModalBackground3" id="OrderSummaryModal">
+                        <div class="ModalContainer3">
+                            <div class="MBContainer">
+                                <div class="BBContainer">
+                                    <button id="OSMBackButton">
+                                        X
+                                    </button>
+                                </div>
+                                <div class="TextPM">ORDER SUMMARY</div>
+                            </div>
+
+                            <div class="MHr">
+                                <div class="mhr"></div>
+                            </div>
+
+                            <div class="LocationContainer">
+                                <div class="LImg">
+                                    <img src="OrderProcessImgs\Location.png" alt="">
+                                </div>
+                                <div class="CInformation">
+                                    <p class="DNText">Delivery (via Lalamove)</p>
+                                    <p class="NAText">Jane Doe</p>
+                                    <p class="NAText">Block 12 Lot 8, Phase 3, Barangay Banay-Banay, Cabuyao City, Laguna, 4025</p>
+                                    <p class="DNText">09XX-XXX-XXXX</p>
+                                </div>
+                                <div class="FBContainer">
+                                    <button id="OSMBackButton">
+                                        >
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="MHr">
+                                <div class="mhr"></div>
+                            </div>
+
+                            <div class="ModalContent">
+                                <div class="IAContainer">
+                                    <div class="TIContainer">
+                                        <p class="TItem">ITEM</p>
+                                        <div class="ImgBg"><img src="OrderProcessImgs\ProductPic.png" alt="" class="ProductImg"></div>
+                                    </div>
+
+                                    <div>
+                                        <div class="TItem">TOTAL AMOUNT PAID:</div>
+                                        <div class="TAmount">P131.00</div>
+                                    </div>
+                                </div>
+                                <div class="OCPContainer">
+                                    <div class="OInfo1">
+                                        <div>
+                                            <p class="TItem">NAME</p>
+                                            <p class="Text1">Tumbler (360ml)</p>
+                                            <p class="Text2">Mug & Tumbler</p>
+                                        </div>
+                                        <div>
+                                            <p class="TItem">QUANTITY</p>
+                                            <p class="Text1" id="Text1Quanti">2</p>
+                                        </div>
+                                        <div>
+                                            <p class="TItem">DELIVERY DATE</p>
+                                            <p class="Text1">MAR 26, 2026</p>
+                                            <p class="Text2">12:00 PM</p>
+                                        </div>
+                                    </div>
+                                    <div class="OInfo2">
+                                        <div>
+                                            <p class="TItem">PRICE</p>
+                                            <p class="Text1">P45.00</p>
+                                        </div>
+                                        <div>
+                                            <p class="TItem">DISCOUNT</p>
+                                            <p class="Text1">10%</p>
+                                        </div>
+                                        <div>
+                                            <p class="TItem">TOTAL PRICE</p>
+                                            <p class="Text1">P81.00</p>
+                                        </div>
+                                        <div>
+                                            <p class="TItem">DELIVERY FEE</p>
+                                            <p class="Text1">P50.00</p>
+                                        </div>
+                                    </div>
+                                    <div class="PCContainer">
+                                        <div>
+                                            <label for="photo-upload" class="TextCategory">Photo of Order:</label> <br>
+                                            <input type="file" id="photo-upload" name="photo" accept="image/*" class="OPUpload"><img src="OrderProcessImgs\add-image.png" alt="" class="AddP">
+                                        </div>
+                                        <div>
+                                            <button class="OPButton">CONFIRM</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="ModalBackground4" id="OrderSummaryReceiptModal">
+                        <div class="ModalContainer4">
+                            <div class="MBContainer">
+                                <div class="BBContainer">
+                                    <button id="OSRMBackButton">
+                                        X
+                                    </button>
+                                </div>
+                                <div class="TextPM">ORDER SUMMARY</div>
+                            </div>
+
+                            <div class="MHr">
+                                <div class="mhr"></div>
+                            </div>
+
+                            <div class="LocationContainer">
+                                <div class="LImg">
+                                    <img src="OrderProcessImgs\Location.png" alt="">
+                                </div>
+                                <div class="CInformation">
+                                    <p class="DNText">Delivery (via Lalamove)</p>
+                                    <p class="NAText">Jane Doe</p>
+                                    <p class="NAText">Block 12 Lot 8, Phase 3, Barangay Banay-Banay, Cabuyao City, Laguna, 4025</p>
+                                    <p class="DNText">09XX-XXX-XXXX</p>
+                                </div>
+                                <div class="FBContainer">
+                                    <button id="OSMBackButton">
+                                        >
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="MHr">
+                                <div class="mhr"></div>
+                            </div>
+
+                            <div class="ModalContent">
+                                <div class="IAContainer">
+                                    <div class="TIContainer">
+                                        <p class="TItem">ITEM</p>
+                                        <div class="ImgBg"><img src="OrderProcessImgs\ProductPic.png" alt="" class="ProductImg"></div>
+                                    </div>
+                                </div>
+                                <div class="OCPContainer">
+                                    <div class="OInfo1_4">
+                                        <div>
+                                            <p class="TItem">NAME</p>
+                                            <p class="Text1">Tumbler (360ml)</p>
+                                            <p class="Text2">Mug & Tumbler</p>
+                                        </div>
+                                        <div>
+                                            <p class="TItem">QUANTITY</p>
+                                            <p class="Text1" id="Text1Quanti">2</p>
+                                        </div>
+                                        <div>
+                                            <p class="TItem">DELIVERY DATE</p>
+                                            <p class="Text1">MAR 26, 2026</p>
+                                            <p class="Text2">12:00 PM</p>
+                                        </div>
+                                    </div>
+                                    <div class="OInfo2_4">
+                                        <div>
+                                            <p class="TItem">PRICE</p>
+                                            <p class="Text1">P45.00</p>
+                                        </div>
+                                        <div>
+                                            <p class="TItem">DISCOUNT</p>
+                                            <p class="Text1">10%</p>
+                                        </div>
+                                        <div>
+                                            <p class="TItem">TOTAL PRICE</p>
+                                            <p class="Text1">P81.00</p>
+                                        </div>
+                                        <div>
+                                            <p class="TItem">DELIVERY FEE</p>
+                                            <p class="Text1">P50.00</p>
+                                        </div>
+                                    </div>
+                                    <div class="OInfo3_4">
+                                        <div>
+                                            <p class="TItem">PAYMENT STATUS</p>
+                                            <p class="Text1">FULLY PAID</p>
+                                        </div>
+                                        <div>
+                                            <p class="TItem">DELIVERY STATUS</p>
+                                            <p class="Text1">DELIVERED</p>
+                                        </div>
+                                    </div>
+                                    <div class="OInfo4">
+                                        <div class="TItem">
+                                            ORDER TIMELINE
+                                        </div>
+                                        <div class="TDContainer">
+                                            <div class="TimelineText">
+                                                <p>ORDER DETAILS</p>
+                                                <p>VERIFICATION</p>
+                                                <p>PAYMENT METHOD</p>
+                                                <p>PROCESSING</p>
+                                                <p>FINAL PAYMENT</p>
+                                                <p>OUT FOR DELIVERY</p>
+                                                <p>ORDER COMPLETE</p>
+                                            </div>
+                                            <div class="TimelineDate">
+                                                <p>MAY 25, 2026  |  3:37 PM</p>
+                                                <p>MAY 25, 2026  |  5:30 PM</p>
+                                                <p>MAY 25, 2026  |  7:00 PM</p>
+                                                <p>MAY 25, 2026  |  10:00 PM</p>
+                                                <p>MAY 25, 2026  |  11:00 PM</p>
+                                                <p>MAY 26, 2026  |  12:00 PM</p>
+                                                <p>MAY 26, 2026  |  2:00 PM</p>
+                                            </div>
+                                        </div>
+                                        <div class="ASContainer">
+                                            <div>
+                                                <div class="TItem">TOTAL AMOUNT PAID:</div>
+                                                <div class="TAmount">P131.00</div>
+                                            </div>
+                                            <div>
+                                                <div class="TItem">ORDER STATUS:</div>
+                                                <div class="TStatus">COMPLETED</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="ModalContainer5">
+                            <div class="TextPM">
+                                ORDER RECEIPT
+                            </div>
+
+                            <div class="MHr">
+                                <div class="mhr"></div>
+                            </div>
+
+                            <div>
+                                <div>
+                                    <p>R&C PRINTING SERVICES</p>
+                                    <p>PAYMENT RECEIPT</p>
+                                </div>
+                                <div>
+                                    <p>Receipt No.: <p>RC-2026-00124</p></p>
+                                    <p>Order ID:<p>ORD-2026-00124</p></p>
+                                    <p>Date:<p>May 25, 2026</p></p>
+                                </div>
+                            </div>
+
+                            <div class="MHr">
+                                <div class="mhr"></div>
+                            </div>
+
+                            <div>
+                                <p>Customer Name:<p>Jane Doe</p></p>
+                                <p>Contact Number:<p>09XX-XXX-XXXX</p></p>
+                            </div>
+
+                            <div class="MHr">
+                                <div class="mhr"></div>
+                            </div>
+
+                            <div>
+                                <div>
+                                    <p>PRODUCT DETAILS</p>
+                                </div>
+                                <div>
+                                    <p>Product:<p>Tumbler (360ml)</p></p>
+                                    <p>Quantity:<p>2 pcs</p></p>
+                                    <p>Customization Type:<p>Uploaded Custom Design</p></p>
+                                    <p>Delivery Method:<p>Delivery (via Lalamove)</p></p>
+                                </div>
+                            </div>
+
+                            <div class="MHr">
+                                <div class="mhr"></div>
+                            </div>
+
+                            <div>
+                                <div>
+                                    <p>PAYMENT DETAILS</p>
+                                </div>
+                                <div>
+                                    <p>Payment Type: <p>50% Down Payment</p></p>
+                                    <p>Payment Method: <p>Bank (BPI)</p></p>
+                                    <p>Amount Paid: <p>₱131.00</p></p>
+                                    <p>Remaining Balance: <p>₱0.00</p></p>
+                                    <p>Reference Number: <p>1234567890</p></p>
+                                    <p>Payment Status: <p>Fully Paid</p></p>
+                                </div>
+                            </div>
+
+                            <div class="MHr">
+                                <div class="mhr"></div>
+                            </div>
+
+                            <div>
+                                <p>Processed By: R&C Printing Services</p>
+                                <p>This serves as proof that your order transaction has been completed successfully. 
+                                    Thank you for choosing R&C Printing Services.</p>
+                            </div>
+                    </div>
+
+                    
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+    
+<script src="OrderProcess.js"></script>
+
+</body>
+</html>
