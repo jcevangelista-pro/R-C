@@ -244,27 +244,31 @@
       <div class="section">
         <div class="label">ADD / DEDUCT STOCK</div>
         <div class="radio-row">
-          <div class="radio-option">
-            <div class="radio-box filled"></div> ADD STOCK
+          <!-- ===== ADDED: clicking a radio option now selects the stock mode ===== -->
+          <div class="radio-option" onclick="selectStockMode('add')">
+            <div class="radio-box filled" id="radioAddBox"></div> ADD STOCK
           </div>
-          <div class="radio-option">
-            <div class="radio-box"></div> DEDUCT STOCK
+          <div class="radio-option" onclick="selectStockMode('deduct')">
+            <div class="radio-box" id="radioDeductBox"></div> DEDUCT STOCK
           </div>
+          <!-- ===== END ADDED ===== -->
         </div>
       </div>
  
       <div class="section stepper-row">
         <div>
           <div class="label">QUANTITY</div>
+          <!-- ===== ADDED: +/- buttons now update quantity & new total ===== -->
           <div class="stepper">
-            <button>-</button>
-            <div class="qty">10</div>
-            <button>+</button>
+            <button type="button" onclick="changeQuantity(-1)">-</button>
+            <div class="qty" id="modalQty">10</div>
+            <button type="button" onclick="changeQuantity(1)">+</button>
           </div>
+          <!-- ===== END ADDED ===== -->
         </div>
         <div class="new-total">
           <div class="label">NEW TOTAL STOCK:</div>
-          <div class="value">60</div>
+          <div class="value" id="modalNewTotal">60</div>
         </div>
       </div>
  
@@ -369,14 +373,52 @@
   
   <script>
 
-    // edit function
+     // edit function
+    /* ===== ADDED: state for the ADD/DEDUCT toggle and quantity stepper ===== */
+    let stockMode = 'add';       // 'add' or 'deduct'
+    let stockQuantity = 10;
+    let stockCurrentStock = 0;
+    /* ===== END ADDED ===== */
+
     function openModal(itemName, currentStock) {
       // document.getElementById('modalItemName').textContent = itemName;
       document.getElementById('modalItemName').innerHTML = `<input type="text" value="${itemName}">`;
       document.getElementById('modalCurrentStock').textContent = currentStock;
+ 
+      /* ===== ADDED: reset mode/quantity each time the modal opens, then recalculate ===== */
+      stockCurrentStock = parseInt(currentStock, 10) || 0;
+      stockQuantity = 10;
+      document.getElementById('modalQty').textContent = stockQuantity;
+      selectStockMode('add');
+      /* ===== END ADDED ===== */
+ 
       document.getElementById('updateOverlay').classList.add('show');
     }
  
+    /* ===== ADDED: ADD/DEDUCT toggle + quantity stepper functions ===== */
+    /* ============================================================ */
+    function selectStockMode(mode) {
+      stockMode = mode;
+      document.getElementById('radioAddBox').classList.toggle('filled', mode === 'add');
+      document.getElementById('radioDeductBox').classList.toggle('filled', mode === 'deduct');
+      updateNewTotal();
+    }
+ 
+    function changeQuantity(delta) {
+      stockQuantity = Math.max(0, stockQuantity + delta);
+      document.getElementById('modalQty').textContent = stockQuantity;
+      updateNewTotal();
+    }
+ 
+    function updateNewTotal() {
+      const newTotal = stockMode === 'add'
+        ? stockCurrentStock + stockQuantity
+        : Math.max(0, stockCurrentStock - stockQuantity);
+      document.getElementById('modalNewTotal').textContent = newTotal;
+    }
+    /* ===== END ADDED: ADD/DEDUCT toggle + quantity stepper functions ===== */
+
+
     function closeModal() {
       document.getElementById('updateOverlay').classList.remove('show');
     }
