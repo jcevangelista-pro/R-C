@@ -1,0 +1,127 @@
+/* ================= CONTAINERS ================= */
+
+.RContainer {
+    min-height: calc(100vh - 60px);
+}
+
+.WSContainer {
+    min-height: 90vh;
+}
+
+.FormContainer {
+    max-width: 450px;
+    padding: 70px 30px 30px;
+}
+
+/* ================= FORM ================= */
+
+.form {
+    display: flex;
+    flex-direction: column;
+}
+
+.Greetings p {
+    margin: 15px 0 15px 0;
+}
+
+.Input {
+    height: 45px;
+}
+
+/* ================= TERMS ================= */
+
+.TermsPolicy {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+
+    margin-top: 10px;
+
+    font-family: "Franklin Gothic Light",
+                 "Arial Narrow",
+                 Arial,
+                 sans-serif;
+
+    font-size: 0.8rem;
+
+    color: #3E43A0;
+}
+
+.TermsPolicy label {
+    margin: 2px 0 0 0;
+}
+
+.TermsPolicy a {
+    color: #3E43A0;
+    font-size: 0.7rem;
+}
+
+.TermsPolicy a:hover {
+    color: #6368cc;
+}
+
+#TermsandPolicy {
+    width: 16px;
+    height: 16px;
+
+    margin-top: 2px;
+}
+
+/* ================= BUTTONS ================= */
+
+.Buttons {
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+/* ================= LOGIN ================= */
+
+.LogIn {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    font-size: 0.8rem;
+}
+
+#TLogIn {
+    margin: 0;
+    color: #3E43A0;
+    font-family: 'Franklin Gothic Light', 'Arial Narrow', Arial, sans-serif;
+}
+
+#BLogIn {
+    color: #3E43A0;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+}
+
+#BLogIn:hover {
+    color: #6368cc;
+}
+
+/* ================= TABLET ================= */
+
+@media screen and (max-width: 768px) {
+
+    .FormContainer {
+        max-width: 400px;
+    }
+}
+
+/* ================= MOBILE ================= */
+
+@media screen and (max-width: 480px) {
+
+    .FormContainer {
+        padding: 80px 20px 20px;
+    }
+
+    .TermsPolicy {
+        font-size: 0.7rem;
+    }
+
+    .LogIn {
+        flex-direction: column;
+        align-items: center;
+    }
+}

@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>R&C Printing Services - My Cart</title>
+ 
+<link rel="stylesheet" href="Cart.css">
+ 
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+ 
+<!-- <span class="page-label">Product Catalogue</span> -->
+ 
+<!-- ================= TOP NAV ================= -->
+<nav class="Navbar">
+    <a href="#" id="BName">R&amp;C PRINTING SERVICES</a>
+    <ul>
+        <li><a href=""><img src="../imgs/Search.png" alt="" class="Img"></a></li>
+        <li><a href=""><img src="../imgs/typing.png" alt="" class="Img"></a></li>
+        <li class="cart-icon-item"><a href="">
+            <img src="../imgs/trolley.png" alt="" class="Img">
+            <span class="cart-badge" id="cartBadge">0</span>
+        </a></li>
+        <li><a href="">HOME</a></li>
+        <li><a href="">PRODUCTS</a></li>
+        <li><a href="">PORTFOLIO</a></li>
+        <li><a href=""><img src="../imgs/user.png" alt="" class="Img"></a></li>
+    </ul>
+</nav>
+ 
+<main class="page">
+ 
+    <!-- ================= CART CARD ================= -->
+    <section class="cart-card">
+ 
+        <div class="cart-header">
+            <span id="cartTitle">My Cart (1)</span>
+            <button class="header-delivery-toggle" id="deliveryToggleBtn">
+                <span id="deliveryToggleLabel">DELIVERY DETAILS</span>
+                <span class="chevron">›</span>
+            </button>
+        </div>
+ 
+        <div class="cart-table-head">
+            <span class="cth-radio"></span>
+            <span class="cth-item">ITEM</span>
+            <span class="cth-name">NAME</span>
+            <span class="cth-price">PRICE</span>
+            <span class="cth-qty">QUANTITY</span>
+            <span class="cth-total">TOTAL PRICE</span>
+            <span class="cth-chevron"></span>
+        </div>
+ 
+        <div class="cart-rows" id="cartRows">
+            <!-- injected by cart.js -->
+        </div>
+ 
+        <div class="cart-footer">
+            <span class="cart-total-label">TOTAL: <span id="cartTotal">P00.00</span></span>
+            <button class="checkout-btn" id="checkoutBtn">Check Out</button>
+        </div>
+ 
+    </section>
+ 
+    <!-- ================= ORDER SUMMARY MODAL ================= -->
+    <div class="modal-overlay" id="summaryOverlay">
+    <div class="delivery-modal-card order-modal-card" id="summaryModal">
+ 
+        <button class="side-back-btn" id="summaryBackBtn">‹</button>
+        <h2 class="delivery-title">Order Summary</h2>
+        <hr class="side-divider">
+ 
+        <div class="customer-info-row">
+            <span class="pin-icon">📍</span>
+            <div class="customer-info-text">
+                <p class="delivery-via" id="sumDeliveryVia">Delivery (via Lalamove)</p>
+                <p class="stat-value" id="sumCustomerName" style="margin:0;">Jane Doe</p>
+                <p class="stat-sub" id="sumCustomerAddress">Block 12 Lot 8, Phase 3, Barangay Banay-Banay, Cabuyao City, Laguna, 4025</p>
+                <p class="stat-sub" id="sumCustomerPhone">09XX-XXX-XXXX</p>
+                <p class="stat-sub" id="sumCustomerEmail"></p>
+            </div>
+            <button class="side-back-btn next-item-btn" id="summaryNextBtn" title="Next item">›</button>
+        </div>
+ 
+        <div class="order-details-content">
+ 
+            <div class="od-grid">
+                <div class="od-stat od-item-cell">
+                    <span class="stat-label">ITEM</span>
+                    <div class="od-thumb" id="sumThumb"></div>
+                </div>
+                <div class="od-details-col">
+                    <div class="od-inline-row">
+                        <div class="od-stat">
+                            <span class="stat-label">NAME</span>
+                            <p class="stat-value link" id="sumName">Tumbler (360ml)</p>
+                            <p class="stat-sub" id="sumCategory">Mug &amp; Tumbler</p>
+                        </div>
+                        <div class="od-stat">
+                            <span class="stat-label">QUANTITY</span>
+                            <p class="stat-value" id="sumQty">2</p>
+                        </div>
+                    </div>
+                    <div class="od-inline-row">
+                        <div class="od-stat">
+                            <span class="stat-label">PRICE</span>
+                            <p class="stat-value" id="sumPrice">P45.00</p>
+                        </div>
+                        <div class="od-stat">
+                            <span class="stat-label">TOTAL PRICE</span>
+                            <p class="stat-value" id="sumTotalPrice">P90.00</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+ 
+            <div class="selection-block two-up">
+                <div>
+                    <span class="stat-label">DESIGN SELECTION:</span>
+                    <div class="option-row">
+                        <label class="checkbox-option">
+                            <span class="box active"></span> <span id="sumDesignLabel">Upload own photo/design</span>
+                        </label>
+                    </div>
+                </div>
+                <div>
+                    <span class="stat-label">ORDER TYPE:</span>
+                    <div class="option-row">
+                        <label class="checkbox-option">
+                            <span class="box active"></span> <span id="sumOrderTypeLabel">Rush Order</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+ 
+            <div class="field-row two upload-row">
+                <div class="field">
+                    <label>ORDER PHOTO</label>
+                    <div class="photo-upload readonly-photo" id="sumPhotoBox">
+                        <img id="sumPhotoPreview" style="display:none;">
+                        <span id="sumPhotoIcon">📷</span>
+                    </div>
+                </div>
+                <div class="field">
+                    <label>ORDER DESCRIPTION</label>
+                    <div class="description-view" id="sumDescription">No description provided.</div>
+                </div>
+            </div>
+ 
+        </div>
+ 
+        <div class="selection-block bottom-row">
+            <span class="cart-total-label" id="sumTotalFooter">TOTAL: P90.00 (1 ITEM)</span>
+            <button class="done-btn" id="summaryCheckoutBtn">CHECK OUT</button>
+        </div>
+ 
+    </div>
+    </div>
+ 
+    <!-- ================= DELIVERY DETAILS MODAL ================= -->
+    <div class="modal-overlay" id="deliveryOverlay">
+    <div class="delivery-modal-card" id="deliveryModal">
+ 
+        <button class="side-back-btn" id="deliveryBackBtn">‹</button>
+        <h2 class="delivery-title">Delivery Details</h2>
+        <hr class="side-divider">
+ 
+        <!-- ---- Delivery (via Lalamove) fields ---- -->
+        <div class="delivery-fields" id="deliveryFieldsDelivery">
+ 
+            <div class="field-row three">
+                <div class="field">
+                    <label>First Name</label>
+                    <input type="text" id="fldFirstName">
+                </div>
+                <div class="field">
+                    <label>Middle Name</label>
+                    <input type="text" id="fldMiddleName">
+                </div>
+                <div class="field">
+                    <label>Last Name</label>
+                    <input type="text" id="fldLastName">
+                </div>
+            </div>
+ 
+            <div class="field-row two">
+                <div class="field">
+                    <label>E-mail</label>
+                    <input type="email" id="fldEmail">
+                </div>
+                <div class="field">
+                    <label>Phone Number</label>
+                    <input type="text" id="fldPhone">
+                </div>
+            </div>
+ 
+            <div class="field-row three">
+                <div class="field">
+                    <label>Province/Region</label>
+                    <input type="text" id="fldProvince">
+                </div>
+                <div class="field">
+                    <label>City</label>
+                    <input type="text" id="fldCity">
+                </div>
+                <div class="field">
+                    <label>Barangay</label>
+                    <input type="text" id="fldBarangay">
+                </div>
+            </div>
+ 
+            <div class="field-row two uneven">
+                <div class="field">
+                    <label>Address Details</label>
+                    <input type="text" id="fldAddress">
+                </div>
+                <div class="field small">
+                    <label>Zip Code</label>
+                    <input type="text" id="fldZip">
+                </div>
+            </div>
+ 
+            <div class="field-row two">
+                <div class="field">
+                    <label>Preferred Delivery Date:</label>
+                    <input type="date" id="fldDeliveryDate">
+                </div>
+                <div class="field">
+                    <label>Delivery Note:</label>
+                    <input type="text" id="fldDeliveryNote">
+                </div>
+            </div>
+ 
+        </div>
+ 
+        <!-- ---- Pickup fields ---- -->
+        <div class="delivery-fields" id="deliveryFieldsPickup" style="display:none;">
+ 
+            <div class="field-row two">
+                <div class="field readonly">
+                    <label>Pickup Location</label>
+                    <p>R&C Printing Services<br>St. Joseph Windfield 2 Village,<br>Cabuyao City, Laguna</p>
+                </div>
+                <div class="field readonly">
+                    <label>Pickup Hours</label>
+                    <p>Monday to Saturday<br>9:00 AM - 6:00 PM</p>
+                </div>
+            </div>
+ 
+            <div class="field-row two">
+                <div class="field">
+                    <label>Mobile Number</label>
+                    <input type="text" id="fldMobile" placeholder="09XX-XXX-XXXX">
+                </div>
+                <div class="field readonly">
+                    <label>Reminder</label>
+                    <p>Please arrive with your "Ready for Pickup" notification before visiting the store.</p>
+                </div>
+            </div>
+ 
+            <div class="field-row two">
+                <div class="field">
+                    <label>Preferred Delivery Date:</label>
+                    <input type="date" id="fldPickupDate">
+                </div>
+                <div class="field">
+                    <label>Delivery Note:</label>
+                    <input type="text" id="fldPickupNote">
+                </div>
+            </div>
+ 
+        </div>
+ 
+        <div class="selection-block bottom-row">
+            <span class="stat-label">DELIVERY SELECTION:</span>
+            <div class="option-row">
+                <label class="checkbox-option">
+                    <span class="box" id="dotDelivery"></span> Delivery (via Lalamove)
+                </label>
+                <label class="checkbox-option">
+                    <span class="box" id="dotPickup"></span> Pickup
+                </label>
+            </div>
+            <button class="done-btn" id="deliveryDoneBtn">DONE</button>
+        </div>
+ 
+    </div>
+    </div>
+ 
+    <!-- ================= ORDER DETAILS MODAL ================= -->
+    <div class="modal-overlay" id="orderOverlay">
+    <div class="delivery-modal-card order-modal-card" id="orderModal">
+ 
+        <button class="side-back-btn" id="orderBackBtn">‹</button>
+        <h2 class="delivery-title">Order details</h2>
+        <hr class="side-divider">
+ 
+        <div class="order-details-content">
+ 
+            <div class="od-grid">
+                <div class="od-stat od-item-cell">
+                    <span class="stat-label">ITEM</span>
+                    <div class="od-thumb" id="odThumb"></div>
+                </div>
+                <div class="od-details-col">
+                    <div class="od-inline-row">
+                        <div class="od-stat">
+                            <span class="stat-label">NAME</span>
+                            <p class="stat-value link" id="odName">Tumbler (360ml)</p>
+                            <p class="stat-sub" id="odCategory">Mug &amp; Tumbler</p>
+                        </div>
+                        <div class="od-stat">
+                            <span class="stat-label">QUANTITY</span>
+                            <input type="number" id="odQtyInput" class="qty-input" min="1" value="2">
+                        </div>
+                    </div>
+                    <div class="od-inline-row">
+                        <div class="od-stat">
+                            <span class="stat-label">PRICE</span>
+                            <p class="stat-value" id="odPrice">P45.00</p>
+                        </div>
+                        <div class="od-stat">
+                            <span class="stat-label">TOTAL PRICE</span>
+                            <p class="stat-value" id="odTotalPrice">P90.00</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+ 
+            <div class="selection-block two-up">
+                <div>
+                    <span class="stat-label">DESIGN SELECTION:</span>
+                    <div class="option-row">
+                        <label class="checkbox-option">
+                            <span class="box" id="boxUpload"></span> Upload own photo/design
+                        </label>
+                        <label class="checkbox-option">
+                            <span class="box" id="boxRequest"></span> Request photo customization
+                        </label>
+                    </div>
+                    <p class="order-type-note" id="designNote" style="display:none;">*Reference Photo is subject to changes through messenger/support.</p>
+                </div>
+                <div>
+                    <span class="stat-label">ORDER TYPE:</span>
+                    <div class="option-row">
+                        <label class="checkbox-option">
+                            <span class="box" id="boxNormal"></span> Normal Order
+                        </label>
+                        <label class="checkbox-option">
+                            <span class="box" id="boxRush"></span> Rush Order
+                        </label>
+                    </div>
+                    <p class="order-type-note" id="orderTypeNote">Note: Rush orders are subject to an additional rush fee equivalent to 80% of the total price.</p>
+                </div>
+            </div>
+ 
+            <div class="field-row two upload-row">
+                <div class="field">
+                    <label>ORDER PHOTO</label>
+                    <label class="photo-upload" id="photoUploadBox" for="orderPhotoInput">
+                        <img id="photoPreview" style="display:none;">
+                        <span id="photoUploadIcon">📷</span>
+                    </label>
+                    <input type="file" id="orderPhotoInput" accept="image/*" style="display:none;">
+                </div>
+                <div class="field">
+                    <label>ORDER DESCRIPTION</label>
+                    <textarea id="odDescription" placeholder="Describe how you want the uploaded photo to be edited, arranged, or printed."></textarea>
+                </div>
+            </div>
+ 
+        </div>
+ 
+        <div class="selection-block bottom-row">
+            <span class="cart-total-label">TOTAL: <span id="odTotalFooter">P90.00</span></span>
+            <button class="done-btn" id="orderDoneBtn">DONE</button>
+        </div>
+ 
+    </div>
+    </div>
+ 
+</main>
+ 
+<script src="cartData.js"></script>
+<script src="cart.js"></script>
+ 
+</body>
+</html>
