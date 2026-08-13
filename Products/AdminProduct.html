@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Products - R&amp;C Printing Services</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Arial, sans-serif; }
+
+  body {
+    background: #d9d9d9;
+    display: flex;
+    min-height: 100vh;
+  }
+
+  /* ── SIDEBAR ──────────────────────────────────────────── */
+  .sidebar {
+    width: 220px;
+    background: #1b1f4b;
+    color: #fff;
+    padding: 20px 0;
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 0; left: 0;
+    height: 100vh;
+    overflow-y: auto;
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0 20px 25px;
+  }
+
+  .brand img { width: 42px; height: 42px; border-radius: 50%; object-fit: cover; }
+
+  .brand-text { font-size: 15px; font-weight: 700; line-height: 1.3; color: #fffcfb; }
+
+  .nav-label { font-size: 11px; letter-spacing: 1px; color: #9b9fc9; padding: 10px 20px 8px; }
+
+  .nav-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 20px;
+    color: #d7d9f0;
+    text-decoration: none;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+
+  .nav-item:hover { background: rgba(255,255,255,0.05); }
+
+  .nav-item.active {
+    background: #2a2f6b;
+    color: #fff;
+    border-left: 4px solid #ec4899;
+    padding-left: 16px;
+  }
+
+  .nav-item img { width: 18px; height: 18px; }
+
+  /* ── MAIN ─────────────────────────────────────────────── */
+  .main {
+    flex: 1;
+    padding: 24px 32px;
+    margin-left: 220px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  /* ── TOPBAR ───────────────────────────────────────────── */
+  .topbar {
+    background: #fff;
+    border-radius: 10px;
+    padding: 16px 25px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+  }
+
+  .topbar h1 { color: #ec4899; font-size: 46px; font-weight: 800; }
+
+  .owner-tag {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #ec4899;
+    font-weight: 700;
+    font-size: 22px;
+  }
+
+  .owner-tag img { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; }
+
+  /* ── STAT TILES ROW ───────────────────────────────────── */
+  .panel1 {
+    background: #fff;
+    border-radius: 10px;
+    padding: 20px 25px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+    display: flex;
+    gap: 20px;
+  }
+
+  .TContainer {
+    display: flex;
+    align-items: flex-start;
+    border-top: 3px solid #ec4899;
+    border-radius: 8px;
+    padding: 14px 16px 12px;
+    width: 25vw;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    background: #fff;
+  }
+
+  .TCategory {
+    flex: 1;
+    font-size: 1rem;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    color: #1b1f4b;
+    font-weight: 600;
+    padding-top: 6px;
+  }
+
+  .TTopCategory {
+    font-size: 2rem;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    color: #ec4899;
+    font-weight: 800;
+    text-align: right;
+    padding-right: 6px;
+  }
+
+  /* ── PRODUCTS PANEL ───────────────────────────────────── */
+  .panel2 {
+    background: #fff;
+    border-radius: 10px;
+    padding: 24px 25px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+    min-height: 50rem;
+  }
+
+  .PCContainer {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 28px;
+  }
+
+  /* ── PRODUCT CARD ─────────────────────────────────────── */
+  .ProductCard {
+    background-color: #c6caf6;
+    border-radius: 16px;
+    height: 50vh;
+    width: 22vw;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.12);
+    cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.15s;
+    overflow: hidden;
+  }
+
+  .ProductCard:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 14px rgba(0,0,0,0.16);
+  }
+
+  /* Add Product card */
+  #AddProduct {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: #fff;
+    border: 2px dashed #c6caf6;
+  }
+
+  #AddProduct:hover { border-color: #ec4899; }
+
+  #WhiteBg {
+    width: 90%;
+    height: 55%;
+    background-color: #f3f4f6;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  #addButton {
+    font-size: 5rem;
+    font-weight: 300;
+    border: none;
+    background: transparent;
+    color: #ec4899;
+    cursor: pointer;
+    line-height: 1;
+  }
+
+  #addButton:hover { color: #db2777; }
+
+  .TAddProduct {
+    font-size: 1.2rem;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    color: #1b1f4b;
+    text-align: center;
+    margin-top: 14px;
+    font-weight: 700;
+  }
+
+  .ProductPicture {
+    width: calc(100% - 16px);
+    height: 56%;
+    border-radius: 12px;
+    margin: 8px 8px 0;
+    object-fit: cover;
+  }
+
+  .ProductName {
+    color: #1b1f4b;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin: 8px 14px 2px;
+  }
+
+  .ProductType {
+    color: #6b7280;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    font-size: 0.95rem;
+    margin: 0 14px;
+  }
+
+  /* ── MODAL OVERLAY ────────────────────────────────────── */
+  #ModalContainer, #ProductContent {
+    background-color: rgba(30,50,99,0.43);
+    position: fixed;
+    display: none;
+    top: 0;
+    left: 220px;
+    width: calc(100vw - 220px);
+    height: 100vh;
+    pointer-events: auto;
+    align-items: center;
+    justify-content: center;
+    z-index: 999;
+  }
+
+  #ModalContainer.show, #ProductContent.show {
+    display: flex;
+    pointer-events: auto;
+  }
+
+  /* ── ADD PRODUCT MODAL ────────────────────────────────── */
+  #ContentModal {
+    background-color: #fff;
+    border-radius: 16px;
+    width: 520px;
+    padding: 28px 32px 24px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.18);
+  }
+
+  .TextAP, .TextUP {
+    text-align: center;
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: #1b1f4b;
+    margin-bottom: 20px;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+  }
+
+  #MAddProduct {
+    background-color: #f3f4f6;
+    color: #ec4899;
+    cursor: pointer;
+    width: 100%;
+    height: 160px;
+    border: 2px dashed #c6caf6;
+    font-size: 4rem;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    transition: border-color 0.15s;
+  }
+
+  #MAddProduct:hover { border-color: #ec4899; }
+
+  .ProductDetails {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  .PDInput {
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    width: 220px;
+    height: 40px;
+    padding: 0 12px;
+    font-size: 0.95rem;
+    color: #1b1f4b;
+    outline: none;
+  }
+
+  .PDInput:focus { border-color: #ec4899; }
+
+  .PDInput::placeholder {
+    color: #9ca3af;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    font-size: 0.9rem;
+  }
+
+  .DropDown {
+    color: #1b1f4b;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    background-color: white;
+    width: 220px;
+    height: 40px;
+    padding: 0 12px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    outline: none;
+    display: flex;
+    align-items: center;
+  }
+
+  .PDButtons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 8px;
+  }
+
+  #ProductClose, #ProductAdding, #ProductCancel, #ProductUpdate {
+    border: none;
+    height: 40px;
+    width: 120px;
+    cursor: pointer;
+    color: #1b1f4b;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    font-size: 1rem;
+    border-radius: 6px;
+    background-color: #f3f4f6;
+    font-weight: 700;
+    transition: background 0.15s, color 0.15s;
+  }
+
+  #ProductClose:hover, #ProductCancel:hover {
+    background-color: #e5e7eb;
+  }
+
+  #ProductAdding, #ProductUpdate {
+    background-color: #ec4899;
+    color: #fff;
+  }
+
+  #ProductAdding:hover, #ProductUpdate:hover {
+    background-color: #db2777;
+  }
+
+  /* ── UPDATE PRODUCT MODAL ─────────────────────────────── */
+  #PCCard {
+    background-color: #fff;
+    border-radius: 16px;
+    width: 700px;
+    padding: 28px 32px 24px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.18);
+  }
+
+  .PUContentCard {
+    display: flex;
+    gap: 28px;
+    align-items: flex-start;
+  }
+
+  .ProductPictureUpdate .ProductPicture {
+    width: 220px;
+    height: 220px;
+    border-radius: 12px;
+    object-fit: cover;
+    margin: 0;
+  }
+
+  .UProductDetails {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  #FrontPageVisibility {
+    width: 18px;
+    height: 18px;
+    margin-right: 8px;
+    accent-color: #ec4899;
+    cursor: pointer;
+  }
+
+  .Label {
+    color: #1b1f4b;
+    font-size: 0.9rem;
+    font-weight: 600;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    cursor: pointer;
+  }
+
+  .UPDButtons {
+    display: flex;
+    gap: 12px;
+    margin-top: 16px;
+  }
+</style>
+</head>
+<body>
+
+  <!-- ── SIDEBAR ─────────────────────────────────────────── -->
+  <div class="sidebar">
+    <div class="brand">
+      <img src="../imgs/image 2.png" alt="R&C Logo">
+      <div class="brand-text">R&amp;C PRINTING<br>SERVICES</div>
+    </div>
+
+    <div class="nav-label">MAIN</div>
+    <a class="nav-item" href="../Dashboard/Dashboard.html"><span>Dashboard</span> <span class="nav-icon"><img src="../imgs/Performance Macbook.png" alt=""></span></a>
+    <a class="nav-item" href="../Inventory/inventory-admin.html"><span>Inventory</span> <span class="nav-icon"><img src="../imgs/Boxes.png" alt=""></span></a>
+    <a class="nav-item" href="../Order/order-owner.html"><span>Orders</span> <span class="nav-icon"><img src="../imgs/Shopping Cart.png" alt=""></span></a>
+    <a class="nav-item" href="#"><span>Customer</span> <span class="nav-icon"><img src="../imgs/User Male.png" alt=""></span></a>
+    <a class="nav-item active" href="AdminProduct.html"><span>Products</span> <span class="nav-icon"><img src="../imgs/Product.png" alt=""></span></a>
+    <a class="nav-item" href="../UserSystem/UserSystem.html"><span>Users</span> <span class="nav-icon"><img src="../imgs/user.png" alt=""></span></a>
+  </div>
+
+  <!-- ── MAIN ───────────────────────────────────────────── -->
+  <div class="main">
+
+    <div class="topbar">
+      <h1>Products</h1>
+      <div class="owner-tag">
+        <span>Owner</span>
+        <img src="../imgs/Test Account.png" alt="Owner">
+      </div>
+    </div>
+
+    <div class="panel1">
+      <div class="TContainer">
+        <div class="TCategory">Total Products:</div>
+        <div class="TTopCategory" id="TTopCategory1">670</div>
+      </div>
+      <div class="TContainer">
+        <div class="TCategory">Total Sold:</div>
+        <div class="TTopCategory" id="TTopCategory2">1,230</div>
+      </div>
+      <div class="TContainer">
+        <div class="TCategory">Top Category:</div>
+        <div class="TTopCategory" id="TTopCategory3">Sublimation</div>
+      </div>
+    </div>
+
+    <div class="panel2">
+      <div class="PCContainer">
+
+        <div class="ProductCard" id="AddProduct">
+          <div id="WhiteBg"><button id="addButton">+</button></div>
+          <p class="TAddProduct">Add Product</p>
+        </div>
+
+        <div id="ModalContainer">
+          <div id="ContentModal">
+            <div class="TextAP">Add Product</div>
+            <div>
+              <button id="MAddProduct">+</button>
+            </div>
+
+            <div class="ProductDetails">
+              <div>
+                <input type="text" class="PDInput" placeholder="Name of Product" id="PDInput1">
+              </div>
+              <div class="DropDown">Material Used</div>
+              <div class="DropDown" id="DropDown1">Type of Product</div>
+              <div class="PDInput">
+                <input type="text" class="PDInput" placeholder="Product Price" id="PDInput2">
+              </div>
+            </div>
+
+            <div class="PDButtons">
+              <button id="ProductClose"><img src="" alt="">CANCEL</button>
+              <button id="ProductAdding"><img src="" alt="">ADD</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="ProductCard" id="ProductContent1">
+          <img src="../imgs/MugPicture.jpg" alt="" class="ProductPicture">
+          <p class="ProductName">Tumbler (360ml)</p>
+          <p class="ProductType">Mug &amp; Tumbler</p>
+        </div>
+
+        <div id="ProductContent">
+          <div id="PCCard">
+            <div class="TextUP">Update Product</div>
+
+            <div class="PUContentCard">
+              <div class="ProductPictureUpdate">
+                <img src="MugPicture.jpg" alt="" class="ProductPicture">
+              </div>
+
+              <div>
+                <div class="UProductDetails">
+                  <div>
+                    <input type="text" class="PDInput" placeholder="Name of Product" id="PDInput1">
+                  </div>
+                  <div class="DropDown">Material Used</div>
+                  <div class="DropDown" id="DropDown1">Type of Product</div>
+                  <div class="PDInput">
+                    <input type="text" class="PDInput" placeholder="Product Price" id="PDInput2">
+                  </div>
+                </div>
+
+                <input type="checkbox" id="FrontPageVisibility" required>
+                <label for="FrontPageVisibility" class="Label">Set Visible to Front Page</label>
+
+                <div class="UPDButtons">
+                  <button id="ProductCancel"><img src="" alt="">CANCEL</button>
+                  <button id="ProductUpdate"><img src="" alt="">UPDATE</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div><!-- /.main -->
+
+<script>
+  const addButton = document.getElementById ('addButton');
+  const ModalContainer = document.getElementById ('ModalContainer');
+  const ProductClose = document.getElementById ('ProductClose');
+
+  addButton.addEventListener('click', () => {
+      ModalContainer.classList.add('show');
+  });
+
+  ProductClose.addEventListener('click', () => {
+      ModalContainer.classList.remove('show');
+  });
+   
+  /* Product Content Modal */
+  const ProductContent1 = document.getElementById ('ProductContent1');
+  const ProductContent = document.getElementById ('ProductContent');
+  const ProductCancel = document.getElementById ('ProductCancel');
+
+  ProductContent1.addEventListener('click', () => {
+      ProductContent.classList.add('show');
+  });
+
+  ProductCancel.addEventListener('click', () => {
+    ProductContent.classList.remove('show');
+  });
+</script>
+</body>
+</html>
