@@ -1,192 +1,419 @@
+/* =========================
+   GENERAL
+========================= */
 
 body {
     margin: 0;
     font-family: Arial, sans-serif;
-    background: radial-gradient(farthest-corner at 0px 10px, #AABCEB, #FFB2E9, #ffffff, #FFB2E9);
+    background: radial-gradient(
+        farthest-corner at 0px 10px,
+        #AABCEB,
+        #FFB2E9,
+        #ffffff,
+        #FFB2E9
+    );
 }
- 
+
+
+/* =========================
+   NAVBAR
+========================= */
+
 .Navbar {
     background: white;
     border-bottom: 1px solid #F868AA;
     box-shadow: inset 0 -2px 8px rgba(0, 0, 0, 0.1);
- 
+
     display: flex;
     justify-content: space-between;
     align-items: center;
- 
+
     padding: 10px 20px;
+
     position: sticky;
     top: 0;
     z-index: 1000;
 }
- 
+
 #BName {
     text-decoration: none;
     color: #F868AA;
     font-size: 2rem;
     font-weight: bold;
 }
- 
+
 .Navbar ul {
     list-style: none;
     margin: 0;
     padding: 0;
- 
+
     display: flex;
     align-items: center;
     gap: 15px;
 }
- 
+
 .Navbar a {
     color: #F868AA;
     text-decoration: none;
     padding: 10px 12px;
     display: block;
 }
- 
+
+
+/* =========================
+   NAVBAR IMAGE
+========================= */
+
 .Img {
-    width: 24px;
-    height: 24px;
+    width: 30px;
+    height: 30px;
     object-fit: contain;
+    display: block;
 }
- 
+
+
+/* =========================
+   MAIN PAGE
+========================= */
+
 .page {
     min-height: 100vh;
+
     display: flex;
     justify-content: center;
+
     padding: 20px 15px;
+
     box-sizing: border-box;
 }
- 
+
+
+/* =========================
+   MAIN CONTAINER
+========================= */
+
 .ServicesContainer {
     width: 100%;
     max-width: 1400px;
- 
+
     background: rgba(203, 175, 241, 0.75);
+
     backdrop-filter: blur(3px);
     -webkit-backdrop-filter: blur(3px);
- 
+
     border-radius: 20px;
-    border: none;
-    box-shadow: 0 8px 32px rgba(160, 120, 220, 0.35), 0 2px 8px rgba(160, 120, 220, 0.18);
- 
+
+    box-shadow:
+        0 8px 32px rgba(160, 120, 220, 0.35),
+        0 2px 8px rgba(160, 120, 220, 0.18);
+
     padding: 25px;
+
     box-sizing: border-box;
- 
+
     display: flex;
     flex-direction: column;
+
     gap: 20px;
- 
+
     height: fit-content;
+
     position: relative;
 }
+
+
+/* =========================
+   HEADER
+========================= */
 
 .HeaderSection {
     display: flex;
     flex-direction: column;
     align-items: center;
+
     gap: 10px;
+
     position: relative;
 }
- 
+
 .Logo {
     width: 80px;
     height: 80px;
+
     border-radius: 50%;
+
     object-fit: cover;
+
     position: absolute;
+
     top: 0;
     left: 0;
 }
- 
+
 h1 {
     text-align: center;
+
     color: white;
+
     font-size: 60px;
+
     margin: 0;
-    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+
+    text-shadow:
+        2px 2px 5px rgba(0, 0, 0, 0.3);
 }
- 
+
 h2 {
     text-align: center;
+
     color: white;
+
     font-size: 35px;
+
     margin: 0;
-    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+
+    text-shadow:
+        2px 2px 5px rgba(0, 0, 0, 0.3);
 }
- 
+
+
+/* =========================
+   PRODUCTS
+========================= */
+
 .ProductsBox {
     background: white;
+
     padding: 20px;
+
     border-radius: 12px;
+
     box-sizing: border-box;
 }
- 
+
 .ProductGrid {
     display: grid;
+
     grid-template-columns: repeat(4, 1fr);
+
     grid-template-rows: repeat(2, auto);
+
     gap: 20px;
 }
 
 .ProductCard {
     background: #b2ace3;
+
     border-radius: 12px;
+
     overflow: hidden;
- 
+
     display: flex;
     flex-direction: column;
+
+    transition: transform 0.2s ease;
 }
- 
+
+.ProductCard:hover {
+    transform: translateY(-5px);
+}
+
 .ProductImage {
     width: 100%;
+
     height: 170px;
+
     object-fit: cover;
+
     display: block;
 }
- 
+
 .ProductCard h3 {
     text-align: center;
+
     margin: 10px 0;
+
     color: #0b0a0b;
 }
 
+
+/* =========================
+   SOCIAL MEDIA BOX
+========================= */
+
 .SocialsBox {
     margin-top: 10px;
+
     background: white;
-    padding: 20px;
+
+    padding: 25px;
+
     border-radius: 15px;
+
     text-align: center;
+
     backdrop-filter: blur(8px);
+
+    box-sizing: border-box;
 }
- 
+
 .SocialsBox h2 {
-    margin-bottom: 10px;
+    margin: 0 0 15px 0;
+
     color: black;
+
+    font-size: 30px;
+
+    text-shadow: none;
 }
- 
+
 .SocialsBox p {
-    color: rgb(0, 0, 0);
-    margin: 10px 0 0;
+    color: black;
+
+    margin: 10px 0 15px;
+
     font-size: 14px;
 }
- 
+
+
+/* =========================
+   SOCIAL MEDIA LINKS
+========================= */
+
 .SocialLinks {
     display: flex;
+
     justify-content: center;
-    gap: 40px;
-    margin: 10px 0;
+
+    align-items: center;
+
+    gap: 30px;
+
+    margin: 15px 0;
+
     flex-wrap: wrap;
 }
- 
+
 .SocialLinks a {
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
     text-decoration: none;
-    color: rgb(2, 2, 2);
-    font-weight: bold;
-    font-size: 16px;
+
+    padding: 8px;
+
+    border-radius: 10px;
+
+    transition:
+        transform 0.2s ease,
+        background 0.2s ease;
 }
- 
+
 .SocialLinks a:hover {
-    text-decoration: underline;
+    transform: scale(1.15);
+
+    background: rgba(248, 104, 170, 0.1);
 }
- 
+
+
+/* =========================
+   SOCIAL MEDIA IMAGES
+========================= */
+
+.SocialLinks .Img {
+    width: 45px;
+
+    height: 45px;
+
+    object-fit: contain;
+
+    display: block;
+}
+
+
+/* =========================
+   RESPONSIVE DESIGN
+========================= */
+
+@media (max-width: 1000px) {
+
+    .ProductGrid {
+        grid-template-columns: repeat(2, 1fr);
+
+        grid-template-rows: auto;
+    }
+
+    h1 {
+        font-size: 45px;
+    }
+
+    h2 {
+        font-size: 28px;
+    }
+}
+
+
+@media (max-width: 600px) {
+
+    .Navbar {
+        padding: 8px 12px;
+    }
+
+    #BName {
+        font-size: 1.5rem;
+    }
+
+    .Navbar ul {
+        gap: 5px;
+    }
+
+    .Navbar a {
+        padding: 8px;
+    }
+
+    .page {
+        padding: 10px;
+    }
+
+    .ServicesContainer {
+        padding: 15px;
+        border-radius: 15px;
+    }
+
+    .Logo {
+        position: static;
+
+        width: 65px;
+        height: 65px;
+
+        margin-bottom: 5px;
+    }
+
+    h1 {
+        font-size: 35px;
+    }
+
+    h2 {
+        font-size: 24px;
+    }
+
+    .ProductGrid {
+        grid-template-columns: 1fr;
+    }
+
+    .ProductImage {
+        height: 200px;
+    }
+
+    .SocialLinks {
+        gap: 20px;
+    }
+
+    .SocialLinks .Img {
+        width: 40px;
+        height: 40px;
+    }
+}
