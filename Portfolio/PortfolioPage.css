@@ -116,9 +116,10 @@ body {
 
 .HeaderSection {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     align-items: center;
-    gap: 10px;
+    justify-content: center;
+    gap: 20px;
     position: relative;
 }
 
@@ -127,7 +128,22 @@ body {
     height: 80px;
     border-radius: 50%;
     object-fit: cover;
+
+    position: absolute;
+    left: 0;
+    top: 0;
+
+    border: 4px solid #e5dee8;
+    box-sizing: border-box;
+
+    box-shadow:
+        0 0 30px rgba(110, 24, 133, 0.8);
 }
+
+.HeaderSection h1 {
+    margin: 0;
+}
+ 
 
 h1 {
     text-align: center;
