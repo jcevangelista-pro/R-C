@@ -1,6 +1,7 @@
 body {
     margin: 0;
     font-family: Arial, sans-serif;
+
     background: radial-gradient(
         farthest-corner at 0px 10px,
         #AABCEB,
@@ -10,6 +11,7 @@ body {
     );
 }
 
+
 /* =========================
    NAVBAR
 ========================= */
@@ -17,46 +19,61 @@ body {
 .Navbar {
     background: white;
     border-bottom: 1px solid #F868AA;
-    box-shadow: inset 0 -2px 8px rgba(0, 0, 0, 0.1);
+
+    box-shadow:
+        inset 0 -2px 8px rgba(0, 0, 0, 0.1);
 
     display: flex;
-    justify-content: space-between;
     align-items: center;
 
     padding: 10px 20px;
+
     position: sticky;
     top: 0;
     z-index: 1000;
 }
 
+
+/* R&C PRINTING SERVICES - LEFT */
+
 #BName {
     text-decoration: none;
     color: #F868AA;
+
     font-size: 2rem;
     font-weight: bold;
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
+
     white-space: nowrap;
+
+    margin-right: auto;
 }
+
+
+/* NAVIGATION LINKS */
 
 .Navbar ul {
     list-style: none;
+
     margin: 0;
     margin-left: auto;
+
     padding: 0;
 
     display: flex;
     align-items: center;
+
     gap: 15px;
 }
 
 .Navbar a {
     color: #F868AA;
     text-decoration: none;
+
     padding: 10px 12px;
+
     display: block;
 }
+
 
 /* =========================
    GENERAL IMAGE
@@ -65,8 +82,10 @@ body {
 .Img {
     width: 24px;
     height: 24px;
+
     object-fit: contain;
 }
+
 
 /* =========================
    PAGE
@@ -74,11 +93,15 @@ body {
 
 .page {
     min-height: 100vh;
+
     display: flex;
     justify-content: center;
+
     padding: 20px 15px;
+
     box-sizing: border-box;
 }
+
 
 /* =========================
    MAIN CONTAINER
@@ -89,10 +112,12 @@ body {
     max-width: 1400px;
 
     background: rgba(203, 175, 241, 0.75);
+
     backdrop-filter: blur(3px);
     -webkit-backdrop-filter: blur(3px);
 
     border-radius: 20px;
+
     border: none;
 
     box-shadow:
@@ -100,15 +125,19 @@ body {
         0 2px 8px rgba(160, 120, 220, 0.18);
 
     padding: 25px;
+
     box-sizing: border-box;
 
     display: flex;
     flex-direction: column;
+
     gap: 20px;
 
     height: fit-content;
+
     position: relative;
 }
+
 
 /* =========================
    HEADER
@@ -116,54 +145,80 @@ body {
 
 .HeaderSection {
     display: flex;
+
     flex-direction: row;
+
     align-items: center;
+
     justify-content: center;
+
     gap: 20px;
+
     position: relative;
 }
+
+
+/* R&C LOGO */
 
 .Logo {
     width: 80px;
     height: 80px;
+
     border-radius: 50%;
+
     object-fit: cover;
 
     position: absolute;
+
     left: 0;
     top: 0;
 
     border: 4px solid #e5dee8;
+
     box-sizing: border-box;
 
     box-shadow:
         0 0 30px rgba(110, 24, 133, 0.8);
 }
 
+
+/* HEADER TITLE */
+
 .HeaderSection h1 {
     margin: 0;
 }
- 
 
 h1 {
     text-align: center;
+
     color: white;
+
     font-size: 60px;
+
     margin: 0;
 
     text-shadow:
         2px 2px 5px rgba(0, 0, 0, 0.3);
 }
+
+
+/* =========================
+   SECTION HEADINGS
+========================= */
 
 h2 {
     text-align: center;
+
     color: white;
+
     font-size: 35px;
+
     margin: 0;
 
     text-shadow:
         2px 2px 5px rgba(0, 0, 0, 0.3);
 }
+
 
 /* =========================
    PRODUCTS
@@ -171,39 +226,66 @@ h2 {
 
 .ProductsBox {
     background: white;
+
     padding: 20px;
+
     border-radius: 12px;
+
     box-sizing: border-box;
 }
 
+
+/* PRODUCT GRID */
+
 .ProductGrid {
     display: grid;
+
     grid-template-columns: repeat(4, 1fr);
+
     grid-template-rows: repeat(2, auto);
+
     gap: 20px;
 }
 
+
+/* PRODUCT CARD */
+
 .ProductCard {
     background: #b2ace3;
+
     border-radius: 12px;
+
     overflow: hidden;
 
     display: flex;
+
     flex-direction: column;
 }
 
+
+/* PRODUCT IMAGE */
+
 .ProductImage {
     width: 100%;
+
     height: 170px;
+
     object-fit: cover;
+
     display: block;
 }
 
+
+/* PRODUCT NAME */
+
 .ProductCard h3 {
     text-align: center;
+
     margin: 10px 0;
+
     color: #0b0a0b;
 }
+
 
 /* =========================
    SOCIALS BOX
@@ -213,14 +295,18 @@ h2 {
     margin-top: 10px;
 
     background: white;
+
     padding: 20px;
+
     border-radius: 15px;
 
     text-align: center;
 
     backdrop-filter: blur(8px);
+
     -webkit-backdrop-filter: blur(8px);
 }
+
 
 /* FOLLOW US HEADING */
 
@@ -228,9 +314,11 @@ h2 {
     margin: 0 0 15px 0;
 
     color: black;
+
     font-family: Arial, sans-serif;
 
     font-size: 35px;
+
     font-weight: bold;
 
     text-align: center;
@@ -239,15 +327,19 @@ h2 {
         2px 2px 5px rgba(0, 0, 0, 0.3);
 }
 
-/* DESCRIPTION / COPYRIGHT */
+
+/* COPYRIGHT */
 
 .SocialsBox p {
     color: black;
+
     margin: 10px 0 0;
 
     font-family: Arial, sans-serif;
+
     font-size: 14px;
 }
+
 
 /* =========================
    SOCIAL LINKS
@@ -255,7 +347,9 @@ h2 {
 
 .SocialLinks {
     display: flex;
+
     justify-content: center;
+
     align-items: center;
 
     gap: 40px;
@@ -265,13 +359,16 @@ h2 {
     flex-wrap: wrap;
 }
 
+
 /* CLICKABLE SOCIAL ICON */
 
 .SocialLinks a {
     text-decoration: none;
 
     display: flex;
+
     align-items: center;
+
     justify-content: center;
 
     padding: 5px;
@@ -280,6 +377,7 @@ h2 {
         transform 0.2s ease,
         opacity 0.2s ease;
 }
+
 
 /* SOCIAL ICON SIZE */
 
@@ -292,13 +390,17 @@ h2 {
     display: block;
 }
 
-/* HOVER EFFECT */
+
+/* SOCIAL HOVER */
 
 .SocialLinks a:hover {
     text-decoration: none;
+
     transform: scale(1.15);
+
     opacity: 0.8;
 }
+
 
 /* =========================
    RESPONSIVE DESIGN
@@ -322,6 +424,11 @@ h2 {
         font-size: 30px;
     }
 }
+
+
+/* =========================
+   MOBILE
+========================= */
 
 @media (max-width: 600px) {
 
@@ -347,6 +454,7 @@ h2 {
 
     .ServicesContainer {
         padding: 15px;
+
         border-radius: 15px;
     }
 
