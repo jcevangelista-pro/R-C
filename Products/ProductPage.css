@@ -271,14 +271,121 @@ body {
 
 /* ── RESPONSIVE ──────────────────────────────────────────── */
 @media (max-width: 768px) {
-    .Navbar { flex-direction: column; align-items: flex-start; }
-    .Navbar ul { flex-wrap: wrap; }
-    #BName { padding-left: 1rem; }
-    .RContainer { padding: 1rem 0; }
-    .WSContainer { width: 96vw; }
-    .PIContainer { flex-direction: column; gap: 20px; padding: 0 16px 10px; }
-    .ProductContainer { width: 100%; min-height: 30vh; }
-    #ProductName, .product-name { font-size: 1.8rem; }
-    #OpenModal, .btn-add-cart { width: 100%; }
-    .modal-card { width: 96vw; }
+    /* Navbar: brand left, user icon right, hide middle items */
+    .Navbar {
+        flex-direction: row;
+        align-items: center;
+        padding: 10px 16px;
+    }
+
+    .Navbar ul {
+        display: flex;
+        align-items: center;
+        flex-wrap: nowrap;
+        gap: 0;
+    }
+
+    .Navbar li {
+        display: none;
+    }
+
+    .Navbar li:last-child {
+        display: block;
+    }
+
+    .Navbar li:last-child a {
+        padding: 4px;
+    }
+
+    #BName {
+        font-size: 0.85rem;
+        padding-left: 0;
+    }
+
+    .Img {
+        width: 24px;
+        height: 24px;
+    }
+
+    /* Main content */
+    .RContainer {
+        padding: 1rem 0;
+        min-height: auto;
+    }
+
+    .WSContainer {
+        width: 94vw;
+        padding: 10px 10px 20px;
+    }
+
+    .PIContainer {
+        flex-direction: column;
+        gap: 16px;
+        padding: 0 12px 10px;
+    }
+
+    .ProductContainer {
+        width: 100%;
+        min-height: 30vh;
+    }
+
+    .ProductImage {
+        max-height: 28vh;
+    }
+
+    #ProductName, .product-name {
+        font-size: 1.6rem;
+        margin-top: 10px;
+    }
+
+    #ProductType, .product-type {
+        font-size: 1rem;
+    }
+
+    #ProductPrice, .product-price {
+        font-size: 1.5rem;
+        margin-bottom: 16px;
+    }
+
+    #OpenModal, .btn-add-cart {
+        width: 100%;
+        padding: 12px 0;
+        font-size: 0.95rem;
+    }
+
+    #ProductDescription, .product-desc {
+        font-size: 0.72rem;
+        max-width: 100%;
+    }
+
+    /* Modal */
+    .modal-card {
+        width: 96vw;
+        max-height: 90vh;
+        padding-bottom: 20px;
+    }
+
+    .modal-card .PIContainer {
+        flex-direction: column;
+        gap: 16px;
+        padding: 0 12px 10px;
+    }
+
+    .modal-card .ProductContainer {
+        width: 100%;
+        min-height: 25vh;
+    }
+
+    .stepper {
+        width: 10rem;
+        height: 2.6rem;
+    }
+
+    .qty {
+        font-size: 1.3rem;
+    }
+
+    .ButtonDA {
+        font-size: 1.3rem;
+    }
 }
