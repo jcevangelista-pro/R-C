@@ -18,7 +18,17 @@
             <li><a href="../LandingPage/LandingPage.html">HOME</a></li>
             <li><a href="ProductPage.html">PRODUCTS</a></li>
             <li><a href="../Portfolio/PortfolioPage.html">PORTFOLIO</a></li>
-            <li><a href=""><img src="../imgs/user.png" alt="" class="Img"></a></li>
+            <li class="mobile-menu-item">
+                <a href=""><img src="../imgs/user.png" alt="" class="Img"></a>
+                <div class="mobile-sidebar">
+                    <a href=""><img src="../imgs/search.png" alt="" class="sidebar-icon"> Search</a>
+                    <a href=""><img src="../imgs/typing.png" alt="" class="sidebar-icon"> Messages</a>
+                    <a href=""><img src="../imgs/trolley.png" alt="" class="sidebar-icon"> Cart</a>
+                    <a href="../LandingPage/LandingPage.html">HOME</a>
+                    <a href="ProductPage.html">PRODUCTS</a>
+                    <a href="../Portfolio/PortfolioPage.html">PORTFOLIO</a>
+                </div>
+            </li>
         </ul>
     </nav>
 
@@ -93,6 +103,23 @@
         </div>
     </div>
 
+    <script>
+    // Mobile sidebar toggle on click
+    const menuItem = document.querySelector('.mobile-menu-item');
+    if (menuItem) {
+        menuItem.addEventListener('click', function(e) {
+            if (e.target.closest('.mobile-sidebar')) return;
+            e.preventDefault();
+            e.stopPropagation();
+            this.classList.toggle('open');
+        });
+        document.addEventListener('click', function(e) {
+            if (!menuItem.contains(e.target)) {
+                menuItem.classList.remove('open');
+            }
+        });
+    }
+    </script>
     <script src="Product.js"></script>
 </body>
 </html>

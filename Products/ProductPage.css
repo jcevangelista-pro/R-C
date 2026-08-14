@@ -17,7 +17,7 @@ body {
     list-style-type: none;
     padding: 0;
     margin: 0;
-    overflow: hidden;
+    overflow: visible;
     display: flex;
     align-items: center;
 }
@@ -269,6 +269,11 @@ body {
 
 .ButtonDA:hover { color: #F868AA; }
 
+/* ── MOBILE SIDEBAR (hidden on desktop) ──────────────────── */
+.mobile-sidebar {
+    display: none;
+}
+
 /* ── RESPONSIVE ──────────────────────────────────────────── */
 @media (max-width: 768px) {
     /* Navbar: brand left, user icon right, hide middle items */
@@ -283,17 +288,20 @@ body {
         align-items: center;
         flex-wrap: nowrap;
         gap: 0;
+        overflow: visible;
     }
 
     .Navbar li {
         display: none;
     }
 
-    .Navbar li:last-child {
+    /* Show only the mobile menu item */
+    .Navbar li.mobile-menu-item {
         display: block;
+        position: relative;
     }
 
-    .Navbar li:last-child a {
+    .Navbar li.mobile-menu-item > a {
         padding: 4px;
     }
 
@@ -305,6 +313,50 @@ body {
     .Img {
         width: 24px;
         height: 24px;
+    }
+
+    /* Mobile sidebar dropdown */
+    .mobile-sidebar {
+        display: none;
+        position: absolute;
+        top: 100%;
+        right: 0;
+        background: #fff;
+        border: 1px solid #F868AA;
+        border-radius: 10px;
+        box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+        padding: 10px 0;
+        min-width: 180px;
+        z-index: 1000;
+        flex-direction: column;
+    }
+
+    .mobile-menu-item:hover .mobile-sidebar,
+    .mobile-menu-item.open .mobile-sidebar {
+        display: flex;
+    }
+
+    .mobile-sidebar a {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 20px;
+        color: #1E3163;
+        font-size: 0.85rem;
+        font-weight: 600;
+        text-decoration: none;
+        transition: background 0.15s;
+    }
+
+    .mobile-sidebar a:hover {
+        background: #fff0f7;
+        color: #F868AA;
+    }
+
+    .sidebar-icon {
+        width: 16px;
+        height: 16px;
+        object-fit: contain;
     }
 
     /* Main content */
