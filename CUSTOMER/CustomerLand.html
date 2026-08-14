@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Customers - R&amp;C Printing Services</title>
+  <link rel="stylesheet" href="CustomerLand.css">
+  <link rel="stylesheet" href="../UserSystem/UserSystem.css">
+</head>
+<body>
+
+  <!-- ── SIDEBAR ─────────────────────────────────────────── -->
+  <div class="sidebar">
+    <div class="brand">
+      <img src="../imgs/image 2.png" alt="R&C Logo">
+      <div class="brand-text">R&amp;C PRINTING<br>SERVICES</div>
+    </div>
+
+    <div class="nav-label">MAIN</div>
+    <a class="nav-item" href="../Dashboard/Dashboard.html">
+      <span>Dashboard</span>
+      <span class="nav-icon"><img src="../imgs/Performance Macbook.png" alt=""></span>
+    </a>
+    <a class="nav-item" href="../Inventory/inventory-admin.html">
+      <span>Inventory</span>
+      <span class="nav-icon"><img src="../imgs/Boxes.png" alt=""></span>
+    </a>
+    <a class="nav-item" href="../Order/order-owner.html">
+      <span>Orders</span>
+      <span class="nav-icon"><img src="../imgs/Shopping Cart.png" alt=""></span>
+    </a>
+    <a class="nav-item active" href="CustomerLand.html">
+      <span>Customer</span>
+      <span class="nav-icon"><img src="../imgs/User Male.png" alt=""></span>
+    </a>
+    <a class="nav-item" href="../Products/AdminProduct.html">
+      <span>Products</span>
+      <span class="nav-icon"><img src="../imgs/Product.png" alt=""></span>
+    </a>
+    <a class="nav-item" href="../UserSystem/UserSystem.html">
+      <span>Users</span>
+      <span class="nav-icon"><img src="../imgs/user.png" alt=""></span>
+    </a>
+  </div>
+
+  <!-- ── MAIN ───────────────────────────────────────────── -->
+  <div class="main">
+
+    <!-- Topbar -->
+    <div class="topbar">
+      <h1>Customers</h1>
+      <div class="owner-tag">
+        <span>Owner</span>
+        <img src="../imgs/Test Account.png" alt="Owner">
+      </div>
+    </div>
+
+    <!-- Customer panel -->
+    <div class="panel">
+      <div class="panel-header">
+        <div class="col col-name">Name</div>
+        <div class="col col-contact">Contact</div>
+        <div class="col col-address">Address</div>
+        <div class="col col-search">
+          <div class="search-box">
+            <input type="text" placeholder="Search Customer">
+            <span class="search-icon">&#128269;</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="table-wrap" id="tableWrap">
+      </div>
+    </div>
+
+  </div><!-- /.main -->
+ 
+<!-- ================= ORDER RECORDS MODAL ================= -->
+<div class="modal-overlay" id="orderModalOverlay">
+ 
+    <!-- ---- PAGE 1: Order Records ---- -->
+    <div class="order-modal" id="orderRecordsView">
+ 
+        <button class="back-btn" id="orderModalClose">‹</button>
+ 
+        <h2 class="order-modal-title">Customer Order Records</h2>
+        <hr class="order-modal-divider">
+ 
+        <div class="customer-info">
+            <span class="pin-icon">📍</span>
+            <div>
+                <p class="customer-name" id="modalCustomerName">Jane Doe</p>
+                <p class="customer-address" id="modalCustomerAddress">
+                    Block 12 Lot 8, Phase 3, Barangay Banay-Banay, Cabuyao City, Laguna, 4025
+                </p>
+                <p class="customer-phone" id="modalCustomerPhone">09XX-XXX-XXXX</p>
+            </div>
+        </div>
+ 
+        <div class="order-table">
+            <div class="order-table-head">
+                <span>ITEMS</span>
+                <span>NAME</span>
+                <span>QUANTITY</span>
+                <span>ORDER STATUS:</span>
+            </div>
+ 
+            <div class="order-items" id="orderItemsWrap">
+                <!-- Order items injected by script.js -->
+            </div>
+        </div>
+ 
+    </div>
+ 
+    <!-- ---- PAGE 2: Order Summary (SEE DETAILS) ---- -->
+    <div class="order-modal summary-modal" id="orderSummaryView" style="display:none;">
+ 
+        <button class="back-btn" id="summaryBackBtn">‹</button>
+ 
+        <h2 class="order-modal-title">Order Summary</h2>
+        <hr class="order-modal-divider">
+ 
+        <div class="customer-info">
+            <span class="pin-icon">📍</span>
+            <div>
+                <p class="delivery-via" id="summaryDeliveryVia">Delivery (via Lalamove)</p>
+                <p class="customer-name" id="summaryCustomerName">Jane Doe</p>
+                <p class="customer-address" id="summaryCustomerAddress">
+                    Block 12 Lot 8, Phase 3, Barangay Banay-Banay, Cabuyao City, Laguna, 4025
+                </p>
+                <p class="customer-phone" id="summaryCustomerPhone">09XX-XXX-XXXX</p>
+            </div>
+            <button class="next-btn" id="summaryNextBtn">›</button>
+        </div>
+ 
+        <div class="summary-content">
+ 
+            <div class="summary-left">
+                <span class="stat-label">ITEM</span>
+                <div class="item-thumb small" id="summaryThumb"></div>
+            </div>
+ 
+            <div class="summary-right">
+ 
+                <div class="detail-row row-name">
+                    <div class="summary-stat col-1">
+                        <span class="stat-label">NAME</span>
+                        <p class="stat-value link" id="summaryItemName">Tumbler (360ml)</p>
+                        <p class="stat-sub" id="summaryItemCategory">Mug &amp; Tumbler</p>
+                    </div>
+                    <div class="summary-stat col-3">
+                        <span class="stat-label">QUANTITY</span>
+                        <p class="stat-value" id="summaryQty">2</p>
+                    </div>
+                    <div class="summary-stat col-4">
+                        <span class="stat-label">DELIVERY DATE</span>
+                        <p class="stat-value small-line" id="summaryDeliveryDate">MAY 26, 2026<br>12:00 PM</p>
+                    </div>
+                </div>
+ 
+                <div class="detail-row row-price">
+                    <div class="summary-stat">
+                        <span class="stat-label">PRICE</span>
+                        <p class="stat-value" id="summaryPrice">P45.00</p>
+                    </div>
+                    <div class="summary-stat">
+                        <span class="stat-label">DISCOUNT</span>
+                        <p class="stat-value" id="summaryDiscount">10%</p>
+                    </div>
+                    <div class="summary-stat">
+                        <span class="stat-label">TOTAL PRICE</span>
+                        <p class="stat-value" id="summaryTotalPrice">P81.00</p>
+                    </div>
+                    <div class="summary-stat">
+                        <span class="stat-label">DELIVERY FEE</span>
+                        <p class="stat-value" id="summaryDeliveryFee">P50.00</p>
+                    </div>
+                </div>
+ 
+                <div class="detail-row row-status">
+                    <div class="summary-stat col-1">
+                        <span class="stat-label">PAYMENT STATUS</span>
+                        <p class="stat-value" id="summaryPaymentStatus">FULLY PAID</p>
+                    </div>
+                    <div class="summary-stat col-2-3">
+                        <span class="stat-label">DELIVERY STATUS</span>
+                        <p class="stat-value" id="summaryDeliveryStatus">DELIVERED</p>
+                    </div>
+                    <div class="summary-stat col-4">
+                        <span class="stat-label">ORDER TYPE</span>
+                        <p class="stat-value" id="summaryOrderType">RUSH</p>
+                    </div>
+                </div>
+ 
+                <div class="order-timeline">
+                    <span class="stat-label">ORDER TIMELINE</span>
+                    <div class="timeline-list" id="summaryTimeline">
+                
+                    </div>
+                </div>
+ 
+                <div class="summary-footer">
+                    <div class="summary-stat col-1">
+                        <span class="stat-label">ORDER STATUS:</span>
+                        <p class="stat-value" id="summaryStatusLeft">CURRENT</p>
+                    </div>
+                    <div class="summary-stat col-2-3">
+                        <span class="stat-label">TOTAL AMOUNT PAID:</span>
+                        <p class="stat-value" id="summaryTotalPaid">P131.00</p>
+                    </div>
+                    <div class="summary-stat col-4">
+                        <span class="stat-label">ORDER STATUS:</span>
+                        <p class="stat-value green" id="summaryStatusRight">COMPLETED</p>
+                    </div>
+                </div>
+ 
+            </div>
+ 
+        </div>
+ 
+    </div>
+ 
+</div>
+ 
+<script src="data.js"></script>
+<script src="script.js"></script>
+ 
+</body>
+</html>

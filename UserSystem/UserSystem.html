@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>User Management - R&amp;C Printing Services</title>
+  <link rel="stylesheet" href="UserSystem.css">
+</head>
+<body>
+
+  <!-- ── SIDEBAR ─────────────────────────────────────────── -->
+  <div class="sidebar">
+    <div class="brand">
+      <img src="../imgs/image 2.png" alt="R&C Logo">
+      <div class="brand-text">R&amp;C PRINTING<br>SERVICES</div>
+    </div>
+
+    <div class="nav-label">MAIN</div>
+    <a class="nav-item" href="../Dashboard/Dashboard.html">
+      <span>Dashboard</span>
+      <span class="nav-icon"><img src="../imgs/Performance Macbook.png" alt=""></span>
+    </a>
+    <a class="nav-item" href="../Inventory/inventory-admin.html">
+      <span>Inventory</span>
+      <span class="nav-icon"><img src="../imgs/Boxes.png" alt=""></span>
+    </a>
+    <a class="nav-item" href="../Order/order-owner.html">
+      <span>Orders</span>
+      <span class="nav-icon"><img src="../imgs/Shopping Cart.png" alt=""></span>
+    </a>
+    <a class="nav-item" href="../CUSTOMER/CustomerLand.html">
+      <span>Customer</span>
+      <span class="nav-icon"><img src="../imgs/User Male.png" alt=""></span>
+    </a>
+    <a class="nav-item" href="../Products/AdminProduct.html">
+      <span>Products</span>
+      <span class="nav-icon"><img src="../imgs/Product.png" alt=""></span>
+    </a>
+    <a class="nav-item active" href="UserSystem.html">
+      <span>Users</span>
+      <span class="nav-icon"><img src="../imgs/user.png" alt=""></span>
+    </a>
+  </div>
+
+  <!-- ── MAIN ───────────────────────────────────────────── -->
+  <div class="main">
+
+    <!-- Topbar -->
+    <div class="topbar">
+      <h1>Users</h1>
+      <div class="owner-tag">
+        <span>Owner</span>
+        <img src="../imgs/Test Account.png" alt="Owner">
+      </div>
+    </div>
+
+    <!-- Admins panel -->
+    <div class="panel">
+      <div class="panel-header">
+        <h2>ADMINS</h2>
+        <button class="btn-create" onclick="openCreateModal()">Create new account</button>
+      </div>
+
+      <table class="user-table">
+        <thead>
+          <tr>
+            <th class="col-username">Username</th>
+            <th class="col-password">Password</th>
+            <th class="col-role">Role</th>
+            <th class="col-actions"></th>
+          </tr>
+        </thead>
+        <tbody id="userTableBody">
+          <tr>
+            <td colspan="4" style="text-align:center;color:#9ca3af;padding:24px;">Loading…</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div><!-- /.main -->
+
+  <!-- ── UPDATE MODAL ──────────────────────────────────────── -->
+  <div class="overlay" id="updateOverlay">
+    <div class="modal-box">
+      <div class="modal-title">UPDATE</div>
+      <div class="modal-body">
+        <input type="hidden" id="updateId">
+        <div class="modal-row">
+          <span class="modal-label">Username</span>
+          <input type="text" class="modal-input" id="updateUsername" placeholder="Username">
+          <span></span>
+        </div>
+        <div class="modal-row">
+          <span class="modal-label">Password</span>
+          <div class="modal-pw-wrap">
+            <input type="password" id="updatePassword" placeholder="Leave blank to keep">
+            <button class="eye-btn" onclick="togglePw('updatePassword', this)" type="button">&#128065;</button>
+          </div>
+          <span></span>
+        </div>
+        <div class="modal-row">
+          <span class="modal-label">Role</span>
+          <span></span>
+          <select class="modal-select" id="updateRole">
+            <option value="admin">ADMIN</option>
+            <option value="owner">OWNER</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-cancel-modal" onclick="closeUpdateModal()">Cancel</button>
+        <button class="btn-confirm-modal" onclick="submitUpdate()">UPDATE</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── DELETE MODAL ──────────────────────────────────────── -->
+  <div class="overlay" id="deleteOverlay">
+    <div class="delete-box">
+      <h2>Are you sure to delete<br>this account?</h2>
+      <div class="delete-username" id="deleteUsername">—</div>
+      <input type="hidden" id="deleteId">
+      <div class="delete-footer">
+        <button class="btn-cancel-modal" onclick="closeDeleteModal()">CANCEL</button>
+        <button class="btn-confirm-delete" onclick="submitDelete()">DELETE</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── CREATE MODAL ──────────────────────────────────────── -->
+  <div class="overlay" id="createOverlay">
+    <div class="create-box">
+      <div class="create-title">NEW ACCOUNT</div>
+      <div class="create-body">
+        <div class="create-field">
+          <div class="create-field-label">Username:</div>
+          <input type="text" id="createUsername" placeholder="Admin 1">
+        </div>
+        <div class="create-field">
+          <div class="create-field-label">Password:</div>
+          <input type="password" id="createPassword" placeholder="123Pass">
+        </div>
+        <div class="create-field">
+          <div class="create-field-label">Role:</div>
+          <select id="createRole">
+            <option value="admin">&#9660; admin</option>
+            <option value="owner">&#9660; owner</option>
+          </select>
+        </div>
+      </div>
+      <div class="create-footer">
+        <button class="btn-cancel-modal" onclick="closeCreateModal()">CANCEL</button>
+        <button class="btn-confirm-modal" style="background:#ec4899;" onmouseover="this.style.background='#db2777'" onmouseout="this.style.background='#ec4899'" onclick="submitCreate()">CREATE</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── TOAST ──────────────────────────────────────────────── -->
+  <div class="toast" id="toast"></div>
+
+  <script>
+  // ── CONFIG ────────────────────────────────────────────────
+  const API = 'user_actions.php';
+
+  // ── TOAST ─────────────────────────────────────────────────
+  function showToast(msg, type = 'success') {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.className = `toast show ${type}`;
+    setTimeout(() => { t.className = 'toast'; }, 3000);
+  }
+
+  // ── PASSWORD TOGGLE ───────────────────────────────────────
+  function togglePw(inputId, btn) {
+    const inp = document.getElementById(inputId);
+    if (inp.type === 'password') {
+      inp.type = 'text';
+      btn.innerHTML = '&#128064;';
+    } else {
+      inp.type = 'password';
+      btn.innerHTML = '&#128065;';
+    }
+  }
+
+  // ── LOAD & RENDER USERS ───────────────────────────────────
+  async function loadUsers() {
+    try {
+      const res  = await fetch(API);
+      const data = await res.json();
+      if (!data.success) throw new Error(data.error);
+      renderTable(data.users);
+    } catch (err) {
+      document.getElementById('userTableBody').innerHTML =
+        `<tr><td colspan="4" style="text-align:center;color:#ef4444;padding:24px;">Failed to load users: ${err.message}</td></tr>`;
+    }
+  }
+
+  function renderTable(users) {
+    const tbody = document.getElementById('userTableBody');
+    if (!users.length) {
+      tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:#9ca3af;padding:24px;">No accounts found.</td></tr>';
+      return;
+    }
+
+    tbody.innerHTML = users.map(u => `
+      <tr data-id="${u.id}">
+        <td class="col-username">${escHtml(u.username)}</td>
+        <td class="col-password">
+          <div class="pw-wrap">
+            <button class="eye-btn" onclick="toggleRowPw(${u.id}, this)" type="button">&#128065;</button>
+            <span class="pw-dots" id="pw-${u.id}" data-hidden="1">••••••••••</span>
+            <span class="pw-plain" id="pwp-${u.id}" style="display:none;font-size:13px;color:#374151;">${escHtml(u.password)}</span>
+          </div>
+        </td>
+        <td class="col-role">${u.role.toUpperCase()}</td>
+        <td class="col-actions">
+          <div class="action-btns">
+            <button class="btn-change" onclick="openUpdateModal(${u.id}, '${escJs(u.username)}', '${escJs(u.role)}')">Change</button>
+            <button class="btn-delete" onclick="openDeleteModal(${u.id}, '${escJs(u.username)}')">Delete</button>
+          </div>
+        </td>
+      </tr>
+    `).join('');
+  }
+
+  function toggleRowPw(id, btn) {
+    const dots  = document.getElementById('pw-'  + id);
+    const plain = document.getElementById('pwp-' + id);
+    const hidden = dots.dataset.hidden === '1';
+    dots.style.display  = hidden ? 'none'   : 'inline';
+    plain.style.display = hidden ? 'inline' : 'none';
+    dots.dataset.hidden = hidden ? '0' : '1';
+    btn.innerHTML = hidden ? '&#128064;' : '&#128065;';
+  }
+
+  // ── ESCAPE HELPERS ────────────────────────────────────────
+  function escHtml(str) {
+    return String(str)
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+      .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+  function escJs(str) {
+    return String(str).replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+  }
+
+  // ── UPDATE MODAL ──────────────────────────────────────────
+  function openUpdateModal(id, username, role) {
+    document.getElementById('updateId').value        = id;
+    document.getElementById('updateUsername').value  = username;
+    document.getElementById('updatePassword').value  = '';
+    document.getElementById('updateRole').value      = role;
+    document.getElementById('updatePassword').type   = 'password';
+    document.getElementById('updateOverlay').classList.add('show');
+  }
+
+  function closeUpdateModal() {
+    document.getElementById('updateOverlay').classList.remove('show');
+  }
+
+  async function submitUpdate() {
+    const id       = parseInt(document.getElementById('updateId').value);
+    const username = document.getElementById('updateUsername').value.trim();
+    const password = document.getElementById('updatePassword').value.trim();
+    const role     = document.getElementById('updateRole').value;
+
+    if (!username) { showToast('Username is required.', 'error'); return; }
+
+    try {
+      const res  = await fetch(API, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, username, password, role })
+      });
+      const data = await res.json();
+      if (!data.success) throw new Error(data.error);
+      closeUpdateModal();
+      showToast('Account updated successfully.');
+      loadUsers();
+    } catch (err) {
+      showToast(err.message, 'error');
+    }
+  }
+
+  // ── DELETE MODAL ──────────────────────────────────────────
+  function openDeleteModal(id, username) {
+    document.getElementById('deleteId').value       = id;
+    document.getElementById('deleteUsername').textContent = username;
+    document.getElementById('deleteOverlay').classList.add('show');
+  }
+
+  function closeDeleteModal() {
+    document.getElementById('deleteOverlay').classList.remove('show');
+  }
+
+  async function submitDelete() {
+    const id = parseInt(document.getElementById('deleteId').value);
+    try {
+      const res  = await fetch(API, {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id })
+      });
+      const data = await res.json();
+      if (!data.success) throw new Error(data.error);
+      closeDeleteModal();
+      showToast('Account deleted.');
+      loadUsers();
+    } catch (err) {
+      showToast(err.message, 'error');
+    }
+  }
+
+  // ── CREATE MODAL ──────────────────────────────────────────
+  function openCreateModal() {
+    document.getElementById('createUsername').value = '';
+    document.getElementById('createPassword').value = '';
+    document.getElementById('createRole').value     = 'admin';
+    document.getElementById('createOverlay').classList.add('show');
+  }
+
+  function closeCreateModal() {
+    document.getElementById('createOverlay').classList.remove('show');
+  }
+
+  async function submitCreate() {
+    const username = document.getElementById('createUsername').value.trim();
+    const password = document.getElementById('createPassword').value.trim();
+    const role     = document.getElementById('createRole').value;
+
+    if (!username || !password) {
+      showToast('Username and password are required.', 'error');
+      return;
+    }
+
+    try {
+      const res  = await fetch(API, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password, role })
+      });
+      const data = await res.json();
+      if (!data.success) throw new Error(data.error);
+      closeCreateModal();
+      showToast('Account created successfully.');
+      loadUsers();
+    } catch (err) {
+      showToast(err.message, 'error');
+    }
+  }
+
+  // ── CLOSE OVERLAYS ON BACKDROP CLICK ─────────────────────
+  document.querySelectorAll('.overlay').forEach(overlay => {
+    overlay.addEventListener('click', e => {
+      if (e.target === overlay) overlay.classList.remove('show');
+    });
+  });
+
+  // ── INIT ──────────────────────────────────────────────────
+  loadUsers();
+  </script>
+
+</body>
+</html>
