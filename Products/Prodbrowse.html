@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>R&C Printing Services — Products</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="Prodbrowse.css">
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="Navbar">
+    <a href="LandingPage.html" id="BName">R&C PRINTING SERVICES</a>
+    <ul>
+        <li><a href="" id="NavSearch"><img src="../imgs/search.png" alt="" class="Img"></a></li>
+        <li><a href="" id="NavChat"><img src="../imgs/typing.png" alt="" class="Img"></a></li>
+        <li><a href="" id="NavCart"><img src="../imgs/trolley.png" alt="" class="Img"></a></li>
+        <li><a href="../LandingPage/LandingPage.html">HOME</a></li>
+        <li><a href="../Products/ProductPage.html" class="ActiveLink">PRODUCTS</a></li>
+        <li><a href="../Portfolio/PortfolioPage.html">PORTFOLIO</a></li>
+        <li><a href="" id="NavUser"><img src="../imgs/user.png" alt="" class="Img"></a></li>
+    </ul>
+</nav>
+
+<div class="page">
+
+    <!-- HEADER -->
+    <div class="HeaderSection">
+        <img src="../imgs/logo.jpg" class="Logo" alt="R&C Logo">        <h1>OUR PRODUCTS</h1>
+        <p class="HeaderSub">Custom prints, made to order.</p>
+    </div>
+
+    <div class="ShopLayout">
+
+        <!-- SIDEBAR FILTERS -->
+        <aside class="FilterSidebar">
+
+            <div class="FilterBlock">
+                <h3>Browse By</h3>
+                <ul class="CategoryList" id="CategoryList">
+                    <li><button class="CategoryBtn ActiveCategory" data-category="all">All Products</button></li>
+                    <li><button class="CategoryBtn" data-category="Sublimations">Sublimations</button></li>
+                    <li><button class="CategoryBtn" data-category="Mugs & Tumbler">Mugs & Tumbler</button></li>
+                    <li><button class="CategoryBtn" data-category="Office Requirements">Office Requirements</button></li>
+                </ul>
+            </div>
+
+            <div class="FilterBlock">
+                <h3>Filter By Type</h3>
+                <ul class="TypeList" id="TypeList"><!-- injected by JS --></ul>
+            </div>
+
+            <div class="FilterBlock">
+                <h3>Price Range</h3>
+                <div class="PriceInputs">
+                    <div class="PriceField">
+                        <label for="MinPrice">Min</label>
+                        <input type="number" id="MinPrice" min="0" placeholder="₱0">
+                    </div>
+                    <span class="PriceDash">–</span>
+                    <div class="PriceField">
+                        <label for="MaxPrice">Max</label>
+                        <input type="number" id="MaxPrice" min="0" placeholder="₱500">
+                    </div>
+                </div>
+            </div>
+
+            <button class="ClearFiltersBtn" id="ClearFiltersBtn">Clear Filters</button>
+        </aside>
+
+        <!-- PRODUCTS GRID -->
+        <section class="ProductsSection">
+            <div class="ProductsToolbar">
+                <p class="ResultsCount" id="ResultsCount">Showing all products</p>
+                <select id="SortSelect" class="SortSelect">
+                    <option value="default">Sort: Featured</option>
+                    <option value="price-asc">Price: Low to High</option>
+                    <option value="price-desc">Price: High to Low</option>
+                    <option value="name-asc">Name: A–Z</option>
+                </select>
+            </div>
+
+            <div class="ProductGrid" id="ProductGrid"><!-- injected by JS --></div>
+
+            <p class="NoResultsMsg" id="NoResultsMsg" style="display:none;">
+                No products match your filters. Try clearing them.
+            </p>
+        </section>
+
+    </div>
+<!-- FOLLOW US -->
+<div class="SocialsBox">
+
+    <h2>FOLLOW US</h2>
+
+    <div class="SocialLinks">
+
+        <!-- FACEBOOK -->
+        <a href="https://www.facebook.com/RCpartybuddy"
+           target="_blank"
+           rel="noopener noreferrer">
+            <img src="../imgs/fb.png"
+                 alt="Facebook"
+                 class="Img">
+        </a>
+
+        <!-- INSTAGRAM -->
+        <a href="https://www.instagram.com/rc_printing_services/"
+           target="_blank"
+           rel="noopener noreferrer">
+            <img src="../imgs/ig.png"
+                 alt="Instagram"
+                 class="Img">
+        </a>
+
+        <!-- VIBER -->
+        <a href="#"
+           target="_blank"
+           rel="noopener noreferrer">
+            <img src="../imgs/viber.png"
+                 alt="Viber"
+                 class="Img">
+        </a>
+
+    </div>
+
+    <p>
+        <strong>R&C Printing Services | Customized Printing Solutions | 2026</strong>
+    </p>
+
+</div>
+
+<script src="Prodbrowse.js" defer></script>
+</body>
+</html>
