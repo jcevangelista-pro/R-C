@@ -5,14 +5,10 @@ body {
 
 /* ── NAVBAR (matches LandingPage) ────────────────────────── */
 .Navbar {
-    background-color: white;
+    background: white;
     border-bottom: 1px solid #F868AA;
     box-shadow: inset 0 -2px 8px rgba(0, 0, 0, 0.1);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
 }
-
 .Navbar ul {
     list-style-type: none;
     padding: 0;
@@ -20,7 +16,13 @@ body {
     overflow: visible;
     display: flex;
     align-items: center;
+
+    padding: 10px 20px;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
 }
+
 
 .Navbar a {
     color: #F868AA;
@@ -35,14 +37,45 @@ body {
     color: #f3a4c8;
 }
 
+.Navbar ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
 .Navbar li {
     float: left;
 }
 
+:root {
+    --violet: #a78bfa;
+}
+
+/* ACTIVE NAVIGATION LINK */
+.Navbar ul li a.ActiveLink {
+    position: relative;
+    font-weight: bold;
+}
+
+/* UNDERLINE */
+.Navbar ul li a.ActiveLink::after {
+    content: '';
+    position: absolute;
+    left: 12px;
+    right: 12px;
+    bottom: 2px;
+    height: 3px;
+    background: var(--violet);
+    border-radius: 2px;
+}
+
 #BName {
-    font-weight: 800;
-    font-size: 1.1rem;
-    padding-left: 2rem;
+    text-decoration: none;
+    color: #F868AA;
+    font-size: 2rem;
+    font-weight: bold;
+    white-space: nowrap;
+    margin-right: auto;
 }
 
 .Img {
