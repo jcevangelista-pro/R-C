@@ -1,0 +1,868 @@
+.wizard {
+    margin: 20px auto;
+    background: transparent;
+}
+ 
+    .wizard .nav-tabs {
+        position: relative;
+        margin: 40px auto;
+        margin-bottom: 0;
+        border-bottom-color: #e0e0e0;
+    }
+ 
+    .wizard > div.wizard-inner {
+        position: relative;
+    }
+ 
+.connecting-line {
+    height: 2px;
+    background: #e0e0e0;
+    position: absolute;
+    width: 80%;
+    margin: 0 auto;
+    left: 0;
+    right: 0;
+    top: 50%;
+    z-index: 1;
+}
+ 
+.wizard .nav-tabs > li.active > a, .wizard .nav-tabs > li.active > a:hover, .wizard .nav-tabs > li.active > a:focus {
+    color: #555555;
+    cursor: default;
+    border: 0;
+    border-bottom-color: transparent;
+}
+ 
+span.round-tab {
+    width: 70px;
+    height: 70px;
+    line-height: 70px;
+    display: inline-block;
+    border-radius: 100px;
+    background: #fff;
+    border: 2px solid #e0e0e0;
+    z-index: 2;
+    position: absolute;
+    left: 0;
+    text-align: center;
+    font-size: 25px;
+}
+span.round-tab i{
+    color:#555555;
+}
+.wizard li.active span.round-tab {
+    background: #fff;
+    border: 2px solid #5bc0de;
+    
+}
+.wizard li.active span.round-tab i{
+    color: #5bc0de;
+}
+ 
+span.round-tab:hover {
+    color: #333;
+    border: 2px solid #333;
+}
+ 
+.wizard .nav-tabs > li {
+    width: 25%;
+}
+ 
+.wizard li:after {
+    content: " ";
+    position: absolute;
+    left: 46%;
+    opacity: 0;
+    margin: 0 auto;
+    bottom: 0px;
+    border: 5px solid transparent;
+    border-bottom-color: #5bc0de;
+    transition: 0.1s ease-in-out;
+}
+ 
+.wizard li.active:after {
+    content: " ";
+    position: absolute;
+    left: 46%;
+    opacity: 1;
+    margin: 0 auto;
+    bottom: 0px;
+    border: 10px solid transparent;
+    border-bottom-color: #5bc0de;
+}
+ 
+.wizard .nav-tabs > li a {
+    width: 70px;
+    height: 70px;
+    margin: 20px auto;
+    border-radius: 100%;
+    padding: 0;
+}
+ 
+    .wizard .nav-tabs > li a:hover {
+        background: transparent;
+    }
+ 
+.wizard .tab-pane {
+    position: relative;
+    padding-top: 50px;
+    display: none;
+}
+
+.wizard .tab-pane.active {
+    display: block;
+}
+ 
+.wizard h3 {
+    margin-top: 0;
+}
+ 
+@media( max-width : 585px ) {
+ 
+    .wizard {
+        width: 90%;
+        height: auto !important;
+    }
+ 
+    span.round-tab {
+        font-size: 16px;
+        width: 50px;
+        height: 50px;
+        line-height: 50px;
+    }
+ 
+    .wizard .nav-tabs > li a {
+        width: 50px;
+        height: 50px;
+        line-height: 50px;
+    }
+ 
+    .wizard li.active:after {
+        content: " ";
+        position: absolute;
+        left: 35%;
+    }
+}
+.bs-calltoaction{
+    position: relative;
+    width:auto;
+    padding: 15px 25px;
+    border: 1px solid black;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    border-radius: 10px;
+}
+ 
+    .bs-calltoaction > .row{
+        display:table;
+        width: calc(100% + 30px);
+    }
+     
+        .bs-calltoaction > .row > [class^="col-"],
+        .bs-calltoaction > .row > [class*=" col-"]{
+            float:none;
+            display:table-cell;
+            vertical-align:middle;
+        }
+ 
+            .cta-contents{
+                padding-top: 10px;
+                padding-bottom: 10px;
+            }
+ 
+                .cta-title{
+                    margin: 0 auto 15px;
+                    padding: 0;
+                }
+ 
+                .cta-desc{
+                    padding: 0;
+                }
+ 
+                .cta-desc p:last-child{
+                    margin-bottom: 0;
+                }
+ 
+            .cta-button{
+                padding-top: 10px;
+                padding-bottom: 10px;
+            }
+ 
+@media (max-width: 991px){
+    .bs-calltoaction > .row{
+        display:block;
+        width: auto;
+    }
+ 
+        .bs-calltoaction > .row > [class^="col-"],
+        .bs-calltoaction > .row > [class*=" col-"]{
+            float:none;
+            display:block;
+            vertical-align:middle;
+            position: relative;
+        }
+ 
+        .cta-contents{
+            text-align: center;
+        }
+}
+ 
+ 
+ 
+.bs-calltoaction.bs-calltoaction-default{
+    color: #333;
+    background-color: #fff;
+    border-color: #ccc;
+}
+ 
+.bs-calltoaction.bs-calltoaction-primary{
+    color: #fff;
+    background-color: #1e3263;
+    border-color: #2e6da4;
+}
+ 
+.bs-calltoaction.bs-calltoaction-info{
+    color: #fff;
+    background-color: #5bc0de;
+    border-color: #46b8da;
+}
+ 
+.bs-calltoaction.bs-calltoaction-success{
+    color: #fff;
+    background-color: #5cb85c;
+    border-color: #4cae4c;
+}
+ 
+.bs-calltoaction.bs-calltoaction-warning{
+    color: #fff;
+    background-color: #f0ad4e;
+    border-color: #eea236;
+}
+ 
+.bs-calltoaction.bs-calltoaction-danger{
+    color: #fff;
+    background-color: #d9534f;
+    border-color: #d43f3a;
+}
+ 
+.bs-calltoaction.bs-calltoaction-primary .cta-button .btn,
+.bs-calltoaction.bs-calltoaction-info .cta-button .btn,
+.bs-calltoaction.bs-calltoaction-success .cta-button .btn,
+.bs-calltoaction.bs-calltoaction-warning .cta-button .btn,
+.bs-calltoaction.bs-calltoaction-danger .cta-button .btn{
+    border-color:#fff;
+}
+ 
+blockquote{
+    border-left:none
+}
+ 
+.quote-badge{
+    background-color: rgba(0, 0, 0, 0.2);   
+}
+ 
+.quote-box{
+    
+    overflow: hidden;
+    margin-top: -50px;
+    padding-top: -100px;
+    border-radius: 17px;
+    background-color: #4ADFCC;
+    margin-top: 25px;
+    color:white;
+    width: 325px;
+    box-shadow: 2px 2px 2px 2px #E0E0E0;
+    
+}
+ 
+.quotation-mark{
+    
+    margin-top: -10px;
+    font-weight: bold;
+    font-size:100px;
+    color:white;
+    font-family: "Times New Roman", Georgia, Serif;
+    
+}
+ 
+.quote-text{
+    
+    font-size: 19px;
+    margin-top: -65px;
+}
+
+/* ================= ORDER PROCESS PAGE ================= */
+
+.page {
+    background: var(--lavender-bg);
+}
+
+/* Main Order Process Card */
+.order-process-card {
+    max-width: 1400px;
+    margin: 5px auto;
+    background: #fff;
+    border-radius: 14px;
+    overflow: hidden;
+    border: 1px solid #ffc2de;
+    box-shadow:
+        0 0 0 4px rgba(255, 45, 120, 0.08),
+        0 10px 40px rgba(43, 47, 104, 0.15);
+}
+
+/* Header */
+.order-process-header {
+    background: var(--navy);
+    color: #fff;
+    font-weight: 700;
+    font-size: 24px;
+    text-align: center;
+    padding: 20px;
+}
+
+/* Bootstrap container */
+.order-process-card .container {
+    background: transparent;
+}
+
+body .Navbar a#BName {
+    font-size: 32px !important;
+}
+
+
+/* ================= 7-STEP PROGRESS BAR ================= */
+
+.wizard-scroll {
+    width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding-bottom: 10px;
+}
+
+.wizard-inner {
+    position: relative;
+    min-width: 900px;
+}
+
+.order-steps {
+    display: flex;
+    width: 100%;
+    min-width: 900px;
+    border-bottom: none;
+    margin: 40px 0 0 !important;
+}
+
+.order-steps > li {
+    flex: 1;
+    width: auto !important;
+    min-width: 125px;
+    text-align: center;
+    position: relative;
+}
+
+.order-steps > li > a {
+    display: flex !important;
+    flex-direction: column;
+    align-items: center;
+    width: 100% !important;
+    height: auto !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: transparent !important;
+    border: none !important;
+}
+
+.order-steps .round-tab {
+    position: relative;
+    left: auto;
+    width: 60px;
+    height: 60px;
+    line-height: 56px;
+    font-size: 20px;
+    background: #fff;
+    border: 2px solid #d6d3ea;
+}
+
+.order-steps .step-label {
+    margin-top: 10px;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--navy);
+    white-space: nowrap;
+}
+
+/* Connecting line */
+
+.order-steps .connecting-line {
+    width: calc(100% - 125px);
+}
+
+/* Active step */
+
+.order-steps > li.active .round-tab {
+    background: var(--navy);
+    border-color: var(--navy);
+}
+
+.order-steps > li.active .round-tab i {
+    color: #fff;
+}
+
+.order-steps > li.active .step-label {
+    color: var(--pink);
+    font-weight: 700;
+}
+
+/* ================= CURRENT STEP CARD ================= */
+
+.order-step-card {
+    background: #fdf9fb;
+    border: 1px solid #eeeef3;
+    border-radius: 14px;
+    padding: 30px;
+    margin: 20px 0;
+    box-shadow: 0 5px 20px rgba(43, 47, 104, 0.08);
+}
+
+.order-step-card h4 {
+    color: var(--navy);
+    font-size: 18px;
+    font-weight: 700;
+    margin-top: 0;
+}
+
+.order-step-card p {
+    color: var(--text-muted);
+    font-size: 13px;
+}
+
+.step-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+/* ================= STATUS CARD ================= */
+
+.status-card {
+    display: grid;
+    grid-template-columns: 1fr 180px;
+    align-items: center;
+    gap: 30px;
+    padding: 18px 22px;
+    background: #fff;
+    border-radius: 10px;
+    color: var(--navy);
+}
+
+/* LEFT SIDE */
+
+.status-info h4 {
+    margin: 0 0 6px;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--navy);
+}
+
+.status-info p {
+    margin: 0 0 12px;
+    font-size: 11px;
+    line-height: 1.5;
+    color: var(--text-muted);
+    max-width: 600px;
+}
+
+.status-badge {
+    display: inline-block;
+    padding: 5px 12px;
+    border-radius: 20px;
+    background: #fff1f6;
+    color: var(--pink);
+    font-size: 10px;
+    font-weight: 700;
+}
+
+/* RIGHT SIDE */
+
+.status-time {
+    text-align: right;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.status-label {
+    font-size: 9px;
+    font-weight: 700;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: .4px;
+}
+
+.status-time strong {
+    font-size: 11px;
+    color: var(--navy);
+}
+
+.status-time span:last-child {
+    font-size: 10px;
+    color: var(--text-muted);
+}
+
+/* ===== PAYMENT CARD ====== */
+
+#PaymentCard {
+    min-height: 400px;
+    background: #fff;
+    border-radius: 10px;
+    padding-bottom: 20px;
+}
+
+.TopRowType {
+    font-weight: 500;
+    font-size: 30px;
+    color: #1e3263;
+    text-align: center;
+    padding-top: 10px;
+    border-bottom: 2px solid #cfcfe0;
+}
+
+.BottomRowType {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+}
+
+.BRT-LeftColumn {
+    width: 550px;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    margin-left: 20px;
+    padding-top: 20px;
+}
+
+.MoP-PT-Row {
+    display: flex;
+    gap: 100px;
+    border-bottom: 2px solid #cfcfe082;
+    padding-bottom: 20px;
+}
+
+.MoP-PT-Row .stat-label {
+    margin-bottom: 10px;
+}
+
+.MoP-PT-Row .stat-label, 
+.od-inline-row .od-stat .stat-label,
+.ScreenShot-RefNum-Row .field .stat-label
+ {
+    font-size: 15px;
+    font-weight:700;
+}
+
+.MoP-PT-Row .option-row .checkbox-option {
+    font-size: 13px !important;
+    font-weight:600;
+}
+
+.BRT-LeftColumn .od-inline-row {
+    display: flex;
+    width: 550px;
+    gap: none;
+    padding-bottom: 20px;
+    border-bottom: 2px solid #cfcfe082;
+}
+
+.BRT-LeftColumn hr {
+    border: 2px solid #cfcfe082;
+}
+
+.od-inline-row .od-stat .stat-value {
+    font-size: 22px;
+    font-weight:600;
+    color: #3E43A0;
+}
+
+.field input {
+    width: 200px;
+}
+
+.BRT-RightColumn {
+    width: 500px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.stat-label {
+    margin: 0;
+}
+
+.GCLogo {
+    height: 6vh;
+    width: 12vw;
+    margin-bottom: 5px;
+}
+
+.GCQr {
+    height: 25vh;
+}
+
+.gcash-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.gcash-info .stat-label {
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.ScreenShot-RefNum-Row {
+    display: flex;
+    gap: 45px;
+}
+
+.photo-upload{
+  width: 200px;
+  height: 40px;
+  border: 2px dashed #cfcfe0; 
+}
+
+/* ===== FINAL PAYMENT CARD ====== */
+
+#FinalPaymentCard {
+    height: 520px;
+    background: #fff;
+    border-radius: 10px;
+}
+
+.od-inline-row {
+    gap: 100px;
+}
+
+.od-inline-row .od-stat {
+    flex: none;
+}
+
+.od-inline-row .field {
+    margin-left: 50px;   
+}
+
+.od-inline-row .field .stat-label {
+    font-size: 15px;
+    font-weight:700;
+}
+    
+/* ===== ORDER CONFIRMATION CARD ====== */
+
+#OrderReceivedCard {
+    height: 720px;
+    background: #fff;
+    border-radius: 10px;
+}
+
+#odCatergory, #odTime {
+    font-size: 14px;
+}
+
+.LocationContainer {
+    display: flex;
+    padding-bottom: 20px;
+    border-bottom: 2px solid #cfcfe082;
+}
+
+.LImg {
+    padding: 10px 10px 10px 0;
+}
+
+.CInformation {
+    width: 30vw;
+    margin: 0;
+    margin-top: 5px;
+}
+
+.DNText {
+    color: #1e3263;
+    font-family: 'Franklin Gothic Light', 'Arial Narrow', Arial, sans-serif;
+    margin: 0;
+}
+
+.NAText {
+    color: #1e3263;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    margin: 0;
+}
+
+.ItemColumn{
+  display:flex;
+  flex-direction:column;
+  gap: 5px;
+}
+
+.ItemColumn .stat-label{
+  font-size: 20px;
+  font-weight:700;
+  color: var(--navy);
+  letter-spacing:0.3px;
+  display:block;
+  margin-bottom: 8px;
+}
+
+.ItemImg{
+    height: 25vh;
+    width: 15vw;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    border: #787ddc 10px solid;
+}
+
+
+.ItemColumn .od-stat .stat-value {
+    text-align: center;
+    font-size: 30px;
+    font-weight:600;
+    color: #3E43A0;
+    padding-bottom: 10px ;
+}
+
+/* ===== ORDER COMPLETE CARD ====== */
+
+.OrdSum-Receipt-Container {
+    display: flex;
+    gap: 10px;
+}
+
+.ORstatus-card {
+    grid-template-columns: 1fr 180px;
+    align-items: center;
+    gap: 30px;
+    padding: 18px 22px;
+    background: #fff;
+    border-radius: 10px;
+    color: var(--navy);
+}
+
+.HeaderRowType {
+    font-weight: 500;
+    font-size: 30px;
+    color: #1e3263;
+    text-align: center;
+    border-bottom: 2px solid #cfcfe0;
+    width: 485px;
+}
+
+.OrdStatRowContainer,
+.OrderStatInfoContainer 
+.OrdTimelineRowContainer, 
+.OrdReceiptRowContainer,
+.OrdCustRowContainer,
+.OrdProdRowContainer,
+.OrdPaymRowContainer {
+    gap: 20px;
+    font-weight: 500;
+    color: #1e3263;
+    border-bottom: 2px solid #cfcfe0;
+    width: 485px;
+    padding-top: 10px;
+}
+
+.OrderStatInfoContainer {
+    margin-bottom: 10px;
+}
+
+.OrdText-Stat-Row {
+    display: flex;
+    gap: 20px;
+}
+
+.OrdText-Stat-Row p {
+    font-size: 20px;
+    margin: 0;
+}
+
+.OrdStatText {
+    font-weight: 550;
+}
+
+.OrdStat, 
+.OPCTime, 
+.OrdReceiptStat, 
+.OrdCustInfo,
+.OrdProdInfo,
+.OrdPaymInfo {
+    color:#2f4b94
+}
+
+.OrdTimelineRowContainer {
+    margin-top: 10px;
+}
+
+.OrderTimelineContainer {
+    padding-left: 20px;
+    border-left: #1e3263 2px solid;
+    margin-bottom: 20px;
+    
+}
+
+.CategoryText {
+    font-weight: 650;
+    font-size: 25px;
+}
+
+.OrderProcessCategory {
+    font-weight: 550;
+    font-size: 18px;
+    margin: 0;
+}
+
+.OrdReceipt-Stat-Row-Cont,
+.OrdCust-Stat-Row-Cont,
+.OrdProd-Stat-Row-Cont,
+.OrdPaym-Stat-Row-Cont {
+    margin-bottom: 15px;
+}
+
+.OrdReceipt-Stat-Row,
+.OrdCust-Stat-Row,
+.OrdProd-Stat-Row,
+.OrdPaym-Stat-Row {
+    display: flex;
+    gap: 10px;
+    margin: 0;
+}
+
+.OrdReceiptText,
+.OrdCustText,
+.OrdProdText,
+.OrdPaymText {
+    font-weight: 550;
+    font-size: 18px;
+    margin: 0;
+}
+
+.OrdReceiptStat, 
+.OrdCustInfo,
+.OrdProdInfo,
+.OrdPaymInfo {
+    font-size: 18px;
+    margin: 0;
+}
+
+.BusinessText {
+    padding-top: 10px;
+    font-weight: 600;
+    font-size: 25px;
+}
+
+.ReceiptMessage {
+    font-weight: 200;
+    font-size: 12px;
+    padding-bottom: 10px;
+}
+
+
+

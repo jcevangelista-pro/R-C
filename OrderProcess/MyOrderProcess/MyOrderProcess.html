@@ -1,0 +1,884 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>R&C Printing Services - Order Process</title>
+
+    <!-- Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Bootstrap FIRST -->
+     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+
+    <!-- R&C CSS AFTER Bootstrap -->
+    <link rel="stylesheet" href="../../CART/cart.css">
+    <link rel="stylesheet" href="OrderProcess.css">
+    <link rel="stylesheet" href="MyOrderProcess.css">
+    
+</head>
+<body>
+ 
+<!-- ================= TOP NAV ================= -->
+<nav class="Navbar">
+    <a href="#" id="BName">R&amp;C PRINTING SERVICES</a>
+    <ul>
+        <li><a href=""><img src="../../imgs/search.png" alt="" class="Img"></a></li>
+        <li><a href=""><img src="../../imgs/typing.png" alt="" class="Img"></a></li>
+        <li class="cart-icon-item"><a href="">
+            <img src="MyOrders/Alarm.png" alt="" class="Img">
+            <span class="cart-badge" id="">0</span>
+        </a></li>
+        <li class="cart-icon-item"><a href="">
+            <img src="../../imgs/trolley.png" alt="" class="Img">
+            <span class="cart-badge" id="cartBadge">0</span>
+        </a></li>
+        <li class="cart-icon-item"><a href="">
+            <img src="MyOrders/Bill.png" alt="" class="Img">
+            <span class="cart-badge" id="">0</span>
+        </a></li>
+        <li><a href="">HOME</a></li>
+        <li><a href="">PRODUCTS</a></li>
+        <li><a href="">PORTFOLIO</a></li>
+        <li><a href=""><img src="../../imgs/user.png" alt="" class="Img"></a></li>
+    </ul>
+</nav>
+ 
+<main class="page">
+ 
+    <!-- ================= ORDER PROCESS ================= -->
+    <section class="order-process-card">
+ 
+        <div class="order-process-header">
+            <span id="cartTitle">Order Process</span>
+        </div>
+
+        <div class="container">
+            <div class="row">
+                <section>
+                <div class="wizard">
+                    <div class="wizard-inner">
+                        <div class="connecting-line"></div>
+                        <ul class="nav nav-tabs" role="tablist">
+                            <!-- ===== STEP 1 ===== -->
+                            <li role="presentation" class="active">
+                                <a href="#step1" data-toggle="tab" aria-controls="step1" role="tab" title="Step 1">
+                                    <span class="round-tab">
+                                        <i class="bi bi-card-list"></i>
+                                    </span>
+                                </a>
+                            </li>
+                            <!-- ===== STEP 2 ===== -->
+                            <li role="presentation" class="">
+                                <a href="#step2" data-toggle="tab" aria-controls="step2" role="tab" title="Step 2">
+                                    <span class="round-tab">
+                                        <i class="bi bi-chat-dots"></i>
+                                    </span>
+                                </a>
+                            </li>
+                            <!-- ===== STEP 3 ===== -->
+                            <li role="presentation" class="">
+                                <a href="#step3" data-toggle="tab" aria-controls="step3" role="tab" title="Step 3">
+                                    <span class="round-tab">
+                                        <i class="bi bi-wallet2"></i>
+                                    </span>
+                                </a>
+                            </li>
+                            <!-- ===== STEP 4 ===== -->
+                            <li role="presentation" class="">
+                                <a href="#step4" data-toggle="tab" aria-controls="step4" role="tab" title="Step 4">
+                                    <span class="round-tab">
+                                        <i class="glyphicon glyphicon-refresh"></i>
+                                    </span>
+                                </a>
+                            </li>
+                            <!-- ===== STEP 5 ===== -->
+                            <li role="presentation" class="">
+                                <a href="#step5" data-toggle="tab" aria-controls="step5" role="tab" title="Step 5">
+                                    <span class="round-tab">
+                                        <i class="bi bi-wallet2"></i>
+                                    </span>
+                                </a>
+                            </li>
+                            <!-- ===== STEP 6 ===== -->
+                            <li role="presentation" class="">
+                                <a href="#step6" data-toggle="tab" aria-controls="step6" role="tab" title="Step 6">
+                                    <span class="round-tab">
+                                        <i class="bi bi-truck"></i>
+                                    </span>
+                                </a>
+                            </li>
+                            <!-- ===== STEP 7 ===== -->
+                            <li role="presentation" class="">
+                                <a href="#step7" data-toggle="tab" aria-controls="step7" role="tab" title="Step 7">
+                                    <span class="round-tab">
+                                        <i class="bi bi-check-circle"></i>
+                                    </span>
+                                </a>
+                            </li>
+                            <!-- ===== STEP 8 ===== -->
+                            <li role="presentation" class="">
+                                <a href="#step8" data-toggle="tab" aria-controls="step8" role="tab" title="Step 8">
+                                    <span class="round-tab">
+                                        <i class="bi bi-check-circle-fill"></i>
+                                    </span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+        
+                    <form role="form">
+                        <div class="tab-content">
+                            <!-- ===== STEP 1 ===== -->
+                            <div class="tab-pane active" role="tabpanel" id="step1">
+                                <h3>STEP 1</h3>
+                                <div class="bs-calltoaction bs-calltoaction-primary">
+                                    <div class="status-card">    
+                                        <!-- LEFT COLUMN -->
+                                        <div class="status-message">
+                                            <h3>📝 ORDER DETAILS</h3>
+                                            <p>
+                                                You have submitted your order details, 
+                                                uploaded the necessary files, and information.
+                                            </p>
+                                            <span class="status-badge">
+                                                🟢 COMPLETED
+                                            </span>
+                                        </div>
+
+                                        <!-- RIGHT COLUMN -->
+                                        <div class="status-history">
+                                            <div class="status-history-item">
+                                                 <span class="status-dot"></span>
+                                                <div>
+                                                    <strong>Submitted</strong>
+                                                    <p>August 10, 2026 | 7:42 AM</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- ===== STEP 2 ===== -->
+                            <div class="tab-pane" role="tabpanel" id="step2">
+                                <h3>STEP 2</h3>
+                                <div class="bs-calltoaction bs-calltoaction-primary">
+                                    <div class="status-card">    
+                                        <!-- LEFT COLUMN -->
+                                        <div class="status-message">
+                                            <h3>📝 VERIFICATION</h3>
+                                            <p>
+                                                We are reviewing your order, negotiating the details, 
+                                                and finalizing the design and price with you.
+                                            </p>
+                                            <span class="status-badge">
+                                                🟡 UNDER REVIEW
+                                            </span>
+                                        </div>
+
+                                        <!-- RIGHT COLUMN -->
+                                        <div class="status-history">
+                                            <div class="status-history-item">
+                                                 <span class="status-dot"></span>
+                                                <div>
+                                                    <strong>Submitted</strong>
+                                                    <p>August 10, 2026 | 7:42 AM</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- ===== STEP 3 ===== -->
+                            <div class="tab-pane" role="tabpanel" id="step3">
+                                <h3>STEP 3</h3>
+                                <div class="bs-calltoaction bs-calltoaction-primary">
+                                    <div class="status-card">    
+                                        <!-- LEFT COLUMN -->
+                                        <div class="status-message">
+                                            <h3>📝 PAYMENT METHOD</h3>
+                                            <p>
+                                                Choose your preferred payment method and 
+                                                complete the payment to complete your order.
+                                            </p>
+                                            <span class="status-badge">
+                                                🟠 Available after order verification
+                                            </span>
+                                        </div>
+
+                                        <!-- RIGHT COLUMN -->
+                                        <div class="status-history">
+                                            <div class="status-history-item">
+                                                 <span class="status-dot"></span>
+                                                <div>
+                                                    <strong>Submitted</strong>
+                                                    <p>August 10, 2026 | 7:42 AM</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="bs-calltoaction bs-calltoaction-primary">
+                                    <div class="" id="PaymentCard">
+                                        <!-- TOP ROW -->
+                                        <div class="TopRowType">
+                                            <p>PAYMENT METHOD</p>
+                                        </div>
+                                        <div class="BottomRowType">
+                                            <!-- LEFT COLUMN -->
+                                            <div class="BRT-LeftColumn">
+                                                <div class="MoP-PT-Row">
+                                                    <div>
+                                                        <span class="stat-label">MODE OF PAYMENT:</span>
+                                                        <div class="option-row">
+                                                            <label class="checkbox-option">
+                                                                <span class="box" id="boxUpload"></span> GCash
+                                                            </label>
+                                                            <label class="checkbox-option">
+                                                                <span class="box" id="boxRequest"></span> Bank
+                                                            </label>
+                                                        </div>
+                                                    </div>
+
+                                                    <div>
+                                                        <span class="stat-label">PAYMENT TYPE:</span>
+                                                        <div class="option-row">
+                                                            <label class="checkbox-option">
+                                                                <span class="box" id="boxUpload"></span> Full Payment
+                                                            </label>
+                                                            <label class="checkbox-option">
+                                                                <span class="box" id="boxRequest"></span> 50% Downpayment
+                                                            </label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="od-inline-row">
+                                                    <div class="od-stat">
+                                                        <span class="stat-label">PRODUCT TOTAL:</span>
+                                                        <p class="stat-value" id="odPrice">P45.00</p>
+                                                    </div>
+                                                    <div class="od-stat">
+                                                        <span class="stat-label">AMOUNT TO PAY:</span>
+                                                        <p class="stat-value" id="odTotalPrice">P90.00</p>
+                                                    </div>
+                                                </div>
+                                                
+                                                <div class="ScreenShot-RefNum-Row">
+                                                    <div class="field">
+                                                        <label class="stat-label">SCREENSHOT OF PAYMENT:</label>
+                                                        <label class="photo-upload" id="photoUploadBox" for="orderPhotoInput">
+                                                            <img id="photoPreview" style="display:none;">
+                                                            <span id="photoUploadIcon">📷</span>
+                                                        </label>
+                                                        <input type="file" id="orderPhotoInput" accept="image/*" style="display:none;">
+                                                    </div>
+
+                                                    <div class="field">
+                                                        <label class="stat-label">REFERENCE NUMBER:</label>
+                                                        <input type="text" id="fldMobile" placeholder="XXXX-XXX-XXXXXX">
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="BRT-RightColumn">
+                                                <!-- RIGHT COLUMN -->
+                                                <div class="status-history">
+                                                    <div class="field">
+                                                        <img src="../OrderProcessImgs\GCash_logo.svg 1.png" alt="" class="GCLogo">
+                                                        <img src="../OrderProcessImgs\QR_code_for_mobile_English_Wikipedia 1.png" alt="" class="GCQr">
+                                                        <div class="gcash-info">
+                                                            <span class="stat-label">SERVICES R.</span>
+                                                            <span class="stat-label">099******21</span>
+                                                        </div>
+                                                        <button class="done-btn" id="orderDoneBtn">SUBMIT</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>    
+                                        
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- ===== STEP 4 ===== -->
+                            <div class="tab-pane" role="tabpanel" id="step4">
+                                <h3>STEP 4</h3>
+                                <div class="bs-calltoaction bs-calltoaction-primary">
+                                    <div class="status-card">    
+                                        <!-- LEFT COLUMN -->
+                                        <div class="status-message">
+                                            <h3>📝 PROCESSING</h3>
+                                            <p>
+                                                Your order is now being prepared and 
+                                                customized based on your requested specifications.
+                                            </p>
+                                            <span class="status-badge">
+                                                🟠 Available after payment method
+                                            </span>
+                                        </div>
+
+                                        <!-- RIGHT COLUMN -->
+                                        <div class="status-history">
+                                            <div class="status-history-item">
+                                                 <span class="status-dot"></span>
+                                                <div>
+                                                    <strong>Submitted</strong>
+                                                    <p>August 10, 2026 | 7:42 AM</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- ===== STEP 5 ===== -->
+                            <div class="tab-pane" role="tabpanel" id="step5">
+                                <h3>STEP 5</h3>
+                                <div class="bs-calltoaction bs-calltoaction-primary">
+                                    <div class="status-card">    
+                                        <!-- LEFT COLUMN -->
+                                        <div class="status-message">
+                                            <h3>📝 FINAL PAYMENT</h3>
+                                            <p>
+                                                Please settle the remaining balance and delivery fee, 
+                                                if applicable, before pickup or delivery.
+                                            </p>
+                                            <span class="status-badge">
+                                                🟠 Available after processing
+                                            </span>
+                                        </div>
+
+                                        <!-- RIGHT COLUMN -->
+                                        <div class="status-history">
+                                            <div class="status-history-item">
+                                                 <span class="status-dot"></span>
+                                                <div>
+                                                    <strong>Submitted</strong>
+                                                    <p>August 10, 2026 | 7:42 AM</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="bs-calltoaction bs-calltoaction-primary">
+                                    <div class="" id="FinalPaymentCard">
+                                        <!-- TOP ROW -->
+                                        <div class="TopRowType">
+                                            <p>FINAL PAYMENT METHOD</p>
+                                        </div>
+                                        <div class="BottomRowType">
+                                            <!-- LEFT COLUMN -->
+                                            <div class="BRT-LeftColumn">
+                                                <div class="MoP-PT-Row">
+                                                    <div>
+                                                        <span class="stat-label">MODE OF PAYMENT:</span>
+                                                        <div class="option-row">
+                                                            <label class="checkbox-option">
+                                                                <span class="box" id="boxUpload"></span> GCash
+                                                            </label>
+                                                            <label class="checkbox-option">
+                                                                <span class="box" id="boxRequest"></span> Bank
+                                                            </label>
+                                                        </div>
+                                                    </div>
+
+                                                    <div>
+                                                        <span class="stat-label">PAYMENT TYPE:</span>
+                                                        <div class="option-row">
+                                                            <label class="checkbox-option">
+                                                                <span class="box" id="boxUpload"></span> Full Payment
+                                                            </label>
+                                                            <label class="checkbox-option">
+                                                                <span class="box" id="boxRequest"></span> 50% Downpayment
+                                                            </label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="od-inline-row">
+                                                    <div class="od-stat">
+                                                        <span class="stat-label">DELIVERY FEE:</span>
+                                                        <p class="stat-value" id="odPrice">P90.00</p>
+                                                    </div>
+                                                    <div class="field">
+                                                        <label class="stat-label">DELIVERY FEE IMAGE:</label>
+                                                        <label class="photo-upload" id="photoUploadBox" for="orderPhotoInput">
+                                                            <img id="photoPreview" style="display:none;">
+                                                            <span id="photoUploadIcon">📷</span>
+                                                        </label>
+                                                    </div>
+                                                </div>
+
+                                                <div class="od-inline-row">
+                                                    <div class="od-stat">
+                                                        <span class="stat-label">PRODUCT BALANCE:</span>
+                                                        <p class="stat-value" id="odPrice">P45.00</p>
+                                                    </div>
+                                                    <div class="od-stat">
+                                                        <span class="stat-label">AMOUNT TO PAY:</span>
+                                                        <p class="stat-value" id="odTotalPrice">P90.00</p>
+                                                    </div>
+                                                </div>
+                                                
+                                                <div class="ScreenShot-RefNum-Row">
+                                                    <div class="field">
+                                                        <label class="stat-label">SCREENSHOT OF PAYMENT:</label>
+                                                        <label class="photo-upload" id="photoUploadBox" for="orderPhotoInput">
+                                                            <img id="photoPreview" style="display:none;">
+                                                            <span id="photoUploadIcon">📷</span>
+                                                        </label>
+                                                        <input type="file" id="orderPhotoInput" accept="image/*" style="display:none;">
+                                                    </div>
+
+                                                    <div class="field">
+                                                        <label class="stat-label">REFERENCE NUMBER:</label>
+                                                        <input type="text" id="fldMobile" placeholder="XXXX-XXX-XXXXXX">
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="BRT-RightColumn">
+                                                <!-- RIGHT COLUMN -->
+                                                <div class="status-history">
+                                                    <div class="field">
+                                                        <img src="../OrderProcessImgs\GCash_logo.svg 1.png" alt="" class="GCLogo">
+                                                        <img src="../OrderProcessImgs\QR_code_for_mobile_English_Wikipedia 1.png" alt="" class="GCQr">
+                                                        <div class="gcash-info">
+                                                            <span class="stat-label">SERVICES R.</span>
+                                                            <span class="stat-label">099******21</span>
+                                                        </div>
+                                                        <button class="done-btn" id="orderDoneBtn">SUBMIT</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>    
+                                        
+                                    </div>
+                                </div>
+
+                            </div>
+                            <!-- ===== STEP 6 ===== -->
+                            <div class="tab-pane" role="tabpanel" id="step6">
+                                <h3>STEP 6</h3>
+                                <div class="bs-calltoaction bs-calltoaction-primary">
+                                    <div class="status-card">    
+                                        <!-- LEFT COLUMN -->
+                                        <div class="status-message">
+                                            <h3>📝 OUT FOR DELIVERY</h3>
+                                            <p>
+                                                Your order has left our facility and is now on the way to your delivery address.
+                                            </p>
+                                            <span class="status-badge">
+                                                🟠 Available after final payment
+                                            </span>
+                                        </div>
+
+                                        <!-- RIGHT COLUMN -->
+                                        <div class="status-history">
+                                            <div class="status-history-item">
+                                                 <span class="status-dot"></span>
+                                                <div>
+                                                    <strong>Submitted</strong>
+                                                    <p>August 10, 2026 | 7:42 AM</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- ===== STEP 7 ===== -->
+                            <div class="tab-pane" role="tabpanel" id="step7">
+                                <h3>STEP 7</h3>
+                                <div class="bs-calltoaction bs-calltoaction-primary">
+                                    <div class="status-card">    
+                                        <!-- LEFT COLUMN -->
+                                        <div class="status-message">
+                                            <h3>📝 ORDER RECEIVED CONFIRMATION</h3>
+                                            <p>
+                                                Your order has been successfully received! 
+                                                Thank you for ordering from R&C Printing Services! We hope you love your order!
+                                            </p>
+                                            <span class="status-badge">
+                                                🟠 Available after out for delivery
+                                            </span>
+                                        </div>
+
+                                        <!-- RIGHT COLUMN -->
+                                        <div class="status-history">
+                                            <div class="status-history-item">
+                                                 <span class="status-dot"></span>
+                                                <div>
+                                                    <strong>Submitted</strong>
+                                                    <p>August 10, 2026 | 7:42 AM</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="bs-calltoaction bs-calltoaction-primary">
+                                    <div class="" id="OrderReceivedCard">
+                                        <!-- TOP ROW -->
+                                        <div class="TopRowType">
+                                            <p>ORDER RECEIVED CONFIRMATION</p>
+                                        </div>
+
+                                        <div class="BottomRowType">
+                                            <!-- LEFT COLUMN -->
+                                            <div class="BRT-LeftColumn">
+
+                                                <div class="LocationContainer">
+                                                    <div class="LImg">
+                                                        <img src="OrderProcessImgs\Location.png" alt="">
+                                                    </div>
+                                                    <div class="CInformation">
+                                                        <p class="DNText">Delivery (via Lalamove)</p>
+                                                        <p class="NAText">Jane Doe</p>
+                                                        <p class="NAText">Block 12 Lot 8, Phase 3, Barangay Banay-Banay, Cabuyao City, Laguna, 4025</p>
+                                                        <p class="DNText">09XX-XXX-XXXX</p>
+                                                    </div>
+                                                </div>
+
+                                                <div class="od-inline-row">
+                                                    <div class="od-stat">
+                                                        <span class="stat-label">NAME:</span>
+                                                        <p class="stat-value" id="odItem">Tumbler (360ml)</p>
+                                                        <p class="stat-value" id="odCatergory">Mug & Tumbler</p>
+                                                    </div>
+                                                    <div class="od-stat">
+                                                        <span class="stat-label">QUANTITY:</span>
+                                                        <p class="stat-value" id="odTotalPrice">2</p>
+                                                    </div>
+                                                </div>
+
+                                                <div class="od-inline-row">
+                                                    <div class="od-stat">
+                                                        <span class="stat-label">PRICE:</span>
+                                                        <p class="stat-value" id="odPrice">P90.00</p>
+                                                    </div>
+                                                    <div class="od-stat">
+                                                        <span class="stat-label">DISCOUNT:</span>
+                                                        <p class="stat-value" id="odPrice">P90.00</p>
+                                                    </div>
+                                                    <div class="od-stat">
+                                                        <span class="stat-label">TOTAL PRICE:</span>
+                                                        <p class="stat-value" id="odPrice">P90.00</p>
+                                                    </div>
+                                                </div>
+
+                                                <div class="od-inline-row">
+                                                    <div class="od-stat">
+                                                        <span class="stat-label">DELIVERY DATE:</span>
+                                                        <p class="stat-value" id="odDate">MAR 26, 2026</p>
+                                                        <p class="stat-value" id="odTime">12:00 PM</p>
+                                                    </div>
+                                                    <div class="od-stat">
+                                                        <span class="stat-label">DELIVERY FEE:</span>
+                                                        <p class="stat-value" id="odTotalPrice">P90.00</p>
+                                                    </div>
+                                                </div>
+                                                
+                                                <div class="ScreenShot-RefNum-Row">
+                                                    <div class="field">
+                                                        <label class="stat-label"> SUBMIT A PHOTO OF ORDER:</label>
+                                                        <label class="photo-upload" id="photoUploadBox" for="orderPhotoInput">
+                                                            <img id="photoPreview" style="display:none;">
+                                                            <span id="photoUploadIcon">📷</span>
+                                                        </label>
+                                                        <input type="file" id="orderPhotoInput" accept="image/*" style="display:none;">
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="BRT-RightColumn">
+                                                <!-- RIGHT COLUMN -->
+                                                <div class="status-history">
+                                                    <div class="ItemColumn">
+                                                        <label class="stat-label"> ITEM:</label>
+                                                        <img src="../OrderProcessImgs\ProductPic.png" alt="" class="ItemImg">
+                                                        <div class="od-stat">
+                                                            <span class="stat-label">TOTAL AMOUNT PAID:</span>
+                                                            <p class="stat-value" id="odTotalPrice">P90.00</p>
+                                                        </div>
+                                                        <button class="done-btn" id="orderDoneBtn">SUBMIT</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>    
+                                        
+                                    </div>
+                                </div>
+
+                            </div>
+                            <!-- ===== STEP 8 ===== -->
+                            <div class="tab-pane" role="tabpanel" id="step8">
+                                <h3>STEP 8</h3>
+                                <div class="bs-calltoaction bs-calltoaction-primary">
+                                    <div class="status-card">    
+                                        <!-- LEFT COLUMN -->
+                                        <div class="status-message">
+                                            <h3>📝 ORDER COMPLETE</h3>
+                                            <p>
+                                                Your Order is now complete! 
+                                                Thank you for ordering at R&C Printing Services!
+                                            </p>
+                                            <span class="status-badge">
+                                                🟠 Available after order received confirmation
+                                            </span>
+                                        </div>
+
+                                        <!-- RIGHT COLUMN -->
+                                        <div class="status-history">
+                                            <div class="status-history-item">
+                                                 <span class="status-dot"></span>
+                                                <div>
+                                                    <strong>Submitted</strong>
+                                                    <p>August 10, 2026 | 7:42 AM</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <div class="OrdSum-Receipt-Container">
+                                        <div class="bs-calltoaction bs-calltoaction-primary">
+                                            <div class="ORstatus-card">    
+                                                <div class="HeaderRowType">
+                                                    <p>ORDER SUMMARY</p>
+                                                </div>
+
+                                                <div class="OrdStatRowContainer">
+                                                    <div class="CategoryText">
+                                                        <p>STATUS INFORMATION</p>
+                                                    </div>
+
+                                                    <div class="OrderStatInfoContainer">
+                                                        <div class="OrdText-Stat-Row">
+                                                            <p class="OrdStatText">Order Status</p>
+                                                            <p class="OrdStat">Completed</p>
+                                                        </div>
+
+                                                        <div class="OrdText-Stat-Row">
+                                                            <p class="OrdStatText">Payment Status</p>
+                                                            <p class="OrdStat">Fully Paid</p>
+                                                        </div>
+
+                                                        <div class="OrdText-Stat-Row">
+                                                            <p class="OrdStatText">Delivery Status</p>
+                                                            <p class="OrdStat">Delivered</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="OrdTimelineRowContainer">
+                                                    <div class="CategoryText">
+                                                        <p>ORDER TIMELINE</p>
+                                                    </div>
+
+                                                    <div class="OrderTimelineContainer">
+                                                        <div>
+                                                            <p class="OrderProcessCategory">Order Details Submitted</p>
+                                                            <p class="OPCTime">August 10, 2026 | 7:42 AM</p>
+                                                        </div>
+                                                        <div>
+                                                            <p class="OrderProcessCategory">Order Details Verified</p>
+                                                            <p class="OPCTime">August 10, 2026 | 7:42 AM</p>
+                                                        </div>
+                                                        <div>
+                                                            <p class="OrderProcessCategory">Payment Method Submitted</p>
+                                                            <p class="OPCTime">August 10, 2026 | 7:42 AM</p>
+                                                        </div>
+                                                        <div>
+                                                            <p class="OrderProcessCategory">Processing</p>
+                                                            <p class="OPCTime">August 10, 2026 | 7:42 AM</p>
+                                                        </div>
+                                                        <div>
+                                                            <p class="OrderProcessCategory">Final Payment Submitted</p>
+                                                            <p class="OPCTime">August 10, 2026 | 7:42 AM</p>
+                                                        </div>
+                                                        <div>
+                                                            <p class="OrderProcessCategory">Out for Delivery</p>
+                                                            <p class="OPCTime">August 10, 2026 | 7:42 AM</p>
+                                                        </div>
+                                                        <div>
+                                                            <p class="OrderProcessCategory">Order Received Confirmation</p>
+                                                            <p class="OPCTime">August 10, 2026 | 7:42 AM</p>
+                                                        </div>
+                                                        <div>
+                                                            <p class="OrderProcessCategory">Order Complete</p>
+                                                            <p class="OPCTime">August 10, 2026 | 7:42 AM</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="HeaderRowType">
+                                                    <div class="BusinessText">
+                                                        <p>Fulfilled By: R&C Printing Services</p>
+                                                    </div>
+                                                    
+                                                    <div class="ReceiptMessage">
+                                                        <p>
+                                                            Your order has been successfully completed and delivered.
+                                                            All order processes have been finalized.
+                                                            Thank you for choosing R&C Printing Services!
+                                                        </p>
+                                                    </div>
+                                                </div>
+
+                                            </div>  
+                                        </div>
+
+                                        <div class="bs-calltoaction bs-calltoaction-primary">
+                                            <div class="ORstatus-card">    
+                                                <div class="HeaderRowType">
+                                                    <p>ORDER RECEIPT</p>
+                                                </div>
+
+                                                <div class="OrdReceiptRowContainer">
+                                                    <div class="CategoryText">
+                                                        <p>R&C PRINTING SERVICES PAYMENT RECEIPT</p>
+                                                    </div>
+                                                    
+                                                    <div class="OrdReceipt-Stat-Row-Cont">
+                                                        <div class="OrdReceipt-Stat-Row">
+                                                            <p class="OrdReceiptText">Receipt No:</p>
+                                                            <p class="OrdReceiptStat">RC-2026-00124</p>
+                                                        </div>
+
+                                                        <div class="OrdReceipt-Stat-Row">
+                                                            <p class="OrdReceiptText">Order ID:</p>
+                                                            <p class="OrdReceiptStat">ORD-2026-00124</p>
+                                                        </div>
+
+                                                        <div class="OrdReceipt-Stat-Row">
+                                                            <p class="OrdReceiptText">Date:</p>
+                                                            <p class="OrdReceiptStat">May 25, 2026</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="OrdCustRowContainer">
+                                                    <div class="CategoryText">
+                                                        <p>CUSTOMER INFORMATION</p>
+                                                    </div>
+                                                    
+                                                    <div class="OrdCust-Stat-Row-Cont">
+                                                        <div class="OrdCust-Stat-Row">
+                                                            <p class="OrdCustText">Customer Name:</p>
+                                                            <p class="OrdCustInfo">Jane Doe</p>
+                                                        </div>
+
+                                                        <div class="OrdReceipt-Stat-Row">
+                                                            <p class="OrdCustText">Contact Number:</p>
+                                                            <p class="OrdCustInfo">09XX-XXX-XXXX</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="OrdProdRowContainer">
+                                                    <div class="CategoryText">
+                                                        <p>PRODUCT DETAILS</p>
+                                                    </div>
+                                                    
+                                                    <div class="OrdProd-Stat-Row-Cont">
+                                                        <div class="OrdProd-Stat-Row">
+                                                            <p class="OrdProdText">Product:</p>
+                                                            <p class="OrdProdInfo">Tumbler (360ml)</p>
+                                                        </div>
+
+                                                        <div class="OrdProd-Stat-Row">
+                                                            <p class="OrdProdText">Quantity:</p>
+                                                            <p class="OrdProdInfo">2</p>
+                                                        </div>
+
+                                                        <div class="OrdProd-Stat-Row">
+                                                            <p class="OrdProdText">Customization Type:</p>
+                                                            <p class="OrdProdInfo">Uploaded Custom Design</p>
+                                                        </div>
+
+                                                        <div class="OrdProd-Stat-Row">
+                                                            <p class="OrdProdText">Delivery Method:</p>
+                                                            <p class="OrdProdInfo">Delivery (via Lalamove)</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="OrdPaymRowContainer">
+                                                    <div class="CategoryText">
+                                                        <p>PAYMENT DETAILS</p>
+                                                    </div>
+                                                    
+                                                    <div class="OrdPaym-Stat-Row-Cont">
+                                                        <div class="OrdPaym-Stat-Row">
+                                                            <p class="OrdPaymText">Payment Type:</p>
+                                                            <p class="OrdPaymInfo">50% Down Payment</p>
+                                                        </div>
+
+                                                        <div class="OrdPaym-Stat-Row">
+                                                            <p class="OrdPaymText">Payment Method:</p>
+                                                            <p class="OrdPaymInfo">Bank (BPI)</p>
+                                                        </div>
+
+                                                        <div class="OrdPaym-Stat-Row">
+                                                            <p class="OrdPaymText">Amount Paid:</p>
+                                                            <p class="OrdPaymInfo">₱131.00</p>
+                                                        </div>
+
+                                                        <div class="OrdPaym-Stat-Row">
+                                                            <p class="OrdPaymText">Remaining Balance:</p>
+                                                            <p class="OrdPaymInfo">₱0.00</p>
+                                                        </div>
+
+                                                        <div class="OrdPaym-Stat-Row">
+                                                            <p class="OrdPaymText">Reference Number:</p>
+                                                            <p class="OrdPaymInfo">1234567890</p>
+                                                        </div>
+
+                                                        <div class="OrdPaym-Stat-Row">
+                                                            <p class="OrdPaymText">Payment Status:</p>
+                                                            <p class="OrdPaymInfo">Fully Paid</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="HeaderRowType">
+                                                    <div class="BusinessText">
+                                                        <p>Processed By: R&C Printing Services</p>
+                                                    </div>
+                                                    
+                                                    <div class="ReceiptMessage">
+                                                        <p>
+                                                            This serves as proof that your order transaction 
+                                                            has been completed successfully. 
+                                                            Thank you for choosing R&C Printing Services.
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>  
+                        </form>
+                    </div>
+            </section>
+        </div>
+        </div>
+ 
+    </section>
+ 
+     
+ 
+</main>
+ 
+<script src="cartData.js"></script>
+<script src="cart.js"></script>
+<script src='https://code.jquery.com/jquery-2.2.4.min.js'></script>
+<script src='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js'></script>
+<script src="MyOrderProcess.js"></script>
+ 
+</body>
+</html>
