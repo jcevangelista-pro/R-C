@@ -1,0 +1,419 @@
+body {
+    margin: 0;
+    font-family: 'Segoe UI', Arial, sans-serif;
+}
+
+/* ── NAVBAR (matches LandingPage) ────────────────────────── */
+.Navbar {
+    background: white;
+    border-bottom: 1px solid #F868AA;
+    box-shadow: inset 0 -2px 8px rgba(0, 0, 0, 0.1);
+
+    display: flex;
+    align-items: center;
+
+    padding: 10px 20px;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+
+.Navbar a {
+    color: #F868AA;
+    text-decoration: none;
+    padding: 15px;
+    display: block;
+    text-align: left;
+    font-weight: 600;
+}
+
+.Navbar a:hover {
+    color: #f3a4c8;
+}
+
+.Navbar ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.Navbar li {
+    float: left;
+}
+
+:root {
+    --violet: #a78bfa;
+}
+
+/* ACTIVE NAVIGATION LINK */
+.Navbar ul li a.ActiveLink {
+    position: relative;
+    font-weight: bold;
+}
+
+/* UNDERLINE */
+.Navbar ul li a.ActiveLink::after {
+    content: '';
+    position: absolute;
+    left: 12px;
+    right: 12px;
+    bottom: 2px;
+    height: 3px;
+    background: var(--violet);
+    border-radius: 2px;
+}
+
+#BName {
+    text-decoration: none;
+    color: #F868AA;
+    font-size: 2rem;
+    font-weight: bold;
+    white-space: nowrap;
+    margin-right: auto;
+}
+
+.Img {
+    width: 1.2vw;
+    height: 2.5vh;
+}
+
+/* ── MAIN CONTAINER (gradient like LandingPage) ──────────── */
+.RContainer {
+    margin: 0;
+    padding: 2rem 0;
+    background: radial-gradient(farthest-corner at 0px 10px, #AABCEB, #FFB2E9, #ffffff, #FFB2E9);
+    min-height: calc(100vh - 54px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.WSContainer {
+    width: 90vw;
+    max-width: 950px;
+    margin: 0 auto;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    background-color: #ffffff;
+    padding: 10px 10px 30px;
+}
+
+/* ── BACK / CLOSE BUTTON ─────────────────────────────────── */
+.BBContainer {
+    display: flex;
+    justify-content: flex-end;
+}
+
+#BackButton,
+#MBackButton {
+    color: #9ca3af;
+    font-size: 20px;
+    text-align: center;
+    margin: 10px 10px 0 0;
+    padding: 0;
+    background: rgba(255,255,255,0.85);
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+    transition: color 0.15s, background 0.15s;
+    line-height: 34px;
+}
+
+#BackButton:hover,
+#MBackButton:hover {
+    background: #fff;
+    color: #1E3163;
+}
+
+/* ── PRODUCT LAYOUT ──────────────────────────────────────── */
+.PIContainer {
+    display: flex;
+    gap: 40px;
+    padding: 0 30px 10px;
+}
+
+.ProductContainer {
+    width: 42%;
+    min-height: 48vh;
+    border-radius: 10px;
+    background-color: #cbc9f9;
+    border: 1px solid #ddd;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.ProductImage {
+    border-radius: 10px;
+    max-height: 46vh;
+    max-width: 95%;
+    object-fit: contain;
+    padding: 8px;
+}
+
+.ProductInformation {
+    flex: 1;
+    color: #1E3163;
+}
+
+#ProductName, .product-name {
+    margin-top: 16px;
+    margin-bottom: 0;
+    font-size: 2.6rem;
+    font-weight: 800;
+    color: #1E3163;
+}
+
+#ProductType, .product-type {
+    font-size: 1.3rem;
+    margin: 4px 0 4px;
+    color: #1E3163;
+    font-weight: 600;
+}
+
+#ProductAvailability, .product-availability {
+    font-size: 0.9rem;
+    color: #555;
+    margin-bottom: 16px;
+}
+
+#ProductPrice, .product-price {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #1E3163;
+    margin-bottom: 24px;
+}
+
+#OpenModal, .btn-add-cart {
+    display: block;
+    padding: 14px 0;
+    text-align: center;
+    color: #fff;
+    background: #1E3163;
+    width: 260px;
+    font-size: 1rem;
+    font-weight: 700;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.15s;
+}
+
+#OpenModal:hover, .btn-add-cart:hover {
+    background: #2a4080;
+}
+
+#ProductDescription, .product-desc {
+    margin-top: 24px;
+    text-align: left;
+    font-size: 0.78rem;
+    line-height: 1.7;
+    color: #555;
+    max-width: 440px;
+}
+
+/* ── MODAL OVERLAY ───────────────────────────────────────── */
+.ModalContainer {
+    background: rgba(30, 49, 99, 0.5);
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    opacity: 0;
+    pointer-events: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 999;
+    transition: opacity 0.2s ease;
+}
+
+.ModalContainer.show {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.modal-card {
+    width: 88vw;
+    max-width: 900px;
+    max-height: 85vh;
+    overflow-y: auto;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    background-color: rgba(255,255,255,0.97);
+    box-shadow: 0 8px 40px rgba(0,0,0,0.2);
+    padding-bottom: 30px;
+    transform: translateY(10px);
+    transition: transform 0.2s ease;
+}
+
+.ModalContainer.show .modal-card {
+    transform: translateY(0);
+}
+
+/* ── QUANTITY STEPPER ────────────────────────────────────── */
+.Quantity { margin-bottom: 20px; }
+
+.label {
+    font-weight: 700;
+    color: #1E3163;
+    margin-bottom: 6px;
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
+}
+
+.stepper {
+    height: 3rem;
+    width: 12rem;
+    border: 2px solid #1E3163;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 10px;
+}
+
+.qty {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: #1E3163;
+}
+
+.ButtonDA {
+    cursor: pointer;
+    border: none;
+    background: none;
+    font-size: 1.6rem;
+    color: #1E3163;
+    line-height: 1;
+    padding: 0 6px;
+    transition: color 0.15s;
+}
+
+.ButtonDA:hover { color: #F868AA; }
+
+/* ── RESPONSIVE ──────────────────────────────────────────── */
+@media (max-width: 768px) {
+    /* Navbar: brand left, user icon right, hide middle items */
+    .Navbar {
+        flex-direction: row;
+        align-items: center;
+        padding: 10px 16px;
+    }
+
+    .Navbar ul {
+        display: flex;
+        align-items: center;
+        flex-wrap: nowrap;
+        gap: 0;
+    }
+
+    .Navbar li {
+        display: none;
+    }
+
+    .Navbar li:last-child {
+        display: block;
+    }
+
+    .Navbar li:last-child a {
+        padding: 4px;
+    }
+
+    #BName {
+        font-size: 0.85rem;
+        padding-left: 0;
+    }
+
+    .Img {
+        width: 24px;
+        height: 24px;
+    }
+
+    /* Main content */
+    .RContainer {
+        padding: 1rem 0;
+        min-height: auto;
+    }
+
+    .WSContainer {
+        width: 94vw;
+        padding: 10px 10px 20px;
+    }
+
+    .PIContainer {
+        flex-direction: column;
+        gap: 16px;
+        padding: 0 12px 10px;
+    }
+
+    .ProductContainer {
+        width: 100%;
+        min-height: 30vh;
+    }
+
+    .ProductImage {
+        max-height: 28vh;
+    }
+
+    #ProductName, .product-name {
+        font-size: 1.6rem;
+        margin-top: 10px;
+    }
+
+    #ProductType, .product-type {
+        font-size: 1rem;
+    }
+
+    #ProductPrice, .product-price {
+        font-size: 1.5rem;
+        margin-bottom: 16px;
+    }
+
+    #OpenModal, .btn-add-cart {
+        width: 100%;
+        padding: 12px 0;
+        font-size: 0.95rem;
+    }
+
+    #ProductDescription, .product-desc {
+        font-size: 0.72rem;
+        max-width: 100%;
+    }
+
+    /* Modal */
+    .modal-card {
+        width: 96vw;
+        max-height: 90vh;
+        padding-bottom: 20px;
+    }
+
+    .modal-card .PIContainer {
+        flex-direction: column;
+        gap: 16px;
+        padding: 0 12px 10px;
+    }
+
+    .modal-card .ProductContainer {
+        width: 100%;
+        min-height: 25vh;
+    }
+
+    .stepper {
+        width: 10rem;
+        height: 2.6rem;
+    }
+
+    .qty {
+        font-size: 1.3rem;
+    }
+
+    .ButtonDA {
+        font-size: 1.3rem;
+    }
+}

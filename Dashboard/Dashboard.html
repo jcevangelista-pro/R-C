@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard - R&amp;C Printing Services</title>
+  <link rel="stylesheet" href="Dashboard.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+
+  <!-- Loading overlay -->
+  <div class="loading-overlay" id="loadingOverlay">
+    <div class="spinner"></div> Loading Dashboard…
+  </div>
+
+  <!-- ── SIDEBAR ─────────────────────────────────────────── -->
+  <div class="sidebar">
+    <div class="brand">
+      <img src="../imgs/image 2.png" alt="R&C Logo">
+      <div class="brand-text">R&amp;C PRINTING<br>SERVICES</div>
+    </div>
+
+    <div class="nav-label">MAIN</div>
+    <a class="nav-item active" href="Dashboard.html">
+      <span>Dashboard</span>
+      <span class="nav-icon"><img src="../imgs/Performance Macbook.png" alt=""></span>
+    </a>
+    <a class="nav-item" href="../Inventory/inventory-admin.html">
+      <span>Inventory</span>
+      <span class="nav-icon"><img src="../imgs/Boxes.png" alt=""></span>
+    </a>
+    <a class="nav-item" href="../Order/order-owner.html">
+      <span>Orders</span>
+      <span class="nav-icon"><img src="../imgs/Shopping Cart.png" alt=""></span>
+    </a>
+    <a class="nav-item" href="#">
+      <span>Customer</span>
+      <span class="nav-icon"><img src="../imgs/User Male.png" alt=""></span>
+    </a>
+    <a class="nav-item" href="../Products/AdminProduct.html">
+      <span>Products</span>
+      <span class="nav-icon"><img src="../imgs/Product.png" alt=""></span>
+    </a>
+    <a class="nav-item" href="../UserSystem/UserSystem.html">
+      <span>Users</span>
+      <span class="nav-icon"><img src="../imgs/user.png" alt=""></span>
+    </a>
+  </div>
+
+  <!-- ── MAIN ───────────────────────────────────────────── -->
+  <div class="main">
+
+    <!-- Topbar -->
+    <div class="topbar">
+      <h1>Dashboard</h1>
+      <div class="owner-tag">
+        <span>Admin</span>
+        <img src="../imgs/Test Account.png" alt="Admin">
+      </div>
+    </div>
+
+    <!-- ── ROW 1: Order stat tiles + Monthly Order chart + Inventory summary -->
+    <div class="row-grid row-2">
+
+      <!-- Left: 6 stat tiles in a 2-col grid -->
+      <div class="card">
+        <div class="stat-grid">
+          <div class="stat-tile pink">
+            <div class="stat-label">Total Orders</div>
+            <div class="stat-value" id="statTotalOrders">—</div>
+          </div>
+          <div class="stat-tile orange">
+            <div class="stat-label">Orders Due Today</div>
+            <div class="stat-value" id="statDueToday">—</div>
+          </div>
+          <div class="stat-tile blue">
+            <div class="stat-label">Pending Orders</div>
+            <div class="stat-value" id="statPending">—</div>
+          </div>
+          <div class="stat-tile purple">
+            <div class="stat-label">Processing Orders</div>
+            <div class="stat-value" id="statProcessing">—</div>
+          </div>
+          <div class="stat-tile green">
+            <div class="stat-label">Completed Orders</div>
+            <div class="stat-value" id="statCompleted">—</div>
+          </div>
+          <div class="stat-tile red">
+            <div class="stat-label">Cancelled Orders</div>
+            <div class="stat-value" id="statCancelled">—</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: Monthly Order Quantity chart + Inventory summary stacked -->
+      <div style="display:flex; flex-direction:column; gap:16px;">
+
+        <!-- Monthly Order Quantity chart -->
+        <div class="card">
+          <div class="chart-title">Monthly Order Quantity</div>
+          <div class="chart-wrap">
+            <canvas id="chartMonthlyOrders"></canvas>
+          </div>
+        </div>
+
+        <!-- Inventory summary -->
+        <div class="card">
+          <div class="inv-row">
+            <span class="inv-label">Low Stock Items</span>
+            <div class="inv-right">
+              <span class="inv-count orange" id="invLow">—</span>
+              <span class="inv-arrow">&gt;</span>
+            </div>
+          </div>
+          <div class="inv-row">
+            <span class="inv-label">High Stock Items</span>
+            <div class="inv-right">
+              <span class="inv-count green" id="invHigh">—</span>
+              <span class="inv-arrow">&gt;</span>
+            </div>
+          </div>
+          <div class="inv-row">
+            <span class="inv-label">Out of Stock Items</span>
+            <div class="inv-right">
+              <span class="inv-count red" id="invOut">—</span>
+              <span class="inv-arrow">&gt;</span>
+            </div>
+          </div>
+          <div class="inv-row">
+            <span class="inv-label">Total Inventory Items</span>
+            <div class="inv-right">
+              <span class="inv-count pink" id="invTotal">—</span>
+              <span class="inv-arrow">&gt;</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ── ROW 2: Monthly Sales Revenue + Inventory summary (right col already used) -->
+    <div class="row-grid row-2">
+
+      <!-- Monthly Sales Revenue chart -->
+      <div class="card">
+        <div class="chart-title">Monthly Sales Revenue</div>
+        <div class="chart-wrap">
+          <canvas id="chartMonthlySales"></canvas>
+        </div>
+      </div>
+
+      <!-- Spacer column (inventory already shown above, keep layout balanced) -->
+      <!-- We reuse this col for a mini stats repeat on smaller screens via CSS -->
+      <div class="card" style="display:flex; flex-direction:column; justify-content:center; gap:0;">
+        <div class="inv-row">
+          <span class="inv-label">Low Stock Items</span>
+          <div class="inv-right">
+            <span class="inv-count orange" id="invLow2">—</span>
+            <span class="inv-arrow">&gt;</span>
+          </div>
+        </div>
+        <div class="inv-row">
+          <span class="inv-label">High Stock Items</span>
+          <div class="inv-right">
+            <span class="inv-count green" id="invHigh2">—</span>
+            <span class="inv-arrow">&gt;</span>
+          </div>
+        </div>
+        <div class="inv-row">
+          <span class="inv-label">Out of Stock Items</span>
+          <div class="inv-right">
+            <span class="inv-count red" id="invOut2">—</span>
+            <span class="inv-arrow">&gt;</span>
+          </div>
+        </div>
+        <div class="inv-row">
+          <span class="inv-label">Total Inventory Items</span>
+          <div class="inv-right">
+            <span class="inv-count pink" id="invTotal2">—</span>
+            <span class="inv-arrow">&gt;</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ── ROW 3: Recent Orders table (full width) -->
+    <div class="card">
+      <div class="section-header">
+        <h2>Recent Orders</h2>
+        <span>&gt;</span>
+      </div>
+      <table class="orders-table">
+        <thead>
+          <tr>
+            <th>Order ID</th>
+            <th>Customer Name</th>
+            <th>Product</th>
+            <th>Status</th>
+            <th>Date</th>
+          </tr>
+        </thead>
+        <tbody id="recentOrdersBody">
+          <tr><td colspan="5" style="text-align:center; color:#9ca3af; padding:20px;">Loading…</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- ── ROW 4: Monthly Customers chart + Summary stats -->
+    <div class="row-grid row-2">
+
+      <!-- Monthly Customers chart -->
+      <div class="card">
+        <div class="chart-title">Monthly Customers</div>
+        <div class="chart-wrap">
+          <canvas id="chartMonthlyCustomers"></canvas>
+        </div>
+      </div>
+
+      <!-- Customer summary tiles -->
+      <div class="card" style="display:flex; flex-direction:column; justify-content:center;">
+        <div class="summary-grid">
+          <div class="summary-tile pink">
+            <div class="summary-label">Total Customers</div>
+            <div class="summary-value" id="sumTotalCustomers">—</div>
+          </div>
+          <div class="summary-tile green">
+            <div class="summary-label">Repeat Customers</div>
+            <div class="summary-value" id="sumRepeatCustomers">—</div>
+          </div>
+          <div class="summary-tile blue">
+            <div class="summary-label">Total Revenue</div>
+            <div class="summary-value" id="sumTotalRevenue">—</div>
+          </div>
+          <div class="summary-tile purple">
+            <div class="summary-label">Current Revenue</div>
+            <div class="summary-value" id="sumCurrentRevenue">—</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </div><!-- /.main -->
+
+  <script>
+  // ── HELPERS ──────────────────────────────────────────────
+  function fmt(n) {
+    return Number(n).toLocaleString('en-PH');
+  }
+
+  function fmtPeso(n) {
+    return '₱' + Number(n).toLocaleString('en-PH', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+  }
+
+  function statusBadge(status) {
+    const map = {
+      'Delivered'           : 'badge-complete',
+      'Completed'           : 'badge-complete',
+      'Out for Delivery'    : 'badge-delivery',
+      'Pending'             : 'badge-pending',
+      'Pending Verification': 'badge-pending',
+      'Processing'          : 'badge-processing',
+      'Verified'            : 'badge-verified',
+      'Cancelled'           : 'badge-cancelled',
+    };
+    const cls = map[status] || 'badge-default';
+    return `<span class="badge ${cls}">${status}</span>`;
+  }
+
+  // ── CHART DEFAULTS ────────────────────────────────────────
+  Chart.defaults.font.family = "'Segoe UI', Arial, sans-serif";
+  Chart.defaults.font.size   = 11;
+  Chart.defaults.color       = '#6b7280';
+
+  // ── FETCH & RENDER ────────────────────────────────────────
+  async function loadDashboard() {
+    try {
+      const res  = await fetch('dashboard_data.php');
+      const data = await res.json();
+
+      if (!data.success) {
+        alert('Error loading dashboard data: ' + (data.error || 'Unknown error'));
+        return;
+      }
+
+      // ── Order stat tiles
+      document.getElementById('statTotalOrders').textContent = fmt(data.orders.total);
+      document.getElementById('statDueToday').textContent    = fmt(data.orders.due_today);
+      document.getElementById('statPending').textContent     = fmt(data.orders.pending);
+      document.getElementById('statProcessing').textContent  = fmt(data.orders.processing);
+      document.getElementById('statCompleted').textContent   = fmt(data.orders.completed);
+      document.getElementById('statCancelled').textContent   = fmt(data.orders.cancelled);
+
+      // ── Inventory (both copies)
+      ['', '2'].forEach(suffix => {
+        document.getElementById('invLow'   + suffix).textContent = fmt(data.inventory.low_stock);
+        document.getElementById('invHigh'  + suffix).textContent = fmt(data.inventory.high_stock);
+        document.getElementById('invOut'   + suffix).textContent = fmt(data.inventory.out_of_stock);
+        document.getElementById('invTotal' + suffix).textContent = fmt(data.inventory.total);
+      });
+
+      // ── Customer summary
+      document.getElementById('sumTotalCustomers').textContent  = fmt(data.customers.total);
+      document.getElementById('sumRepeatCustomers').textContent = fmt(data.customers.repeat);
+      document.getElementById('sumTotalRevenue').textContent    = fmtPeso(data.customers.total_revenue);
+      document.getElementById('sumCurrentRevenue').textContent  = fmtPeso(data.customers.current_revenue);
+
+      // ── Recent Orders table
+      const tbody = document.getElementById('recentOrdersBody');
+      if (data.recent_orders.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:#9ca3af;padding:20px;">No orders yet.</td></tr>';
+      } else {
+        tbody.innerHTML = data.recent_orders.map(o => `
+          <tr>
+            <td>${o.order_id}</td>
+            <td>${o.customer_name || '—'}</td>
+            <td>${o.product_name  || '—'}</td>
+            <td>${statusBadge(o.order_status)}</td>
+            <td>${o.date_requested}</td>
+          </tr>
+        `).join('');
+      }
+
+      // ── Monthly Order Quantity bar chart
+      const moLabels = data.monthly_orders.map(r => r.month_label);
+      const moData   = data.monthly_orders.map(r => parseInt(r.qty));
+      new Chart(document.getElementById('chartMonthlyOrders'), {
+        type: 'bar',
+        data: {
+          labels: moLabels,
+          datasets: [{
+            data: moData,
+            backgroundColor: moData.map((_, i) =>
+              i === moData.indexOf(Math.max(...moData)) ? '#ec4899' : '#f9a8d4'
+            ),
+            borderRadius: 4,
+            borderSkipped: false,
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            x: { grid: { display: false } },
+            y: { beginAtZero: true, grid: { color: '#f3f4f6' } }
+          }
+        }
+      });
+
+      // ── Monthly Sales Revenue line chart
+      const msLabels = data.monthly_sales.map(r => r.month_label);
+      const msData   = data.monthly_sales.map(r => parseFloat(r.revenue));
+      new Chart(document.getElementById('chartMonthlySales'), {
+        type: 'line',
+        data: {
+          labels: msLabels,
+          datasets: [{
+            data: msData,
+            borderColor: '#a855f7',
+            backgroundColor: 'rgba(168,85,247,0.08)',
+            borderWidth: 2.5,
+            pointBackgroundColor: '#a855f7',
+            pointRadius: 3,
+            tension: 0.4,
+            fill: true,
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            x: { grid: { display: false } },
+            y: {
+              beginAtZero: true,
+              grid: { color: '#f3f4f6' },
+              ticks: {
+                callback: v => v >= 1000 ? (v/1000) + 'k' : v
+              }
+            }
+          }
+        }
+      });
+
+      // ── Monthly Customers bar chart
+      const mcLabels = data.monthly_customers.map(r => r.month_label);
+      const mcData   = data.monthly_customers.map(r => parseInt(r.customers));
+      new Chart(document.getElementById('chartMonthlyCustomers'), {
+        type: 'bar',
+        data: {
+          labels: mcLabels,
+          datasets: [{
+            data: mcData,
+            backgroundColor: '#f9a8d4',
+            hoverBackgroundColor: '#ec4899',
+            borderRadius: 4,
+            borderSkipped: false,
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            x: { grid: { display: false } },
+            y: { beginAtZero: true, grid: { color: '#f3f4f6' }, ticks: { stepSize: 2 } }
+          }
+        }
+      });
+
+    } catch (err) {
+      console.error('Dashboard load error:', err);
+      alert('Could not connect to the dashboard API. Make sure Laragon is running and you are accessing this page via http://localhost/SEtest/Dashboard/Dashboard.html');
+    } finally {
+      document.getElementById('loadingOverlay').style.display = 'none';
+    }
+  }
+
+  loadDashboard();
+  </script>
+
+</body>
+</html>

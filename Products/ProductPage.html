@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Catalogue</title>
+    <link rel="stylesheet" href="ProductPage.css">
+</head>
+<body>
+
+    <!-- ── NAVIGATION BAR (same as LandingPage) ────────────── -->
+    <nav class="Navbar">
+        <a href="../LandingPage/LandingPage.html" id="BName">R&C PRINTING SERVICES</a>
+        <ul>
+            <li><a href=""><img src="../imgs/search.png" alt="" class="Img"></a></li>
+            <li><a href=""><img src="../imgs/typing.png" alt="" class="Img"></a></li>
+            <li><a href=""><img src="../imgs/trolley.png" alt="" class="Img"></a></li>
+            <li><a href="../LandingPage/LandingPage.html">HOME</a></li>
+            <li><a href="ProductPage.html" class="ActiveLink">PRODUCTS</a></li>
+            <li><a href="../Portfolio/PortfolioPage.html">PORTFOLIO</a></li>
+            <li><a href=""><img src="../imgs/user.png" alt="" class="Img"></a></li>
+        </ul>
+    </nav>
+
+    <!-- ── PRODUCT CONTENT ─────────────────────────────────── -->
+    <div class="RContainer">
+        <div class="WSContainer">
+            <div class="BBContainer">
+                <button id="BackButton">&#10005;</button>
+            </div>
+
+            <div class="PIContainer">
+                <div class="ProductContainer">
+                    <img src="../imgs/MugPicture.jpg" alt="Tumbler product image" class="ProductImage">
+                </div>
+
+                <div class="ProductInformation">
+                    <p id="ProductName">Tumbler (360ml)</p>
+                    <p id="ProductType">Mug &amp; Tumbler</p>
+                    <p id="ProductAvailability">Status: Avail/Not</p>
+
+                    <p id="ProductPrice">P45.00</p>
+
+                    <button id="OpenModal">Add to Cart</button>
+
+                    <p id="ProductDescription">For large or high-volume orders, prices may differ based on the quantity, product
+                        specifications, materials, and customization requested. Orders meeting a certain
+                        volume may qualify for a custom quotation. Customers are advised to contact us
+                        directly for exact pricing, discounted rates, and additional assistance.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── MODAL ──────────────────────────────────────────── -->
+    <div class="ModalContainer" id="Modal_Container">
+        <div class="modal-card">
+            <div class="BBContainer">
+                <button id="MBackButton">&#10005;</button>
+            </div>
+
+            <div class="PIContainer">
+                <div class="ProductContainer">
+                    <img src="../imgs/MugPicture.jpg" alt="Tumbler product image" class="ProductImage">
+                </div>
+
+                <div class="ProductInformation">
+                    <p class="product-name">Tumbler (360ml)</p>
+                    <p class="product-type">Mug &amp; Tumbler</p>
+                    <p class="product-availability">Status: Avail/Not</p>
+
+                    <p class="product-price">P45.00</p>
+
+                    <div class="Quantity">
+                        <div class="label">QUANTITY</div>
+                        <div class="stepper">
+                            <button class="ButtonDA">-</button>
+                            <div class="qty">10</div>
+                            <button class="ButtonDA">+</button>
+                        </div>
+                    </div>
+
+                    <button class="btn-add-cart">Add to Cart</button>
+
+                    <p class="product-desc">For large or high-volume orders, prices may differ based on the quantity, product
+                        specifications, materials, and customization requested. Orders meeting a certain
+                        volume may qualify for a custom quotation. Customers are advised to contact us
+                        directly for exact pricing, discounted rates, and additional assistance.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="Product.js"></script>
+</body>
+</html>

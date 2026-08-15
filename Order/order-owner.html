@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Orders - R&C Printing Services</title>
+<link rel="stylesheet" href="order.css">
+</head>
+<body>
+
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="brand">
+      <img src="../imgs/image 2.png" alt="">
+      <div class="brand-text">R&amp;C PRINTING<br>SERVICES</div>
+    </div>
+
+    <div class="nav-label">MAIN</div>
+    <a class="nav-item" href="../Inventory/inventory-owner.html"><span>Dashboard</span> <span class="nav-icon"><img src="../imgs/Performance Macbook.png" alt=""></span></a>
+    <a class="nav-item" href="../Inventory/inventory-owner.html"><span>Inventory</span> <span class="nav-icon"><img src="../imgs/Boxes.png" alt=""></span></a>
+    <a class="nav-item active" href="order.html"><span>Order</span> <span class="nav-icon"><img src="../imgs/Shopping Cart.png" alt=""></span></a>
+    <a class="nav-item"><span>Customer</span> <span class="nav-icon"><img src="../imgs/User Male.png" alt=""></span></a>
+    <a class="nav-item"><span>Products</span> <span class="nav-icon"><img src="../imgs/Product.png" alt=""></span></a>
+    <a class="nav-item" href="../UserSystem/UserSystem.html"><span>Users</span> <span class="nav-icon"><img src="../imgs/user.png" alt=""></span></a>
+  </div>
+
+  <!-- Main -->
+  <div class="main">
+
+    <div class="topbar">
+      <h1 style="font-size: 40px;">Orders</h1>
+      <div class="owner-tag">
+        <span>Owner</span> <div class="owner-"><img src="../imgs/Test Account.png" alt=""></div>
+      </div>
+    </div>
+
+    <!-- ===== Order Stat Cards ===== -->
+    <div class="stat-grid">
+      <div class="stat-card total">
+        <div class="stat-label">Total<br>Orders</div>
+        <div class="stat-value" id="statTotalOrders">60</div>
+      </div>
+      <div class="stat-card completed">
+        <div class="stat-label">Completed<br>Orders</div>
+        <div class="stat-value" id="statCompletedOrders">57</div>
+      </div>
+      <div class="stat-card canceled">
+        <div class="stat-label">Canceled<br>Orders</div>
+        <div class="stat-value" id="statCanceledOrders">3</div>
+      </div>
+      <div class="stat-card due-today">
+        <div class="stat-label">Orders Due<br>Today</div>
+        <div class="stat-value" id="statDueToday">2</div>
+      </div>
+      <div class="stat-card pending">
+        <div class="stat-label">Pending<br>Orders</div>
+        <div class="stat-value" id="statPendingOrders">3</div>
+      </div>
+      <div class="stat-card processing">
+        <div class="stat-label">Processing<br>Orders</div>
+        <div class="stat-value" id="statProcessingOrders">2</div>
+      </div>
+    </div>
+
+    <!-- ===== Pending Orders Table ===== -->
+    <div class="panel">
+      <div class="panel-header">
+        <h2>Pending Orders</h2>
+        <div class="search-box">
+          <input type="text" placeholder=""><img src="../imgs/Search.png" alt="">
+        </div>
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th>ORDER ID</th>
+            <th>CUSTOMER</th>
+            <th>PRODUCT</th>
+            <th>TOTAL</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>ORD-2026-00124</td>
+            <td>Jane Doe</td>
+            <td>Tumbler (360 ml)</td>
+            <td>P90.00</td>
+            <td>
+              <div class="order-actions">
+                <button class="btn-accept" onclick="acceptOrder('ORD-2026-00124')">Accept</button>
+                <button class="btn-reject" onclick="rejectOrder('ORD-2026-00124')">Reject</button>
+                <span class="order-arrow" onclick="viewOrder('ORD-2026-00124')">&gt;</span>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td>ORD-2026-00125</td>
+            <td>Janey Doe</td>
+            <td>Tumbler (360 ml)</td>
+            <td>P90.00</td>
+            <td>
+              <div class="order-actions">
+                <button class="btn-accept" onclick="acceptOrder('ORD-2026-00125')">Accept</button>
+                <button class="btn-reject" onclick="rejectOrder('ORD-2026-00125')">Reject</button>
+                <span class="order-arrow" onclick="viewOrder('ORD-2026-00125')">&gt;</span>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td>ORD-2026-00126</td>
+            <td>Janie Doe</td>
+            <td>Tumbler (360 ml)</td>
+            <td>P90.00</td>
+            <td>
+              <div class="order-actions">
+                <button class="btn-accept" onclick="acceptOrder('ORD-2026-00126')">Accept</button>
+                <button class="btn-reject" onclick="rejectOrder('ORD-2026-00126')">Reject</button>
+                <span class="order-arrow" onclick="viewOrder('ORD-2026-00126')">&gt;</span>
+              </div>
+            </td>
+          </tr>
+          <tr class="table-empty-row">
+            <td colspan="5"></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+
+    <!-- ===== Pending Orders Rush Table ===== -->
+    <div class="panel" style="margin-top: 20px;">
+      <div class="panel-header">
+        <h2>Pending Orders (Rush)</h2>
+        <div class="search-box">
+          <input type="text" placeholder=""><img src="../imgs/Search.png" alt="">
+        </div>
+      </div>
+ 
+      <table>
+        <thead>
+          <tr>
+            <th>ORDER ID</th>
+            <th>CUSTOMER</th>
+            <th>PRODUCT</th>
+            <th>TOTAL</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>ORD-2026-00124</td>
+            <td>Jane Doe</td>
+            <td>Tumbler (360 ml)</td>
+            <td>P90.00</td>
+            <td>
+              <div class="order-actions">
+                <button class="btn-accept" onclick="acceptOrder('ORD-2026-00124')">Accept</button>
+                <button class="btn-reject" onclick="rejectOrder('ORD-2026-00124')">Reject</button>
+                <span class="order-arrow" onclick="viewOrder('ORD-2026-00124')">&gt;</span>
+              </div>
+            </td>
+          
+          <tr class="table-empty-row">
+            <td colspan="5"></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- ===== Orders History Table ===== -->
+    <div class="panel" style="margin-top: 20px;">
+      <div class="panel-header">
+        <h2>Orders History</h2>
+        <div class="search-box">
+          <input type="text" placeholder=""><img src="../imgs/Search.png" alt="">
+        </div>
+      </div>
+ 
+      <table>
+        <thead>
+          <tr>
+            <th>ORDER ID</th>
+            <th>DATE</th>
+            <th>CUSTOMER</th>
+            <th>PRODUCT</th>
+            <th>TOTAL</th>
+            <th>STATUS</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>ORD-2026-00124</td>
+            <td>2026-10-02</td>
+            <td>Jane Doe</td>
+            <td>Tumbler (360 ml)</td>
+            <td>P90.00</td>
+            <td><span class="order-status-badge order-status-delivered">DELIVERED</span></td>
+            <td>
+              <span class="order-arrow"
+                onclick="openOrderDetailModal('ORD-2026-00124','Tumbler (360 ml)','Jane Doe','P90.00','DELIVERED','Damored, Moiraine','MAY 26, 2026','3:52 PM','MAY 26, 2026','3:52 PM','MAY 26, 2026','3:52 PM')">&gt;</span>
+            </td>
+          </tr>
+          <tr>
+            <td>ORD-2026-00125</td>
+            <td>2026-10-02</td>
+            <td>Janey Doe</td>
+            <td>Tumbler (360 ml)</td>
+            <td>P90.00</td>
+            <td><span class="order-status-badge order-status-delivered">DELIVERED</span></td>
+            <td>
+              <span class="order-arrow"
+                onclick="openOrderDetailModal('ORD-2026-00125','Tumbler (360 ml)','Janey Doe','P90.00','DELIVERED','Damored, Moiraine','MAY 26, 2026','3:52 PM','MAY 26, 2026','3:52 PM','MAY 26, 2026','3:52 PM')">&gt;</span>
+            </td>
+          </tr>
+          <tr>
+            <td>ORD-2026-00126</td>
+            <td>2026-10-02</td>
+            <td>Janie Doe</td>
+            <td>Tumbler (360 ml)</td>
+            <td>P90.00</td>
+            <td><span class="order-status-badge order-status-cancelled">CANCELLED</span></td>
+            <td>
+              <span class="order-arrow"
+                onclick="openOrderDetailModal('ORD-2026-00126','Tumbler (360 ml)','Janie Doe','P90.00','CANCELLED','Damored, Moiraine','MAY 26, 2026','3:52 PM','MAY 26, 2026','3:52 PM','MAY 26, 2026','3:52 PM')">&gt;</span>
+            </td>
+          </tr>
+          <tr class="table-empty-row">
+            <td colspan="7"></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+
+    <!-- Order Process -->
+     <div class="history-panel">
+      <div class="history-header">
+        <h2>Order Process</h2>
+        <div class="history-search">
+          <img src="../imgs/Search.png" alt=""> <input type="text" placeholder="">
+        </div>
+      </div>
+      <table class="history-table">
+        <thead>
+          <tr>
+            <th>ORDER-ID</th>
+            <th>CUSTOMER</th>
+            <th>PRODUCT</th>
+            <th>TOTAL</th>
+            <th>STATUS</th>
+            <th> </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>ORD-2026-00124</td>
+            <td>Jane Doe</td>
+            <td>Tumbler (360 ml)</td>
+            <td>P90.00</td>
+            <td><span class="order-status-badge-process order-status-brown">PENDING VERIFICATION</span></td>
+            <td><span class="order-arrow" onclick="openOrderReviewModal()">&gt;</span></td>
+          </tr>
+          <tr class="history-empty-row">
+            <td colspan="5"></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+
+    <div class="overlay" id="orderDetailOverlay">
+    <div class="order-detail-modal">
+      <button class="back-btn" onclick="closeOrderDetailModal()">&lt;</button>
+      <div class="modal-title">Order Details</div>
+      <hr>
+ 
+      <div class="order-detail-row">
+        <div>
+          <div class="order-detail-label">Order ID:</div>
+          <div class="order-detail-value" id="orderDetailId">ORD-2026-00124</div>
+        </div>
+        <div>
+          <div class="order-detail-label">Product Name:</div>
+          <div class="order-detail-value" id="orderDetailProduct">Tumbler (360 ml)</div>
+        </div>
+      </div>
+ 
+      <div class="order-detail-row">
+        <div>
+          <div class="order-detail-label">Customer Name:</div>
+          <div class="order-detail-value" id="orderDetailCustomer">Jane Doe</div>
+        </div>
+        <div>
+          <div class="order-detail-label">Total:</div>
+          <div class="order-detail-value" id="orderDetailTotal">P90.00</div>
+        </div>
+      </div>
+ 
+      <div class="order-detail-section">
+        <div class="order-detail-label">Order Status</div>
+        <div class="order-status-row">
+          <span class="order-status-badge order-status-delivered" id="orderDetailStatus">DELIVERED</span>
+          <span class="order-status-flag"></span>
+        </div>
+      </div>
+ 
+      <div class="order-detail-section">
+        <div class="order-detail-label">Accepted By</div>
+        <div class="order-detail-value" id="orderDetailAcceptedBy">Damored, Moiraine</div>
+      </div>
+ 
+      <div class="order-detail-row">
+        <div>
+          <div class="order-detail-label">Date Requested</div>
+          <div class="order-detail-value" id="orderDetailDateRequested">MAY 26, 2026</div>
+          <div class="order-detail-date-small" id="orderDetailTimeRequested">3:52 PM</div>
+        </div>
+        <div>
+          <div class="order-detail-label">Date Accepted</div>
+          <div class="order-detail-value" id="orderDetailDateAccepted">MAY 26, 2026</div>
+          <div class="order-detail-date-small" id="orderDetailTimeAccepted">3:52 PM</div>
+        </div>
+      </div>
+ 
+      <div class="order-detail-section">
+        <div class="order-detail-label">Date Finished</div>
+        <div class="order-detail-value" id="orderDetailDateFinished">MAY 26, 2026</div>
+        <div class="order-detail-date-small" id="orderDetailTimeFinished">3:52 PM</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== ADDED: Order Review Status Modal (Steps 2-6) ===== -->
+  <!-- ===== Not wired to any button yet — trigger it yourself   -->
+  <!-- ===== by calling openOrderReviewModal() where needed.     -->
+  <!-- ============================================================ -->
+  <div class="overlay" id="orderReviewOverlay">
+    <div class="review-modal">
+      <button class="review-back-btn" onclick="backReviewStep()">&lt;</button>
+      <div class="review-title">Order Review Status</div>
+      <hr>
+ 
+      <div class="review-top-row">
+        <div class="review-step-label" id="reviewStepLabel">
+          <span class="step-number">STEP 2:</span> <span class="step-title">VERIFICATION</span>
+        </div>
+        <div class="review-note">
+          <div class="review-note-title">NOTE:</div>
+          <div class="review-note-text">Please review all necessary details from the messenger conversation before approving. Once approved, the status will proceed to the next step.</div>
+        </div>
+      </div>
+ 
+      <!-- STEP 2: VERIFICATION -->
+      <div class="review-step active" id="reviewStep2">
+        <div class="review-step2-grid">
+          <div class="review-item-thumb">
+            <img src="../imgs/MugPicture.jpg" alt="">
+          </div>
+          <div>
+            <div class="review-label">Name</div>
+            <div class="review-value">Tumbler (360ml)</div>
+            <div class="review-value" style="font-size:12px; font-weight:600; margin-top:2px;">Mug &amp; Tumbler</div>
+          </div>
+          <div>
+            <div class="review-label">Quantity</div>
+            <div class="review-stepper">
+              <button type="button">-</button>
+              <div class="qty">2</div>
+              <button type="button">+</button>
+            </div>
+          </div>
+          <div>
+            <div class="review-label">Price</div>
+            <div class="review-value">P45.00</div>
+          </div>
+          <div>
+            <div class="review-label">Total Price</div>
+            <div class="review-value">P90.00</div>
+          </div>
+ 
+          <div>
+            <div class="review-label">Design Selection</div>
+            <div class="review-value" style="font-size:12px;">Upload own photo/design</div>
+          </div>
+          <div>
+            <div class="review-label">Apply Discount</div>
+            <div class="review-discount-input">
+              <input type="text" value="10"> %
+            </div>
+          </div>
+          <div>
+            <div class="review-label">Amount Reducted</div>
+            <div class="review-value">P9.00</div>
+          </div>
+          <div>
+            <div class="review-label">New Product Total</div>
+            <div class="review-value large">P81.00</div>
+          </div>
+        </div>
+ 
+        <div class="review-photo-desc-grid">
+          <div>
+            <div class="review-label">Order Photo</div>
+            <div class="review-upload-box">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#ec4899" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="9 3 3 3 3 9"></polyline>
+                <polyline points="15 3 21 3 21 9"></polyline>
+                <polyline points="3 15 3 21 9 21"></polyline>
+                <polyline points="21 15 21 21 15 21"></polyline>
+              </svg>
+            </div>
+          </div>
+          <div>
+            <div class="review-label">Order Description</div>
+            <div class="review-description-text">Please place the uploaded graduation photo at the center of the shirt with a blue and gold theme. Add the text "Batch 2026" below the image using bold font. Remove the background of the photo and make the image clearer and brighter. Use a minimal image style.</div>
+          </div>
+        </div>
+ 
+        <div class="review-btn-row">
+          <button type="button" class="review-approve-btn" onclick="approveReviewStep()">APPROVE</button>
+        </div>
+      </div>
+ 
+      <!-- STEP 3: INITIAL PAYMENT -->
+      <div class="review-step" id="reviewStep3">
+        <div class="review-field-grid">
+          <div>
+            <div class="review-label">Design Selection:</div>
+            <div class="review-value">Bank</div>
+          </div>
+          <div>
+            <div class="review-label">Product Total</div>
+            <div class="review-value">P90.00</div>
+          </div>
+          <div>
+            <div class="review-label">Remaining Balance</div>
+            <div class="review-value">P40.50</div>
+          </div>
+          <div>
+            <div class="review-label">New Product Total</div>
+            <div class="review-value">P81.00</div>
+          </div>
+          <div>
+            <div class="review-label">Reference Number:</div>
+            <div class="review-ref-box">4829173645</div>
+          </div>
+ 
+          <div>
+            <div class="review-label">Payment Type:</div>
+            <div class="review-value" style="font-size:12px;">50% Down Payment</div>
+          </div>
+          <div>
+            <div class="review-label">Discount Applied:</div>
+            <div class="review-value">10%</div>
+          </div>
+          <div>
+            <div class="review-label">Amount Reducted</div>
+            <div class="review-value">P9.00</div>
+          </div>
+          <div>
+            <div class="review-label">Amount To Pay:</div>
+            <div class="review-value large">P40.50</div>
+          </div>
+          <div>
+            <div class="review-label">Screenshot of Payment:</div>
+            <div class="review-photo-link">View Photo</div>
+          </div>
+        </div>
+ 
+        <div class="review-btn-row">
+          <button type="button" class="review-approve-btn" onclick="approveReviewStep()">APPROVE</button>
+        </div>
+      </div>
+ 
+      <!-- STEP 4: PROCESSING ORDER -->
+      <div class="review-step" id="reviewStep4">
+        <div class="review-photo-desc-grid">
+          <div>
+            <div class="review-label">Delivery Fee Photo</div>
+            <div class="review-upload-box">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#ec4899" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+                <circle cx="12" cy="13" r="4"></circle>
+              </svg>
+            </div>
+          </div>
+          <div>
+            <div class="review-label">Delivery Fee</div>
+            <div class="review-value large" style="margin-bottom:16px;">P50.00</div>
+            <div class="review-plain-text">Done Processing Raw Materials Into Desired Product? Press Approve</div>
+          </div>
+        </div>
+ 
+        <div class="review-btn-row">
+          <button type="button" class="review-approve-btn" onclick="approveReviewStep()">APPROVE</button>
+        </div>
+      </div>
+ 
+      <!-- STEP 5: FINAL PAYMENT -->
+      <div class="review-step" id="reviewStep5">
+        <div class="review-field-grid cols-4">
+          <div>
+            <div class="review-label">Payment Selection</div>
+            <div class="review-value">Bank</div>
+          </div>
+          <div>
+            <div class="review-label">Product Balance</div>
+            <div class="review-value">P40.50</div>
+          </div>
+          <div>
+            <div class="review-label">Delivery Fee</div>
+            <div class="review-value">P50.00</div>
+          </div>
+          <div>
+            <div class="review-label">Amount To Pay:</div>
+            <div class="review-value large">P90.50</div>
+          </div>
+ 
+          <div>
+            <div class="review-label">Payment Type:</div>
+            <div class="review-value" style="font-size:12px;">50% Down Payment</div>
+          </div>
+          <div>
+            <div class="review-label">Reference Number:</div>
+            <div class="review-ref-box">4829173645</div>
+          </div>
+          <div>
+            <div class="review-label">Screenshot of Payment:</div>
+            <div class="review-photo-link">View Photo</div>
+          </div>
+          <div></div>
+        </div>
+ 
+        <div class="review-btn-row">
+          <button type="button" class="review-approve-btn" onclick="approveReviewStep()">APPROVE</button>
+        </div>
+      </div>
+ 
+      <!-- STEP 6: OUT FOR DELIVERY -->
+      <div class="review-step" id="reviewStep6">
+        <div class="review-plain-text" style="font-size:16px;">Lalamove Has Delivered The Item Successfully To The Customer? Press Approve</div>
+ 
+        <div class="review-btn-row">
+          <button type="button" class="review-approve-btn" onclick="approveReviewStep()">APPROVE</button>
+        </div>
+      </div>
+ 
+    </div>
+  </div>
+
+<script src="order.js"></script>
+
+</body>
+</html>
