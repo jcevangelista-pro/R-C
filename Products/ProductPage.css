@@ -32,8 +32,36 @@ body {
     color: #f3a4c8;
 }
 
+.Navbar ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
 .Navbar li {
     float: left;
+}
+
+:root {
+    --violet: #a78bfa;
+}
+
+/* ACTIVE NAVIGATION LINK */
+.Navbar ul li a.ActiveLink {
+    position: relative;
+    font-weight: bold;
+}
+
+/* UNDERLINE */
+.Navbar ul li a.ActiveLink::after {
+    content: '';
+    position: absolute;
+    left: 12px;
+    right: 12px;
+    bottom: 2px;
+    height: 3px;
+    background: var(--violet);
+    border-radius: 2px;
 }
 
 #BName {

@@ -33,7 +33,29 @@ body {
     z-index: 1000;
 }
 
+/* =========================
+   ACTIVE NAVIGATION LINK
+========================= */
 
+
+.Navbar ul li a.ActiveLink {
+    position: relative;
+    font-weight: bold;
+}
+
+.Navbar ul li a.ActiveLink::after {
+    content: '';
+    position: absolute;
+    left: 12px;
+    right: 12px;
+    bottom: 2px;
+    height: 3px;
+    background: var(--violet);
+    border-radius: 2px;
+}
+:root {
+    --violet: #a78bfa;
+}
 /* R&C PRINTING SERVICES - LEFT */
 
 #BName {

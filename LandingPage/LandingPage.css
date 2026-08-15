@@ -1,200 +1,359 @@
-body{
-    margin: 0px;
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+
+    background: radial-gradient(
+        farthest-corner at 0px 10px,
+        #AABCEB,
+        #FFB2E9,
+        #ffffff,
+        #FFB2E9
+    );
 }
 
-.Navbar{
-    background-color: white;
+
+/* =========================
+   NAVBAR
+========================= */
+
+.Navbar {
+    background: white;
     border-bottom: 1px solid #F868AA;
-    box-shadow: inset 0 -2px 8px rgba(0, 0, 0, 0.1);
+
+    box-shadow:
+        inset 0 -2px 8px rgba(0, 0, 0, 0.1);
+
     display: flex;
-    justify-content: space-between;
+    align-items: center;
+
+    padding: 10px 20px;
+
+    position: sticky;
+    top: 0;
+    z-index: 1000;
 }
+
+/* =========================
+   ACTIVE NAVIGATION LINK
+========================= */
+
+.Navbar ul li a.ActiveLink {
+    position: relative;
+    font-weight: bold;
+}
+
+.Navbar ul li a.ActiveLink::after {
+    content: '';
+    position: absolute;
+    left: 12px;
+    right: 12px;
+    bottom: 2px;
+    height: 3px;
+    background: var(--violet);
+    border-radius: 2px;
+}
+:root {
+    --violet: #a78bfa;
+}
+
+/* R&C PRINTING SERVICES - LEFT */
+
+#BName {
+    text-decoration: none;
+    color: #F868AA;
+
+    font-size: 2rem;
+    font-weight: bold;
+
+    white-space: nowrap;
+
+    margin-right: auto;
+}
+
+
+/* NAVIGATION LINKS */
 
 .Navbar ul {
-    list-style-type: none;
-    padding: 0rem;
-    margin: 0rem;
-    overflow: hidden;
+    list-style: none;
+
+    margin: 0;
+    margin-left: auto;
+
+    padding: 0;
+
+    display: flex;
+    align-items: center;
+
+    gap: 15px;
 }
 
-.Navbar a{
+.Navbar a {
     color: #F868AA;
     text-decoration: none;
-    padding: 15px;
+
+    padding: 10px 12px;
+
     display: block;
-    text-align: left;
 }
 
-.Navbar a:hover{
+.Navbar a:hover {
     color: #f3a4c8;
 }
 
-.Navbar li{
-    float: left;
+
+/* =========================
+   GENERAL IMAGE
+========================= */
+
+.Img {
+    width: 24px;
+    height: 24px;
+
+    object-fit: contain;
 }
 
-.Img{
-    width: 1.2vw;
-    height: 2.5vh;
-}
+
+/* =========================
+   HERO SECTION
+========================= */
 
 .RContainer {
-    margin: 0;
-    padding: 1.5rem 0 0 0;
-    background: radial-gradient(farthest-corner at 0px 10px, #AABCEB, #FFB2E9, #ffffff, #FFB2E9);
-    height: 55vh;
+    padding: 40px 32px;
+
+    box-sizing: border-box;
+
+    display: flex;
+    justify-content: center;
 }
 
 .WSContainer {
-    width: 96.5vw;
-    height: 50vh;
-    margin: 0 1rem 0 1rem;
-    border: 1px solid #ddd;
-    border-radius: 10px;
-    background-color: rgba(0, 4, 221, 0.2);
+    width: 100%;
+    max-width: 1700px;
+
+    background: rgba(203, 175, 241, 0.75);
+
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
+
+    border-radius: 20px;
+
+    box-shadow:
+        0 8px 32px rgba(160, 120, 220, 0.35),
+        0 2px 8px rgba(160, 120, 220, 0.18);
+
+    padding: 40px;
+
+    box-sizing: border-box;
+
     display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 40px;
+
+    flex-wrap: wrap;
 }
 
 .TextContainer {
     color: white;
-    opacity: 100;
-    /*border: 1px solid pink;*/
-    width: 50vw;
-    height: 30vh;
-    margin: 0 0 0 5vw;
-    padding-top: 13vh;
+    flex: 1;
+    min-width: 280px;
+}
+
+.Statement {
+    margin: 0 0 16px;
+    font-size: 2.8rem;
+    font-weight: 800;
+    line-height: 1.15;
+    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+.TextContainer p:not(.Statement) {
+    font-size: 1rem;
+    line-height: 1.7;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.25);
 }
 
 .PicContainer {
-    padding-top: 2.5vh;
-    width: 55vw;
     display: flex;
-    justify-content: flex-end;
+    align-items: flex-start;
+    gap: 16px;
+    flex-wrap: wrap;
 }
 
 .PC1 {
-    margin: 0;
-    width: 21vw;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
 }
-
 
 .Pictures {
-    width: 20vw;
-    height: 21vh;
-    border-radius: 20px;
-}
-
-#Picture2 {
-    margin-top: 2vh;
+    width: 220px;
+    height: 160px;
+    border-radius: 16px;
+    object-fit: cover;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
 }
 
 #Picture3 {
-    width: 25vw;
-    height: 45vh;
-    margin-right: 2.5vw;
+    width: 260px;
+    height: 336px;
+    border-radius: 16px;
+    object-fit: cover;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
 }
 
 
-.Statement{
-    margin: 0 0 0 0;
-    font-size: 2.5rem;
-}
-
+/* =========================
+   PRODUCTS SECTION
+========================= */
 
 .PContainer {
-    width: 99vw;
-    height: 70vh;
+    width: 100%;
     background-color: #ffffff;
+    padding: 30px 32px 50px;
+    box-sizing: border-box;
 }
 
 .BSProducts {
+    max-width: 1700px;
+    margin: 0 auto;
+
     color: #1E3163;
-    padding: 2vh 2vw 0 2vw;
+    padding: 0 0 20px;
+
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
 
-.CardProducts{
-    margin: 0 0vw 0 1vw;
-    width: 15vw;
-    height: 40vh;
-    border: 1px solid #ddd;
-    border-radius: 10px;
-    background-color: #cbc9f9;
-}
-
-.Picture {
-    width: 14vw;
-    height: 22vh;
-    padding: 1vh 0.5vw 0 0.5vw;
-    border-radius: 20px;
-}
-
-.CardText {
-    padding: 0 0 0 0.5vw;
-    font-family: sans-serif;
-    color: #1E3163
-}
-
-.CardText h2 {
+.BSProducts h4 {
     margin: 0;
-    padding: 1vh 0 0 0;
+    font-size: 1.1rem;
+    letter-spacing: 0.5px;
 }
 
-.CardText h3 {
+.BSProducts h2 {
     margin: 0;
-    padding: 0;
+    color: #1E3163;
+    text-shadow: none;
 }
 
-.Cards{
-    display: flex;
-    justify-content: flex-start;
-    margin-left: 10px;
+.Cards {
+    max-width: 1700px;
+    margin: 0 auto;
+
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+    gap: 20px;
 }
 
-
-
-/* Product card links */
+.CardProducts,
 a.CardProducts {
+    background-color: #b2ace3;
+    border-radius: 12px;
+    overflow: hidden;
+
+    display: flex;
+    flex-direction: column;
+
     text-decoration: none;
     color: inherit;
-    display: block;
     cursor: pointer;
-    transition: transform 0.15s, box-shadow 0.15s;
+
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
 a.CardProducts:hover {
     transform: translateY(-4px);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.18);
 }
 
-/* ── MOBILE RESPONSIVE ───────────────────────────────────── */
-@media (max-width: 600px) {
+.Picture {
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+    display: block;
+    border-radius: 0;
+    padding: 0;
+}
 
-    /* Navbar: brand left, user icon right, hide middle links/icons */
-    .Navbar {
-        padding: 10px 16px;
-        align-items: center;
+.CardText {
+    padding: 10px 12px 16px;
+    font-family: Arial, sans-serif;
+    color: #1E3163;
+    text-align: center;
+}
+
+.CardText h2 {
+    margin: 0;
+    padding: 0;
+    font-size: 1rem;
+    color: #0b0a0b;
+}
+
+.CardText h3 {
+    margin: 4px 0 0;
+    padding: 0;
+    font-size: 0.8rem;
+    font-weight: 400;
+    color: #555;
+}
+
+
+/* =========================
+   RESPONSIVE DESIGN
+========================= */
+
+@media (max-width: 900px) {
+
+    .Cards {
+        grid-template-columns: repeat(2, 1fr);
     }
 
-    .Navbar #BName {
-        font-size: 0.85rem;
-        padding: 0;
-        font-weight: 800;
+    .Statement {
+        font-size: 2.1rem;
+    }
+
+    .Pictures {
+        width: 160px;
+        height: 130px;
+    }
+
+    #Picture3 {
+        width: 190px;
+        height: 276px;
+    }
+}
+
+
+/* =========================
+   MOBILE
+========================= */
+
+@media (max-width: 600px) {
+
+    .Navbar {
+        padding: 8px 10px;
+    }
+
+    #BName {
+        font-size: 1.5rem;
     }
 
     .Navbar ul {
-        display: flex;
-        align-items: center;
-        gap: 0;
+        gap: 5px;
     }
 
+    .Navbar a {
+        padding: 8px 6px;
+    }
+
+    /* Show only the last li (user icon) */
     .Navbar li {
         display: none;
     }
 
-    /* Show only the last li (user icon) */
     .Navbar li:last-child {
         display: block;
     }
@@ -203,42 +362,28 @@ a.CardProducts:hover {
         padding: 4px;
     }
 
-    .Img {
-        width: 24px;
-        height: 24px;
-    }
-
-    /* Hero section */
+    /* Hero */
     .RContainer {
-        height: auto;
-        padding: 1rem 0;
+        padding: 16px 12px;
     }
 
     .WSContainer {
-        width: 92vw;
-        height: auto;
         flex-direction: column;
-        padding: 20px 16px;
-        margin: 0 auto;
+        padding: 24px 16px;
+        text-align: center;
     }
 
     .TextContainer {
-        width: 100%;
-        height: auto;
-        margin: 0;
-        padding: 0 0 16px;
-        text-align: center;
+        min-width: 0;
     }
 
     .Statement {
         font-size: 1.6rem;
         font-weight: 800;
-        font-style: italic;
     }
 
-    .TextContainer p {
-        font-size: 0.75rem;
-        line-height: 1.5;
+    .TextContainer p:not(.Statement) {
+        font-size: 0.8rem;
     }
 
     .TextContainer br {
@@ -247,7 +392,6 @@ a.CardProducts:hover {
 
     .PicContainer {
         width: 100%;
-        padding: 0;
         display: grid;
         grid-template-columns: 1fr 1fr;
         gap: 8px;
@@ -255,7 +399,6 @@ a.CardProducts:hover {
     }
 
     .PC1 {
-        width: 100%;
         display: contents;
     }
 
@@ -263,26 +406,17 @@ a.CardProducts:hover {
         width: 100%;
         height: 18vh;
         border-radius: 12px;
-        object-fit: cover;
-    }
-
-    #Picture2 {
-        margin-top: 0;
     }
 
     #Picture3 {
         width: 100%;
         height: 18vh;
-        margin: 0;
         grid-column: 1 / -1;
         border-radius: 12px;
-        object-fit: cover;
     }
 
-    /* Products section */
+    /* Products */
     .PContainer {
-        width: 100%;
-        height: auto;
         padding: 16px 0 24px;
     }
 
@@ -295,41 +429,20 @@ a.CardProducts:hover {
     }
 
     .Cards {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 8px;
-        margin: 0;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
         padding: 0 16px;
-        overflow-x: auto;
-    }
-
-    .CardProducts, a.CardProducts {
-        width: 100%;
-        height: auto;
-        margin: 0;
-        border-radius: 8px;
     }
 
     .Picture {
-        width: 100%;
-        height: 12vh;
-        padding: 4px;
-        border-radius: 12px;
-        object-fit: cover;
-    }
-
-    .CardText {
-        padding: 4px 6px 8px;
+        height: 110px;
     }
 
     .CardText h2 {
-        font-size: 0.7rem;
-        padding: 2px 0 0;
+        font-size: 0.75rem;
     }
 
     .CardText h3 {
-        font-size: 0.6rem;
-        color: #555;
-        font-weight: 400;
+        font-size: 0.65rem;
     }
 }
