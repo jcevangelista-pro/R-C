@@ -13,7 +13,7 @@ $method = $_SERVER['REQUEST_METHOD'];
 try {
     // ── GET: list all admin/owner accounts ──────────────────
     if ($method === 'GET') {
-        $stmt = $pdo->query("SELECT id, username, password, role FROM user ORDER BY role, username");
+        $stmt = $pdo->query("SELECT user_id AS id, username, password_hash AS password, role FROM users WHERE role IN ('admin', 'owner') ORDER BY role, username");
         $rows = $stmt->fetchAll();
         echo json_encode(['success' => true, 'users' => $rows]);
         exit;
@@ -40,7 +40,7 @@ try {
         }
 
         // Check duplicate username
-        $check = $pdo->prepare("SELECT id FROM user WHERE username = ?");
+        $check = $pdo->prepare("SELECT user_id FROM users WHERE username = ?");
         $check->execute([$username]);
         if ($check->fetch()) {
             http_response_code(409);
@@ -49,8 +49,9 @@ try {
         }
 
         $hash = password_hash($password, PASSWORD_BCRYPT);
-        $stmt = $pdo->prepare("INSERT INTO user (username, password, role) VALUES (?, ?, ?)");
-        $stmt->execute([$username, $hash, $role]);
+        $email = strtolower(str_replace(' ', '', $username)) . '@rcprinting.local';
+        $stmt = $pdo->prepare("INSERT INTO users (first_name, last_name, email, username, password_hash, role) VALUES (?, ?, ?, ?, ?, ?)");
+        $stmt->execute([$username, $role, $email, $username, $hash, $role]);
         $newId = $pdo->lastInsertId();
 
         echo json_encode(['success' => true, 'id' => $newId, 'message' => 'Account created.']);
@@ -77,7 +78,7 @@ try {
         }
 
         // Check duplicate username (excluding self)
-        $check = $pdo->prepare("SELECT id FROM user WHERE username = ? AND id != ?");
+        $check = $pdo->prepare("SELECT user_id FROM users WHERE username = ? AND user_id != ?");
         $check->execute([$username, $id]);
         if ($check->fetch()) {
             http_response_code(409);
@@ -87,10 +88,10 @@ try {
 
         if ($password) {
             $hash = password_hash($password, PASSWORD_BCRYPT);
-            $stmt = $pdo->prepare("UPDATE user SET username = ?, password = ?, role = ? WHERE id = ?");
+            $stmt = $pdo->prepare("UPDATE users SET username = ?, password_hash = ?, role = ? WHERE user_id = ?");
             $stmt->execute([$username, $hash, $role, $id]);
         } else {
-            $stmt = $pdo->prepare("UPDATE user SET username = ?, role = ? WHERE id = ?");
+            $stmt = $pdo->prepare("UPDATE users SET username = ?, role = ? WHERE user_id = ?");
             $stmt->execute([$username, $role, $id]);
         }
 
@@ -107,7 +108,7 @@ try {
             exit;
         }
 
-        $stmt = $pdo->prepare("DELETE FROM user WHERE id = ?");
+        $stmt = $pdo->prepare("DELETE FROM users WHERE user_id = ?");
         $stmt->execute([$id]);
 
         echo json_encode(['success' => true, 'message' => 'Account deleted.']);

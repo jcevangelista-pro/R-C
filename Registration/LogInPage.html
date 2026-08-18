@@ -36,17 +36,19 @@
                         <p>Welcome Back, User!</p>
                     </div>
 
-                    <form action="" class="form">
+                    <form action="" class="form" id="loginForm">
                         <label for="username" class="Label">Username</label> <br>
                         <input type="text" id="username" placeholder="@JaydeeDamodred" minlength="8" required class="Input"> <br>
 
                         <label for="password" class="Label">Password</label> <br>
-                        <input type="password" id="password" placeholder="1234Damodred_!" minlength="8" maxlength="30" required class="Input" pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^A-Za-z0-9]).{8,}$"
-                        title="Password must be at least 8 characters long and contain an uppercase letter, a lowercase letter, a number, and a special character."> <br>
+                        <input type="password" id="password" placeholder="1234Damodred_!" minlength="8" maxlength="30" required class="Input"> <br>
 
                         <div class="FPass">
                             <a href="">Forgot Password</a>
                         </div> <br>
+
+                        <div id="loginError" style="color:#ef4444;font-size:0.85rem;text-align:center;display:none;margin-bottom:10px;"></div>
+                        <div id="loginSuccess" style="color:#22c55e;font-size:0.85rem;text-align:center;display:none;margin-bottom:10px;"></div>
 
                         <div class="Buttons">
                             <button type="button" id="BBack"><img src="back.png" alt="" id="BackImg">BACK</button>
@@ -65,5 +67,50 @@
         </div>
     </div>
     
+    <script>
+    const loginForm = document.getElementById('loginForm');
+    const loginError = document.getElementById('loginError');
+    const loginSuccess = document.getElementById('loginSuccess');
+
+    loginForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        loginError.style.display = 'none';
+        loginSuccess.style.display = 'none';
+
+        const data = {
+            action: 'login',
+            username: document.getElementById('username').value.trim(),
+            password: document.getElementById('password').value
+        };
+
+        try {
+            const res = await fetch('auth.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+            const result = await res.json();
+
+            if (result.success) {
+                loginSuccess.textContent = result.message + ' Redirecting...';
+                loginSuccess.style.display = 'block';
+                setTimeout(() => {
+                    window.location.href = result.redirect;
+                }, 1000);
+            } else {
+                loginError.textContent = result.error;
+                loginError.style.display = 'block';
+            }
+        } catch (err) {
+            loginError.textContent = 'Something went wrong. Please try again.';
+            loginError.style.display = 'block';
+        }
+    });
+
+    // Back button
+    document.getElementById('BBack').addEventListener('click', function() {
+        window.history.back();
+    });
+    </script>
 </body>
 </html>

@@ -37,12 +37,12 @@
                         <p>Welcome, User!</p>
                     </div>
 
-                    <form action="" class="form">
+                    <form action="" class="form" id="signupForm">
                         <label for="FirstName" class="Label">First Name</label>
                         <input type="text" id="FirstName" placeholder="Moiraine" required class="Input">
 
                         <label for="MiddleName" class="Label">Middle Name</label>
-                        <input type="text" id="MiddleName" placeholder="Damodred" required class="Input">
+                        <input type="text" id="MiddleName" placeholder="Damodred" class="Input">
                         
                         <label for="LastName" class="Label">Last Name</label>
                         <input type="text" id="LastName" placeholder="Sanche" required class="Input">
@@ -62,9 +62,12 @@
                             <label for="TermsandPolicy" class="Label">By creating this account, I agree to the <a href="">Terms and Privacy Policy.</a> </label>
                         </div> <br>
 
+                        <div id="signupError" style="color:#ef4444;font-size:0.85rem;text-align:center;display:none;margin-bottom:10px;"></div>
+                        <div id="signupSuccess" style="color:#22c55e;font-size:0.85rem;text-align:center;display:none;margin-bottom:10px;"></div>
+
                         <div class="Buttons">
                             <button type="button" id="BBack"><img src="back.png" alt="" id="BackImg">BACK</button>
-                            <input type="submit" id="BSubmit" value="LOG IN">
+                            <input type="submit" id="BSubmit" value="SIGN UP">
                         </div>
 
                         <div class="LogIn">
@@ -79,5 +82,54 @@
         </div>
     </div>
     
+    <script>
+    const signupForm = document.getElementById('signupForm');
+    const signupError = document.getElementById('signupError');
+    const signupSuccess = document.getElementById('signupSuccess');
+
+    signupForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        signupError.style.display = 'none';
+        signupSuccess.style.display = 'none';
+
+        const data = {
+            action: 'signup',
+            first_name: document.getElementById('FirstName').value.trim(),
+            middle_name: document.getElementById('MiddleName').value.trim(),
+            last_name: document.getElementById('LastName').value.trim(),
+            email: document.getElementById('email').value.trim(),
+            username: document.getElementById('username').value.trim(),
+            password: document.getElementById('password').value
+        };
+
+        try {
+            const res = await fetch('auth.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+            const result = await res.json();
+
+            if (result.success) {
+                signupSuccess.textContent = result.message + ' Redirecting...';
+                signupSuccess.style.display = 'block';
+                setTimeout(() => {
+                    window.location.href = '../LandingPage/LandingPage.html';
+                }, 1500);
+            } else {
+                signupError.textContent = result.error;
+                signupError.style.display = 'block';
+            }
+        } catch (err) {
+            signupError.textContent = 'Something went wrong. Please try again.';
+            signupError.style.display = 'block';
+        }
+    });
+
+    // Back button
+    document.getElementById('BBack').addEventListener('click', function() {
+        window.history.back();
+    });
+    </script>
 </body>
 </html>

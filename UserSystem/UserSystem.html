@@ -208,9 +208,7 @@
         <td class="col-username">${escHtml(u.username)}</td>
         <td class="col-password">
           <div class="pw-wrap">
-            <button class="eye-btn" onclick="toggleRowPw(${u.id}, this)" type="button">&#128065;</button>
-            <span class="pw-dots" id="pw-${u.id}" data-hidden="1">••••••••••</span>
-            <span class="pw-plain" id="pwp-${u.id}" style="display:none;font-size:13px;color:#374151;">${escHtml(u.password)}</span>
+            <span class="pw-dots">••••••••••</span>
           </div>
         </td>
         <td class="col-role">${u.role.toUpperCase()}</td>
@@ -222,16 +220,6 @@
         </td>
       </tr>
     `).join('');
-  }
-
-  function toggleRowPw(id, btn) {
-    const dots  = document.getElementById('pw-'  + id);
-    const plain = document.getElementById('pwp-' + id);
-    const hidden = dots.dataset.hidden === '1';
-    dots.style.display  = hidden ? 'none'   : 'inline';
-    plain.style.display = hidden ? 'inline' : 'none';
-    dots.dataset.hidden = hidden ? '0' : '1';
-    btn.innerHTML = hidden ? '&#128064;' : '&#128065;';
   }
 
   // ── ESCAPE HELPERS ────────────────────────────────────────
