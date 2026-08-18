@@ -1,0 +1,188 @@
+﻿FEATURE REQUIREMENTS
+
+
+ID
+	Feature
+	Description
+	User/Actor
+	FR-01
+	User Management
+	The system shall allow the management of user accounts and identify users according to their role: Admin, Owner, or Customer.
+	Owner
+	FR-02
+	Customer Management
+	The system shall allow Admin and Owner to view and manage customer information.
+	Admin, Owner
+	FR-03
+	Product Management
+	The system shall allow Admin and Owner to add, edit, view, and archive products.
+	Admin, Owner
+	FR-04
+	Inventory Management
+	The system shall allow Admin and Owner to manage materials, stock quantities, unit costs, and reorder levels.
+	Admin, Owner
+	FR-05
+	Inventory Archiving
+	The system shall allow materials to be archived using the IsActive status without permanently deleting their records.
+	Admin, Owner
+	FR-06
+	Product-Material Management
+	The system shall allow Admin and Owner to define the materials and quantities required to produce each product.
+	Admin, Owner
+	FR-07
+	Product Catalog
+	The system shall allow customers to view available products, descriptions, prices, categories, and images.
+	Customer
+	FR-08
+	Order Placement
+	The system shall allow customers to submit orders by selecting products, quantities, and customization information.
+	Customer
+	FR-09
+	Product Cart
+	The system shall allow customers to add products to a cart, modify product quantities, remove products, and review selected products before submitting an order.
+	Customer
+	FR-10
+	Order Management
+	The system shall allow Admin and Owner to view, manage, and update customer orders.
+	Admin, Owner
+	FR-11
+	Order Acceptance
+	The system shall allow the Owner or authorized Admin to accept an order and record the accepting user.
+	Admin, Owner
+	FR-12
+	Rush Order Management
+	The system shall allow an order to be marked as a rush order and apply the corresponding rush fee.
+	Admin, Owner
+	FR-13
+	Customization Management
+	The system shall allow customers to provide customization details and allow Admin or Owner to review them.
+	Customer, Admin, Owner
+	FR-14
+	Order-Level Discount
+	The system shall allow Admin or Owner to apply a discount to the entire order.
+	Admin, Owner
+	FR-15
+	Order Details Management
+	The system shall record the products, quantities, and unit prices included in an order.
+	System, Admin, Owner
+	FR-16
+	Order Process Tracking
+	The system shall track every order through the predefined eight-step order process.
+	Admin, Owner, Customer
+	FR-17
+	Process Step Management
+	The system shall provide the eight predefined order process steps.
+	Admin, Owner
+	FR-18
+	Process Evidence
+	The system shall allow dates, statuses, notes, and images to be recorded for individual process steps.
+	Admin, Owner
+	FR-19
+	Payment Proof
+	The system shall allow payment-related process steps to store payment proof images.
+	Customer, Admin, Owner
+	FR-20
+	Order Notifications
+	The system shall allow users to send messages associated with a specific order process step.
+	Admin, Owner, Customer
+	FR-21
+	Notification Receiving
+	The system shall notify the intended user when a message is sent.
+	Admin, Owner, Customer
+	FR-22
+	Notification Status
+	The system shall allow users to identify read and unread notifications.
+	Admin, Owner, Customer
+	FR-23
+	Inventory Deduction
+	The system shall deduct the required materials from inventory when materials are used for an order.
+	Admin, Owner, System
+	FR-24
+	Inventory Addition
+	The system shall allow Admin or Owner to record newly acquired materials.
+	Admin, Owner
+	FR-25
+	Inventory History
+	The system shall record inventory additions, deductions, and adjustments.
+	Admin, Owner, System
+	FR-26
+	Inventory Audit Trail
+	The system shall record the previous stock, quantity changed, and resulting stock for each inventory movement.
+	System
+	FR-27
+	Order-Related Inventory History
+	The system shall associate inventory movements with an order when the movement is caused by an order.
+	System
+	FR-28
+	Order Status Management
+	The system shall allow orders to be tracked as Pending, In Progress, Completed, or Cancelled.
+	Admin, Owner
+	FR-29
+	Payment Status Management
+	The system shall track payment status as Unpaid, Partial, or Paid.
+	Admin, Owner
+	FR-30
+	Order Total Calculation
+	The system shall calculate order totals using product quantities, unit prices, rush fees, and order-level discounts.
+	System
+	FR-31
+	Historical Records
+	The system shall retain historical order, process, payment, notification, and inventory information.
+	Admin, Owner
+	FR-32
+	Price Quotation Input
+	The system shall provide a quotation input field within the order process after the order details have been submitted, allowing the Admin or Owner to enter the quotation amount for the customer.
+	Admin, Owner
+	
+
+DASHBOARD FEATURE
+
+
+ID
+	Feature
+	Description
+	User/Actor
+	FR-33
+	Dashboard
+	The system shall provide a dashboard that summarizes important business information and system activities.
+	Admin, Owner
+	FR-34
+	Order Summary
+	The dashboard shall display the total number of orders and categorize them according to their current status.
+	Admin, Owner
+	FR-35
+	Order Process Overview
+	The dashboard shall display orders currently in each stage of the eight-step order process.
+	Admin, Owner
+	FR-36
+	Pending Orders
+	The dashboard shall display orders requiring attention, such as orders awaiting verification or payment processing.
+	Admin, Owner
+	FR-37
+	Inventory Summary
+	The dashboard shall display current inventory information, including available materials and stock quantities.
+	Admin, Owner
+	FR-38
+	Low Stock Alert
+	The dashboard shall identify materials whose stock has reached or fallen below their reorder level.
+	Admin, Owner
+	FR-39
+	Recent Orders
+	The dashboard shall display recently submitted or updated orders.
+	Admin, Owner
+	FR-40
+	Recent Inventory Activity
+	The dashboard shall display recent inventory additions, deductions, and adjustments.
+	Admin, Owner
+	FR-41
+	Notification Summary
+	The dashboard shall display the number of unread notifications requiring attention.
+	Admin, Owner
+	FR-42
+	Order and Sales Summary
+	The dashboard shall provide a summary of order totals and collected payments for a selected period.
+	Owner
+	FR-43
+	Dashboard Navigation
+	The dashboard shall provide navigation to the system's major functions, including Orders, Products, Inventory, Customers, Notifications, and other authorized features.
+	Admin, Owner

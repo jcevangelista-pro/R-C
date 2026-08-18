@@ -1,5 +1,6 @@
 -- ============================================================
--- SEtest Database Schema
+-- R&C PRINTING SERVICES — Database Schema
+-- Covers: FR-01 through FR-43
 -- Database: rnc
 -- ============================================================
 
@@ -7,8 +8,8 @@ CREATE DATABASE IF NOT EXISTS rnc;
 USE rnc;
 
 -- ============================================================
--- USERS TABLE
--- Supports three roles: customer, admin, owner
+-- 1. USERS (FR-01)
+-- Roles: Admin, Owner, Customer
 -- ============================================================
 
 CREATE TABLE users (
@@ -21,209 +22,382 @@ CREATE TABLE users (
     password_hash   VARCHAR(255) NOT NULL,
     role            ENUM('customer', 'admin', 'owner') NOT NULL DEFAULT 'customer',
     is_active       BOOLEAN NOT NULL DEFAULT TRUE,
+    last_login      DATETIME NULL,
     created_at      DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at      DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
-
--- ============================================================
--- INDEXES
--- ============================================================
 
 CREATE INDEX idx_users_role ON users(role);
 CREATE INDEX idx_users_email ON users(email);
 
 -- ============================================================
--- PRODUCTS TABLE
+-- 2. CUSTOMERS (FR-02)
+-- Extended info for customer accounts
+-- ============================================================
+
+CREATE TABLE customers (
+    customer_id     INT AUTO_INCREMENT PRIMARY KEY,
+    user_id         INT NOT NULL UNIQUE,
+    phone_num       VARCHAR(30) NOT NULL,
+    address         TEXT NOT NULL,
+    created_at      DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT fk_customers_user
+        FOREIGN KEY (user_id) REFERENCES users(user_id)
+        ON UPDATE CASCADE ON DELETE RESTRICT
+);
+
+-- ============================================================
+-- 3. PRODUCTS (FR-03, FR-07)
 -- ============================================================
 
 CREATE TABLE products (
     product_id          INT AUTO_INCREMENT PRIMARY KEY,
     name                VARCHAR(150) NOT NULL,
+    description         TEXT NULL,
     material_used       VARCHAR(150),
     type_of_product     VARCHAR(100),
     price               DECIMAL(10, 2) NOT NULL DEFAULT 0.00,
-    front_page_visible  BOOLEAN NOT NULL DEFAULT FALSE,
     image_path          VARCHAR(255),
+    front_page_visible  BOOLEAN NOT NULL DEFAULT FALSE,
     is_archived         BOOLEAN NOT NULL DEFAULT FALSE,
+    is_active           BOOLEAN NOT NULL DEFAULT TRUE,
     created_by          INT,
     created_at          DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at          DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
     FOREIGN KEY (created_by) REFERENCES users(user_id) ON DELETE SET NULL
 );
 
 CREATE INDEX idx_products_type ON products(type_of_product);
 CREATE INDEX idx_products_visible ON products(front_page_visible);
+CREATE INDEX idx_products_active ON products(is_active);
 
 -- ============================================================
--- INVENTORY TABLE
+-- 4. INVENTORY (FR-04, FR-05)
+-- is_active used for archiving (FR-05)
 -- ============================================================
 
 CREATE TABLE inventory (
-    inventory_id        INT AUTO_INCREMENT PRIMARY KEY,
-    item_name           VARCHAR(150) NOT NULL,
-    category            ENUM('MUGS','SHIRTS','PAPER','SUPPLY','PEN','FANS','OTHER') NOT NULL DEFAULT 'OTHER',
-    stock               INT NOT NULL DEFAULT 0,
-    unit                VARCHAR(50) NOT NULL,
-    low_stock_threshold  INT NOT NULL DEFAULT 10,
-    high_stock_threshold INT NOT NULL DEFAULT 100,
-    status              ENUM('Normal Stock','Low Stock','High Stock','Out of Stock') NOT NULL DEFAULT 'Normal Stock',
-    remarks             TEXT,
-    is_archived         BOOLEAN NOT NULL DEFAULT FALSE,
-    archived_at         DATETIME,
-    created_by          INT,
-    created_at          DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at          DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    inventory_id         INT AUTO_INCREMENT PRIMARY KEY,
+    item_name            VARCHAR(150) NOT NULL,
+    description          TEXT NULL,
+    category             ENUM('MUGS','SHIRTS','PAPER','SUPPLY','PEN','FANS','OTHER') NOT NULL DEFAULT 'OTHER',
+    unit_of_measure      VARCHAR(50) NOT NULL,
+    stock                INT NOT NULL DEFAULT 0,
+    reorder_level        INT NOT NULL DEFAULT 10,
+    unit_cost            DECIMAL(10,2) NOT NULL DEFAULT 0.00,
+    is_active            BOOLEAN NOT NULL DEFAULT TRUE,
+    remarks              TEXT,
+    created_by           INT,
+    created_at           DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at           DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
     FOREIGN KEY (created_by) REFERENCES users(user_id) ON DELETE SET NULL
 );
 
 CREATE INDEX idx_inventory_category ON inventory(category);
-CREATE INDEX idx_inventory_status ON inventory(status);
+CREATE INDEX idx_inventory_active ON inventory(is_active);
 
 -- ============================================================
--- INVENTORY UPDATE HISTORY TABLE
+-- 5. PRODUCT MATERIALS — BOM (FR-06)
+-- Defines materials + quantities needed per product
 -- ============================================================
 
-CREATE TABLE inventory_history (
-    history_id      INT AUTO_INCREMENT PRIMARY KEY,
-    inventory_id    INT NOT NULL,
-    action          ENUM('ADD STOCK','DEDUCT STOCK') NOT NULL,
-    quantity        INT NOT NULL,
-    stock_before    INT NOT NULL,
-    stock_after     INT NOT NULL,
-    remarks         TEXT,
-    updated_by      INT,
-    updated_at      DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (inventory_id) REFERENCES inventory(inventory_id) ON DELETE CASCADE,
-    FOREIGN KEY (updated_by) REFERENCES users(user_id) ON DELETE SET NULL
+CREATE TABLE product_materials (
+    product_material_id INT AUTO_INCREMENT PRIMARY KEY,
+    product_id          INT NOT NULL,
+    inventory_id        INT NOT NULL,
+    quantity_required   DECIMAL(12,2) NOT NULL,
+
+    CONSTRAINT fk_pm_product
+        FOREIGN KEY (product_id) REFERENCES products(product_id)
+        ON UPDATE CASCADE ON DELETE RESTRICT,
+
+    CONSTRAINT fk_pm_inventory
+        FOREIGN KEY (inventory_id) REFERENCES inventory(inventory_id)
+        ON UPDATE CASCADE ON DELETE RESTRICT,
+
+    CONSTRAINT uq_product_material
+        UNIQUE (product_id, inventory_id)
 );
 
 -- ============================================================
--- ORDERS TABLE
+-- 6. ORDERS (FR-08, FR-10, FR-11, FR-12, FR-13, FR-14, FR-28, FR-29, FR-30, FR-32)
 -- ============================================================
 
 CREATE TABLE orders (
-    order_id            VARCHAR(20) PRIMARY KEY,           -- e.g. ORD-2026-00124
-    customer_id         INT,
-    product_id          INT,
-    quantity            INT NOT NULL DEFAULT 1,
-    unit_price          DECIMAL(10, 2) NOT NULL,
-    discount_percent    DECIMAL(5, 2) NOT NULL DEFAULT 0.00,
-    amount_deducted     DECIMAL(10, 2) NOT NULL DEFAULT 0.00,
-    product_total       DECIMAL(10, 2) NOT NULL,
-    delivery_fee        DECIMAL(10, 2) NOT NULL DEFAULT 0.00,
-    total_amount        DECIMAL(10, 2) NOT NULL,
+    order_id            VARCHAR(20) PRIMARY KEY,
+    customer_id         INT NOT NULL,
+    accepted_by         INT NULL,
+
+    -- Rush (FR-12)
+    is_rush             BOOLEAN NOT NULL DEFAULT FALSE,
+    rush_fee            DECIMAL(10, 2) NOT NULL DEFAULT 0.00,
+
+    -- Customization (FR-13)
     customization_type  VARCHAR(150),
     design_description  TEXT,
+
+    -- Discount (FR-14)
+    discount_percent    DECIMAL(5, 2) NOT NULL DEFAULT 0.00,
+    amount_deducted     DECIMAL(10, 2) NOT NULL DEFAULT 0.00,
+
+    -- Totals (FR-30)
+    product_total       DECIMAL(10, 2) NOT NULL DEFAULT 0.00,
+    delivery_fee        DECIMAL(10, 2) NOT NULL DEFAULT 0.00,
+    total_amount        DECIMAL(10, 2) NOT NULL DEFAULT 0.00,
+
+    -- Quotation (FR-32)
+    quotation_amount    DECIMAL(10, 2) NULL,
+    quotation_notes     TEXT NULL,
+
+    -- Delivery
     delivery_method     ENUM('Pickup','Delivery') NOT NULL DEFAULT 'Pickup',
     delivery_address    TEXT,
     delivery_date       DATETIME,
+
+    -- Payment (FR-29)
     payment_method      ENUM('GCash','Bank') DEFAULT NULL,
     payment_type        ENUM('Full Payment','50% Down Payment') DEFAULT NULL,
     amount_paid         DECIMAL(10, 2) NOT NULL DEFAULT 0.00,
     remaining_balance   DECIMAL(10, 2) NOT NULL DEFAULT 0.00,
     reference_number    VARCHAR(100),
-    payment_status      ENUM('Unpaid','Partially Paid','Fully Paid') NOT NULL DEFAULT 'Unpaid',
-    order_status        ENUM('Pending','Pending Verification','Verified','Processing','Out for Delivery','Delivered','Cancelled','Completed') NOT NULL DEFAULT 'Pending',
-    is_rush             BOOLEAN NOT NULL DEFAULT FALSE,
-    accepted_by         INT,
-    receipt_no          VARCHAR(20),                        -- e.g. RC-2026-00124
+    payment_screenshot  VARCHAR(255) NULL,
+    payment_status      ENUM('Unpaid','Partial','Paid') NOT NULL DEFAULT 'Unpaid',
+
+    -- Order Status (FR-28)
+    order_status        ENUM('Pending','In Progress','Completed','Cancelled') NOT NULL DEFAULT 'Pending',
+
+    -- Receipt
+    receipt_no          VARCHAR(20),
+
+    -- Timestamps (FR-11)
     date_requested      DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     date_accepted       DATETIME,
     date_finished       DATETIME,
-    FOREIGN KEY (customer_id) REFERENCES users(user_id) ON DELETE SET NULL,
-    FOREIGN KEY (product_id) REFERENCES products(product_id) ON DELETE SET NULL,
-    FOREIGN KEY (accepted_by) REFERENCES users(user_id) ON DELETE SET NULL
+    created_at          DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at          DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+    CONSTRAINT fk_orders_customer
+        FOREIGN KEY (customer_id) REFERENCES customers(customer_id)
+        ON UPDATE CASCADE ON DELETE RESTRICT,
+
+    CONSTRAINT fk_orders_accepted_by
+        FOREIGN KEY (accepted_by) REFERENCES users(user_id)
+        ON UPDATE CASCADE ON DELETE SET NULL
 );
 
 CREATE INDEX idx_orders_status ON orders(order_status);
+CREATE INDEX idx_orders_payment_status ON orders(payment_status);
 CREATE INDEX idx_orders_customer ON orders(customer_id);
 CREATE INDEX idx_orders_date ON orders(date_requested);
 
 -- ============================================================
--- USER TABLE  (admin/owner accounts — mirrors OwnerUser.html)
--- ============================================================
--- Note: This is a separate management table from `users`.
--- `users` = all accounts (customers + staff).
--- `user`  = staff-facing view used in the admin panel
---           (Username, Password, Role: admin | owner).
+-- 7. ORDER DETAILS (FR-15, FR-30)
+-- Line items per order (multi-product support)
 -- ============================================================
 
-CREATE TABLE user (
-    id          INT AUTO_INCREMENT PRIMARY KEY,
-    username    VARCHAR(50) NOT NULL UNIQUE,
-    password    VARCHAR(255) NOT NULL,
-    role        ENUM('admin','owner') NOT NULL DEFAULT 'admin',
-    is_active   BOOLEAN NOT NULL DEFAULT TRUE,
-    created_at  DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at  DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+CREATE TABLE order_details (
+    order_detail_id INT AUTO_INCREMENT PRIMARY KEY,
+    order_id        VARCHAR(20) NOT NULL,
+    product_id      INT NOT NULL,
+    quantity        INT NOT NULL,
+    unit_price      DECIMAL(10,2) NOT NULL,
+    sub_total       DECIMAL(10,2) GENERATED ALWAYS AS (quantity * unit_price) STORED,
+
+    CONSTRAINT fk_od_order
+        FOREIGN KEY (order_id) REFERENCES orders(order_id)
+        ON UPDATE CASCADE ON DELETE RESTRICT,
+
+    CONSTRAINT fk_od_product
+        FOREIGN KEY (product_id) REFERENCES products(product_id)
+        ON UPDATE CASCADE ON DELETE RESTRICT,
+
+    CONSTRAINT chk_order_quantity
+        CHECK (quantity > 0)
 );
 
-CREATE INDEX idx_user_role ON user(role);
+CREATE INDEX idx_od_order ON order_details(order_id);
 
 -- ============================================================
--- SAMPLE DATA (for development/testing)
+-- 8. PROCESS STEPS (FR-17)
+-- The 8 predefined order workflow steps
 -- ============================================================
 
--- Owner account (users)
+CREATE TABLE process_steps (
+    process_step_id INT AUTO_INCREMENT PRIMARY KEY,
+    step_number     INT NOT NULL UNIQUE,
+    step_name       VARCHAR(100) NOT NULL,
+    description     TEXT NULL,
+
+    CONSTRAINT chk_step_number
+        CHECK (step_number BETWEEN 1 AND 8)
+);
+
+-- ============================================================
+-- 9. ORDER PROCESS (FR-16, FR-18, FR-19)
+-- Tracks each order through the 8 steps with evidence
+-- ============================================================
+
+CREATE TABLE order_process (
+    process_id      INT AUTO_INCREMENT PRIMARY KEY,
+    order_id        VARCHAR(20) NOT NULL,
+    process_step_id INT NOT NULL,
+
+    status          ENUM('Pending','In Progress','Completed','Skipped')
+                        NOT NULL DEFAULT 'Pending',
+
+    process_date    DATE NULL,
+    completed_at    DATETIME NULL,
+    completed_by    INT NULL,
+
+    -- Evidence (FR-18, FR-19)
+    image           VARCHAR(255) NULL,
+    notes           TEXT NULL,
+
+    created_at      DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at      DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+    CONSTRAINT fk_op_order
+        FOREIGN KEY (order_id) REFERENCES orders(order_id)
+        ON UPDATE CASCADE ON DELETE RESTRICT,
+
+    CONSTRAINT fk_op_step
+        FOREIGN KEY (process_step_id) REFERENCES process_steps(process_step_id)
+        ON UPDATE CASCADE ON DELETE RESTRICT,
+
+    CONSTRAINT fk_op_completed_by
+        FOREIGN KEY (completed_by) REFERENCES users(user_id)
+        ON UPDATE CASCADE ON DELETE SET NULL,
+
+    CONSTRAINT uq_order_process_step
+        UNIQUE (order_id, process_step_id)
+);
+
+-- ============================================================
+-- 10. NOTIFICATIONS (FR-20, FR-21, FR-22, FR-41)
+-- Messages tied to order process steps
+-- ============================================================
+
+CREATE TABLE notifications (
+    notification_id INT AUTO_INCREMENT PRIMARY KEY,
+    process_id      INT NULL,
+    user_id         INT NOT NULL,
+    sent_by         INT NOT NULL,
+    title           VARCHAR(200) NOT NULL,
+    message         TEXT NOT NULL,
+    is_read         BOOLEAN NOT NULL DEFAULT FALSE,
+    created_at      DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT fk_notif_process
+        FOREIGN KEY (process_id) REFERENCES order_process(process_id)
+        ON UPDATE CASCADE ON DELETE SET NULL,
+
+    CONSTRAINT fk_notif_user
+        FOREIGN KEY (user_id) REFERENCES users(user_id)
+        ON UPDATE CASCADE ON DELETE RESTRICT,
+
+    CONSTRAINT fk_notif_sent_by
+        FOREIGN KEY (sent_by) REFERENCES users(user_id)
+        ON UPDATE CASCADE ON DELETE RESTRICT
+);
+
+CREATE INDEX idx_notif_user ON notifications(user_id);
+CREATE INDEX idx_notif_read ON notifications(is_read);
+
+-- ============================================================
+-- 11. INVENTORY HISTORY (FR-23, FR-24, FR-25, FR-26, FR-27)
+-- Full audit trail for all stock movements
+-- ============================================================
+
+CREATE TABLE inventory_history (
+    history_id      INT AUTO_INCREMENT PRIMARY KEY,
+    inventory_id    INT NOT NULL,
+    order_id        VARCHAR(20) NULL,
+    action          ENUM('Added','Deducted','Adjusted') NOT NULL,
+    quantity        DECIMAL(12,2) NOT NULL,
+    stock_before    INT NOT NULL,
+    stock_after     INT NOT NULL,
+    reason          VARCHAR(255) NULL,
+    notes           TEXT NULL,
+    updated_by      INT,
+    created_at      DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT fk_ih_inventory
+        FOREIGN KEY (inventory_id) REFERENCES inventory(inventory_id)
+        ON UPDATE CASCADE ON DELETE RESTRICT,
+
+    CONSTRAINT fk_ih_order
+        FOREIGN KEY (order_id) REFERENCES orders(order_id)
+        ON UPDATE CASCADE ON DELETE SET NULL,
+
+    CONSTRAINT fk_ih_user
+        FOREIGN KEY (updated_by) REFERENCES users(user_id)
+        ON UPDATE CASCADE ON DELETE SET NULL
+);
+
+CREATE INDEX idx_ih_inventory ON inventory_history(inventory_id);
+CREATE INDEX idx_ih_order ON inventory_history(order_id);
+CREATE INDEX idx_ih_date ON inventory_history(created_at);
+
+-- ============================================================
+-- 12. CART (FR-09)
+-- Temporary cart items before order submission
+-- ============================================================
+
+CREATE TABLE cart (
+    cart_id         INT AUTO_INCREMENT PRIMARY KEY,
+    customer_id     INT NOT NULL,
+    product_id      INT NOT NULL,
+    quantity        INT NOT NULL DEFAULT 1,
+    added_at        DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT fk_cart_customer
+        FOREIGN KEY (customer_id) REFERENCES customers(customer_id)
+        ON UPDATE CASCADE ON DELETE CASCADE,
+
+    CONSTRAINT fk_cart_product
+        FOREIGN KEY (product_id) REFERENCES products(product_id)
+        ON UPDATE CASCADE ON DELETE CASCADE,
+
+    CONSTRAINT chk_cart_qty CHECK (quantity > 0)
+);
+
+CREATE INDEX idx_cart_customer ON cart(customer_id);
+
+-- ============================================================
+-- SEED: Process Steps (FR-17)
+-- ============================================================
+
+INSERT INTO process_steps (step_number, step_name, description) VALUES
+    (1, 'Order Details', 'Order is submitted by the customer after checkout'),
+    (2, 'Verification', 'Owner communicates with the customer to verify the order'),
+    (3, 'Initial Payment', 'Initial payment is processed and verified'),
+    (4, 'Processing', 'Order is being prepared and customized'),
+    (5, 'Final Payment', 'Remaining order balance is processed'),
+    (6, 'Out for Delivery', 'Completed order is handed over for delivery'),
+    (7, 'Order Received Confirmation', 'Customer confirms the order has been received'),
+    (8, 'Order Completed', 'Order is officially marked as completed');
+
+-- ============================================================
+-- SEED: Sample accounts
+-- ============================================================
+
 INSERT INTO users (first_name, middle_name, last_name, email, username, password_hash, role)
 VALUES ('Moiraine', 'Damodred', 'Sanche', 'moiraine_owner@example.com', '@MoiraineOwner', '$2b$12$placeholder_hash_owner', 'owner');
 
--- Admin account (users)
 INSERT INTO users (first_name, middle_name, last_name, email, username, password_hash, role)
 VALUES ('Moiraine', 'Damodred', 'Sanche', 'moiraine_admin@example.com', '@MoiraineAdmin', '$2b$12$placeholder_hash_admin', 'admin');
 
--- Customer account (users)
 INSERT INTO users (first_name, middle_name, last_name, email, username, password_hash, role)
 VALUES ('Jane', NULL, 'Doe', 'jane.doe@example.com', '@JaneDoe123', '$2b$12$placeholder_hash_customer', 'customer');
 
--- user table (admin panel accounts)
-INSERT INTO user (username, password, role)
-VALUES ('@MoiraineOwner', '$2b$12$placeholder_hash_owner', 'owner');
+INSERT INTO customers (user_id, phone_num, address)
+VALUES (3, '09XX-XXX-XXXX', 'Block 12 Lot 8, Phase 3, Barangay Banay-Banay, Cabuyao City, Laguna, 4025');
 
-INSERT INTO user (username, password, role)
-VALUES ('@MoiraineAdmin', '$2b$12$placeholder_hash_admin', 'admin');
-
--- Sample products
 INSERT INTO products (name, material_used, type_of_product, price, front_page_visible, created_by)
 VALUES ('Tumbler (360ml)', 'Sublimation', 'Mug & Tumbler', 45.00, TRUE, 1);
 
--- Sample inventory items
-INSERT INTO inventory (item_name, category, stock, unit, low_stock_threshold, high_stock_threshold, status, created_by)
-VALUES ('White Mug', 'MUGS', 50, 'Pcs', 10, 200, 'Normal Stock', 1);
-
-INSERT INTO inventory (item_name, category, stock, unit, low_stock_threshold, high_stock_threshold, status, created_by)
-VALUES ('White T-shirts', 'SHIRTS', 20, 'Pcs', 25, 100, 'Low Stock', 1);
-
-INSERT INTO inventory (item_name, category, stock, unit, low_stock_threshold, high_stock_threshold, status, created_by)
-VALUES ('A4 Glossy Paper (500s)', 'PAPER', 100, 'Reams', 10, 80, 'High Stock', 1);
-
-INSERT INTO inventory (item_name, category, stock, unit, low_stock_threshold, high_stock_threshold, status, created_by)
-VALUES ('Laminating Film (A4)', 'SUPPLY', 100, 'Pcs', 10, 80, 'High Stock', 1);
-
-INSERT INTO inventory (item_name, category, stock, unit, low_stock_threshold, high_stock_threshold, status, created_by)
-VALUES ('A4 Bond paper', 'PAPER', 100, 'Reams', 10, 80, 'High Stock', 1);
-
-INSERT INTO inventory (item_name, category, stock, unit, low_stock_threshold, high_stock_threshold, status, is_archived, archived_at, created_by)
-VALUES ('Click pen', 'PEN', 0, 'Pcs', 5, 50, 'Out of Stock', FALSE, NULL, 1);
-
-INSERT INTO inventory (item_name, category, stock, unit, low_stock_threshold, high_stock_threshold, status, is_archived, archived_at, created_by)
-VALUES ('White Mug (archived)', 'MUGS', 0, 'Pcs', 10, 200, 'Out of Stock', TRUE, '2026-05-26 00:00:00', 1);
-
--- Sample order
-INSERT INTO orders (
-    order_id, customer_id, product_id, quantity, unit_price,
-    discount_percent, amount_deducted, product_total, delivery_fee, total_amount,
-    customization_type, delivery_method, delivery_address, delivery_date,
-    payment_method, payment_type, amount_paid, remaining_balance, reference_number,
-    payment_status, order_status, is_rush, accepted_by, receipt_no,
-    date_requested, date_accepted, date_finished
-) VALUES (
-    'ORD-2026-00124', 3, 1, 2, 45.00,
-    10.00, 9.00, 81.00, 50.00, 131.00,
-    'Uploaded Custom Design', 'Delivery',
-    'Block 12 Lot 8, Phase 3, Barangay Banay-Banay, Cabuyao City, Laguna, 4025',
-    '2026-03-26 12:00:00',
-    'Bank', '50% Down Payment', 131.00, 0.00, '1234567890',
-    'Fully Paid', 'Delivered', FALSE, 2, 'RC-2026-00124',
-    '2026-05-25 15:37:00', '2026-05-25 17:30:00', '2026-05-26 14:00:00'
-);
+INSERT INTO inventory (item_name, category, stock, unit_of_measure, reorder_level, unit_cost, created_by)
+VALUES ('White Mug', 'MUGS', 50, 'Pcs', 10, 25.00, 1);

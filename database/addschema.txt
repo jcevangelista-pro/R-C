@@ -1,0 +1,368 @@
+CREATE DATABASE IF NOT EXISTS rnc;
+USE rnc;
+
+-- =========================================
+-- 1. USERS
+-- =========================================
+CREATE TABLE Users (
+    UserID INT AUTO_INCREMENT PRIMARY KEY,
+    Email VARCHAR(255) NOT NULL UNIQUE,
+    FirstName VARCHAR(100) NOT NULL,
+    MiddleName VARCHAR(100) NULL,
+    LastName VARCHAR(100) NOT NULL,
+    PasswordHash VARCHAR(255) NOT NULL,
+    Role ENUM('Admin', 'Owner', 'Customer') NOT NULL,
+    CreatedAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    LastLogin DATETIME NULL
+);
+
+
+-- =========================================
+-- 2. CUSTOMERS
+-- =========================================
+CREATE TABLE Customers (
+    CustomerID INT AUTO_INCREMENT PRIMARY KEY,
+    UserID INT NOT NULL UNIQUE,
+    PhoneNum VARCHAR(30) NOT NULL,
+    Address TEXT NOT NULL,
+
+    CONSTRAINT fk_customers_user
+        FOREIGN KEY (UserID)
+        REFERENCES Users(UserID)
+        ON UPDATE CASCADE
+        ON DELETE RESTRICT
+);
+
+
+-- =========================================
+-- 3. PRODUCTS
+-- =========================================
+CREATE TABLE Products (
+    ProductID INT AUTO_INCREMENT PRIMARY KEY,
+    ProductName VARCHAR(255) NOT NULL,
+    Description TEXT NULL,
+    Category VARCHAR(100) NULL,
+    UnitOfMeasure VARCHAR(50) NOT NULL,
+    BasePrice DECIMAL(12,2) NOT NULL DEFAULT 0.00,
+    Image VARCHAR(255) NULL,
+    IsActive BOOLEAN NOT NULL DEFAULT TRUE,
+    CreatedAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    UpdatedAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+        ON UPDATE CURRENT_TIMESTAMP
+);
+
+
+-- =========================================
+-- 4. INVENTORY / MATERIALS
+-- =========================================
+CREATE TABLE Inventory (
+    InventoryID INT AUTO_INCREMENT PRIMARY KEY,
+    MaterialName VARCHAR(255) NOT NULL,
+    Description TEXT NULL,
+    UnitOfMeasure VARCHAR(50) NOT NULL,
+    StockOnHand DECIMAL(12,2) NOT NULL DEFAULT 0.00,
+    ReorderLevel DECIMAL(12,2) NOT NULL DEFAULT 0.00,
+    UnitCost DECIMAL(12,2) NOT NULL DEFAULT 0.00,
+    IsActive BOOLEAN NOT NULL DEFAULT TRUE,
+    LastUpdated DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+        ON UPDATE CURRENT_TIMESTAMP
+);
+
+
+-- =========================================
+-- 5. PRODUCT MATERIALS
+--    Bill of Materials (BOM)
+-- =========================================
+CREATE TABLE Product_Materials (
+    ProductMaterialsID INT AUTO_INCREMENT PRIMARY KEY,
+    ProductID INT NOT NULL,
+    InventoryID INT NOT NULL,
+    QuantityRequired DECIMAL(12,2) NOT NULL,
+
+    CONSTRAINT fk_product_materials_product
+        FOREIGN KEY (ProductID)
+        REFERENCES Products(ProductID)
+        ON UPDATE CASCADE
+        ON DELETE RESTRICT,
+
+    CONSTRAINT fk_product_materials_inventory
+        FOREIGN KEY (InventoryID)
+        REFERENCES Inventory(InventoryID)
+        ON UPDATE CASCADE
+        ON DELETE RESTRICT,
+
+    CONSTRAINT uq_product_material
+        UNIQUE (ProductID, InventoryID)
+);
+
+
+-- =========================================
+-- 6. PROCESS STEPS
+-- =========================================
+CREATE TABLE Process_Steps (
+    ProcessStepID INT AUTO_INCREMENT PRIMARY KEY,
+    StepNumber INT NOT NULL UNIQUE,
+    StepName VARCHAR(100) NOT NULL,
+    Description TEXT NULL,
+
+    CONSTRAINT chk_step_number
+        CHECK (StepNumber BETWEEN 1 AND 8)
+);
+
+
+-- =========================================
+-- 7. ORDERS
+-- =========================================
+CREATE TABLE Orders (
+    OrderID INT AUTO_INCREMENT PRIMARY KEY,
+
+    CustomerID INT NOT NULL,
+    AcceptedBy INT NULL,
+
+    OrderDate DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    DueDate DATETIME NULL,
+
+    IsRush BOOLEAN NOT NULL DEFAULT FALSE,
+    RushFee DECIMAL(12,2) NOT NULL DEFAULT 0.00,
+
+    IsCustomized BOOLEAN NOT NULL DEFAULT FALSE,
+    CustomizationDetails TEXT NULL,
+
+    Discount DECIMAL(12,2) NOT NULL DEFAULT 0.00,
+
+    TotalAmount DECIMAL(12,2) NOT NULL DEFAULT 0.00,
+
+    PaymentStatus ENUM(
+        'Unpaid',
+        'Partial',
+        'Paid'
+    ) NOT NULL DEFAULT 'Unpaid',
+
+    Status ENUM(
+        'Pending',
+        'In Progress',
+        'Completed',
+        'Cancelled'
+    ) NOT NULL DEFAULT 'Pending',
+
+    CreatedAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    UpdatedAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+        ON UPDATE CURRENT_TIMESTAMP,
+
+    CONSTRAINT fk_orders_customer
+        FOREIGN KEY (CustomerID)
+        REFERENCES Customers(CustomerID)
+        ON UPDATE CASCADE
+        ON DELETE RESTRICT,
+
+    CONSTRAINT fk_orders_accepted_by
+        FOREIGN KEY (AcceptedBy)
+        REFERENCES Users(UserID)
+        ON UPDATE CASCADE
+        ON DELETE SET NULL
+);
+
+
+-- =========================================
+-- 8. ORDER DETAILS
+-- =========================================
+CREATE TABLE Order_Details (
+    OrderDetailID INT AUTO_INCREMENT PRIMARY KEY,
+
+    OrderID INT NOT NULL,
+    ProductID INT NOT NULL,
+
+    Quantity DECIMAL(12,2) NOT NULL,
+    UnitPrice DECIMAL(12,2) NOT NULL,
+
+    SubTotal DECIMAL(12,2)
+        GENERATED ALWAYS AS (Quantity * UnitPrice) STORED,
+
+    CONSTRAINT fk_order_details_order
+        FOREIGN KEY (OrderID)
+        REFERENCES Orders(OrderID)
+        ON UPDATE CASCADE
+        ON DELETE RESTRICT,
+
+    CONSTRAINT fk_order_details_product
+        FOREIGN KEY (ProductID)
+        REFERENCES Products(ProductID)
+        ON UPDATE CASCADE
+        ON DELETE RESTRICT,
+
+    CONSTRAINT chk_order_quantity
+        CHECK (Quantity > 0)
+);
+
+
+-- =========================================
+-- 9. ORDER PROCESS
+-- =========================================
+CREATE TABLE Order_Process (
+    ProcessID INT AUTO_INCREMENT PRIMARY KEY,
+
+    OrderID INT NOT NULL,
+    ProcessStepID INT NOT NULL,
+
+    Status ENUM(
+        'Pending',
+        'In Progress',
+        'Completed',
+        'Skipped'
+    ) NOT NULL DEFAULT 'Pending',
+
+    ProcessDate DATE NULL,
+    CompletedAt DATETIME NULL,
+
+    CompletedBy INT NULL,
+
+    Image VARCHAR(255) NULL,
+    Notes TEXT NULL,
+
+    CreatedAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    UpdatedAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+        ON UPDATE CURRENT_TIMESTAMP,
+
+    CONSTRAINT fk_order_process_order
+        FOREIGN KEY (OrderID)
+        REFERENCES Orders(OrderID)
+        ON UPDATE CASCADE
+        ON DELETE RESTRICT,
+
+    CONSTRAINT fk_order_process_step
+        FOREIGN KEY (ProcessStepID)
+        REFERENCES Process_Steps(ProcessStepID)
+        ON UPDATE CASCADE
+        ON DELETE RESTRICT,
+
+    CONSTRAINT fk_order_process_completed_by
+        FOREIGN KEY (CompletedBy)
+        REFERENCES Users(UserID)
+        ON UPDATE CASCADE
+        ON DELETE SET NULL,
+
+    -- One process record per step for each order
+    CONSTRAINT uq_order_process_step
+        UNIQUE (OrderID, ProcessStepID)
+);
+
+
+-- =========================================
+-- 10. NOTIFICATIONS
+-- =========================================
+CREATE TABLE Notifications (
+    NotificationID INT AUTO_INCREMENT PRIMARY KEY,
+
+    ProcessID INT NOT NULL,
+
+    -- User receiving the notification
+    UserID INT NOT NULL,
+
+    -- User who sent the notification
+    SentBy INT NOT NULL,
+
+    Title VARCHAR(200) NOT NULL,
+    Message TEXT NOT NULL,
+
+    IsRead BOOLEAN NOT NULL DEFAULT FALSE,
+
+    CreatedAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT fk_notifications_process
+        FOREIGN KEY (ProcessID)
+        REFERENCES Order_Process(ProcessID)
+        ON UPDATE CASCADE
+        ON DELETE RESTRICT,
+
+    CONSTRAINT fk_notifications_user
+        FOREIGN KEY (UserID)
+        REFERENCES Users(UserID)
+        ON UPDATE CASCADE
+        ON DELETE RESTRICT,
+
+    CONSTRAINT fk_notifications_sent_by
+        FOREIGN KEY (SentBy)
+        REFERENCES Users(UserID)
+        ON UPDATE CASCADE
+        ON DELETE RESTRICT
+);
+
+
+-- =========================================
+-- 11. INVENTORY HISTORY
+-- =========================================
+CREATE TABLE Inventory_History (
+    InventoryHistoryID INT AUTO_INCREMENT PRIMARY KEY,
+
+    InventoryID INT NOT NULL,
+
+    -- Optional: connects the inventory movement
+    -- to the order that caused it
+    OrderID INT NULL,
+
+    -- User who performed the inventory transaction
+    UserID INT NULL,
+
+    ChangeType ENUM(
+        'Added',
+        'Deducted',
+        'Adjusted'
+    ) NOT NULL,
+
+    Quantity DECIMAL(12,2) NOT NULL,
+
+    PreviousStock DECIMAL(12,2) NOT NULL,
+    NewStock DECIMAL(12,2) NOT NULL,
+
+    Reason VARCHAR(255) NULL,
+    Notes TEXT NULL,
+
+    CreatedAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT fk_inventory_history_inventory
+        FOREIGN KEY (InventoryID)
+        REFERENCES Inventory(InventoryID)
+        ON UPDATE CASCADE
+        ON DELETE RESTRICT,
+
+    CONSTRAINT fk_inventory_history_order
+        FOREIGN KEY (OrderID)
+        REFERENCES Orders(OrderID)
+        ON UPDATE CASCADE
+        ON DELETE SET NULL,
+
+    CONSTRAINT fk_inventory_history_user
+        FOREIGN KEY (UserID)
+        REFERENCES Users(UserID)
+        ON UPDATE CASCADE
+        ON DELETE SET NULL
+);
+
+
+
+INSERT INTO Process_Steps
+    (StepNumber, StepName, Description)
+VALUES
+    (1, 'Order Details',
+     'Order is submitted by the customer after checkout'),
+
+    (2, 'Verification',
+     'Owner communicates with the customer to verify the order'),
+
+    (3, 'Initial Payment Processing',
+     'Initial payment is processed and verified'),
+
+    (4, 'Final Payment',
+     'Remaining order balance is processed'),
+
+    (5, 'Out for Delivery',
+     'Completed order is handed over for delivery'),
+
+    (6, 'Order Received Confirmation',
+     'Customer confirms that the order has been received'),
+
+    (7, 'Order Completed Confirmation',
+     'Customer confirms that the order is correct and complete'),
+
+    (8, 'Order Completed',
+     'Order is officially marked as completed');

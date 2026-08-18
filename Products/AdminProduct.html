@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>Products - R&amp;C Printing Services</title>
+<!-- <link rel="stylesheet" href="../UserSystem/UserSystem.css"> -->
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Arial, sans-serif; }
 
@@ -64,6 +65,7 @@
 
   /* ── MAIN ─────────────────────────────────────────────── */
   .main {
+    width: 80%;
     flex: 1;
     padding: 24px 32px;
     margin-left: 220px;
@@ -324,9 +326,10 @@
     font-size: 0.9rem;
     cursor: pointer;
     outline: none;
-    display: flex;
-    align-items: center;
+    appearance: auto;
   }
+
+  .DropDown:focus { border-color: #ec4899; }
 
   .PDButtons {
     display: flex;
@@ -335,7 +338,7 @@
     margin-top: 8px;
   }
 
-  #ProductClose, #ProductAdding, #ProductCancel, #ProductUpdate {
+  #ProductClose, #ProductAdding, #ProductCancel, #ProductUpdate, #ProductArchive {
     border: none;
     height: 40px;
     width: 120px;
@@ -360,6 +363,15 @@
 
   #ProductAdding:hover, #ProductUpdate:hover {
     background-color: #db2777;
+  }
+
+  #ProductArchive {
+    background-color: #f59e0b;
+    color: #fff;
+  }
+
+  #ProductArchive:hover {
+    background-color: #d97706;
   }
 
   /* ── UPDATE PRODUCT MODAL ─────────────────────────────── */
@@ -478,9 +490,29 @@
               <div>
                 <input type="text" class="PDInput" placeholder="Name of Product" id="PDInput1">
               </div>
-              <div class="DropDown">Material Used</div>
-              <div class="DropDown" id="DropDown1">Type of Product</div>
-              <div class="PDInput">
+              <select class="DropDown" id="DropDownMaterial">
+                <option value="" disabled selected>Material Used</option>
+                <option value="Ceramic">Ceramic</option>
+                <option value="Stainless Steel">Stainless Steel</option>
+                <option value="Plastic">Plastic</option>
+                <option value="Glass">Glass</option>
+                <option value="Paper">Paper</option>
+                <option value="Fabric">Fabric</option>
+                <option value="Vinyl">Vinyl</option>
+                <option value="Wood">Wood</option>
+              </select>
+              <select class="DropDown" id="DropDownType">
+                <option value="" disabled selected>Type of Product</option>
+                <option value="Mug & Tumbler">Mug &amp; Tumbler</option>
+                <option value="T-Shirt">T-Shirt</option>
+                <option value="Sticker">Sticker</option>
+                <option value="Tarpaulin">Tarpaulin</option>
+                <option value="ID & Card">ID &amp; Card</option>
+                <option value="Keychain">Keychain</option>
+                <option value="Notebook">Notebook</option>
+                <option value="Sublimation">Sublimation</option>
+              </select>
+              <div>
                 <input type="text" class="PDInput" placeholder="Product Price" id="PDInput2">
               </div>
             </div>
@@ -510,12 +542,32 @@
               <div>
                 <div class="UProductDetails">
                   <div>
-                    <input type="text" class="PDInput" placeholder="Name of Product" id="PDInput1">
+                    <input type="text" class="PDInput" placeholder="Name of Product" id="UPDInput1">
                   </div>
-                  <div class="DropDown">Material Used</div>
-                  <div class="DropDown" id="DropDown1">Type of Product</div>
-                  <div class="PDInput">
-                    <input type="text" class="PDInput" placeholder="Product Price" id="PDInput2">
+                  <select class="DropDown" id="UDropDownMaterial">
+                    <option value="" disabled selected>Material Used</option>
+                    <option value="Ceramic">Ceramic</option>
+                    <option value="Stainless Steel">Stainless Steel</option>
+                    <option value="Plastic">Plastic</option>
+                    <option value="Glass">Glass</option>
+                    <option value="Paper">Paper</option>
+                    <option value="Fabric">Fabric</option>
+                    <option value="Vinyl">Vinyl</option>
+                    <option value="Wood">Wood</option>
+                  </select>
+                  <select class="DropDown" id="UDropDownType">
+                    <option value="" disabled selected>Type of Product</option>
+                    <option value="Mug & Tumbler">Mug &amp; Tumbler</option>
+                    <option value="T-Shirt">T-Shirt</option>
+                    <option value="Sticker">Sticker</option>
+                    <option value="Tarpaulin">Tarpaulin</option>
+                    <option value="ID & Card">ID &amp; Card</option>
+                    <option value="Keychain">Keychain</option>
+                    <option value="Notebook">Notebook</option>
+                    <option value="Sublimation">Sublimation</option>
+                  </select>
+                  <div>
+                    <input type="text" class="PDInput" placeholder="Product Price" id="UPDInput2">
                   </div>
                 </div>
 
@@ -523,8 +575,9 @@
                 <label for="FrontPageVisibility" class="Label">Set Visible to Front Page</label>
 
                 <div class="UPDButtons">
-                  <button id="ProductCancel"><img src="" alt="">CANCEL</button>
-                  <button id="ProductUpdate"><img src="" alt="">UPDATE</button>
+                  <button id="ProductCancel">CANCEL</button>
+                  <button id="ProductArchive">ARCHIVE</button>
+                  <button id="ProductUpdate">UPDATE</button>
                 </div>
               </div>
             </div>
