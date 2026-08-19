@@ -14,8 +14,8 @@ try {
     // ── ORDER STATS ──────────────────────────────────────────
     $totalOrders     = (int) $pdo->query("SELECT COUNT(*) FROM orders")->fetchColumn();
     $pendingOrders   = (int) $pdo->query("SELECT COUNT(*) FROM orders WHERE order_status = 'Pending'")->fetchColumn();
-    $processingOrders= (int) $pdo->query("SELECT COUNT(*) FROM orders WHERE order_status IN ('Processing','Verified','Pending Verification')")->fetchColumn();
-    $completedOrders = (int) $pdo->query("SELECT COUNT(*) FROM orders WHERE order_status IN ('Delivered','Completed')")->fetchColumn();
+    $processingOrders= (int) $pdo->query("SELECT COUNT(*) FROM orders WHERE order_status = 'In Progress'")->fetchColumn();
+    $completedOrders = (int) $pdo->query("SELECT COUNT(*) FROM orders WHERE order_status = 'Completed'")->fetchColumn();
     $cancelledOrders = (int) $pdo->query("SELECT COUNT(*) FROM orders WHERE order_status = 'Cancelled'")->fetchColumn();
 
     // Orders due today
@@ -49,22 +49,22 @@ try {
     ")->fetchAll();
 
     // ── INVENTORY STATS ──────────────────────────────────────
-    $lowStock      = (int) $pdo->query("SELECT COUNT(*) FROM inventory WHERE status = 'Low Stock'    AND is_archived = 0")->fetchColumn();
-    $highStock     = (int) $pdo->query("SELECT COUNT(*) FROM inventory WHERE status = 'High Stock'   AND is_archived = 0")->fetchColumn();
-    $outOfStock    = (int) $pdo->query("SELECT COUNT(*) FROM inventory WHERE status = 'Out of Stock' AND is_archived = 0")->fetchColumn();
-    $totalInventory= (int) $pdo->query("SELECT COUNT(*) FROM inventory WHERE is_archived = 0")->fetchColumn();
+    $lowStock      = (int) $pdo->query("SELECT COUNT(*) FROM inventory WHERE stock <= reorder_level AND stock > 0 AND is_active = 1")->fetchColumn();
+    $highStock     = (int) $pdo->query("SELECT COUNT(*) FROM inventory WHERE stock > reorder_level * 5 AND is_active = 1")->fetchColumn();
+    $outOfStock    = (int) $pdo->query("SELECT COUNT(*) FROM inventory WHERE stock = 0 AND is_active = 1")->fetchColumn();
+    $totalInventory= (int) $pdo->query("SELECT COUNT(*) FROM inventory WHERE is_active = 1")->fetchColumn();
 
     // ── RECENT ORDERS (latest 5) ─────────────────────────────
     $recentOrders = $pdo->query("
         SELECT
             o.order_id,
             CONCAT(u.first_name, ' ', u.last_name) AS customer_name,
-            p.name AS product_name,
+            (SELECT p.name FROM order_details od JOIN products p ON p.product_id = od.product_id WHERE od.order_id = o.order_id LIMIT 1) AS product_name,
             o.order_status,
             DATE_FORMAT(o.date_requested, '%b %d, %Y') AS date_requested
         FROM orders o
-        LEFT JOIN users u ON o.customer_id = u.user_id
-        LEFT JOIN products p ON o.product_id = p.product_id
+        LEFT JOIN customers c ON o.customer_id = c.customer_id
+        LEFT JOIN users u ON c.user_id = u.user_id
         ORDER BY o.date_requested DESC
         LIMIT 5
     ")->fetchAll();
@@ -85,11 +85,11 @@ try {
         ) AS repeats
     ")->fetchColumn();
 
-    // Total revenue (all completed/delivered orders)
+    // Total revenue (all completed orders)
     $totalRevenue = (float) $pdo->query("
         SELECT COALESCE(SUM(total_amount), 0)
         FROM orders
-        WHERE order_status IN ('Delivered','Completed')
+        WHERE order_status = 'Completed'
     ")->fetchColumn();
 
     // Current month revenue

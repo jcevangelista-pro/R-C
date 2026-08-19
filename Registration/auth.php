@@ -126,7 +126,7 @@ switch ($action) {
         $_SESSION['role'] = $user['role'];
 
         // Determine redirect based on role
-        $redirect = '../LandingPage/LandingPage.html';
+        $redirect = '../LandingPage/LandingPage.php';
         if ($user['role'] === 'admin' || $user['role'] === 'owner') {
             $redirect = '../Dashboard/Dashboard.html';
         }

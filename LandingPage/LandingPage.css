@@ -172,6 +172,60 @@ a.CardProducts:hover {
 /* ── MOBILE SIDEBAR (hidden on desktop) ──────────────────── */
 .mobile-sidebar {
     display: none;
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background: #fff;
+    border: 1px solid #F868AA;
+    border-radius: 10px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+    padding: 8px 0;
+    min-width: 140px;
+    z-index: 1000;
+    flex-direction: column;
+}
+
+.mobile-menu-item {
+    position: relative;
+}
+
+.mobile-menu-item.open .mobile-sidebar {
+    display: flex;
+}
+
+.mobile-sidebar a {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 20px;
+    color: #1E3163;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: background 0.15s;
+}
+
+.mobile-sidebar a:hover {
+    background: #fff0f7;
+    color: #F868AA;
+}
+
+.sidebar-icon {
+    width: 16px;
+    height: 16px;
+    object-fit: contain;
+}
+
+/* On desktop: hide nav items that are only for mobile sidebar */
+.mobile-sidebar a:not(.logout-link) {
+    display: none;
+}
+
+/* Show only logout on desktop dropdown */
+.mobile-sidebar .logout-link {
+    display: flex;
+    color: #ef4444;
+    font-weight: 700;
 }
 
 /* ── MOBILE RESPONSIVE ───────────────────────────────────── */
@@ -257,6 +311,11 @@ a.CardProducts:hover {
         width: 16px;
         height: 16px;
         object-fit: contain;
+    }
+
+    /* On mobile: show ALL sidebar links (override desktop hide) */
+    .mobile-sidebar a:not(.logout-link) {
+        display: flex;
     }
 
     /* Hero section */
