@@ -1,29 +1,12 @@
 /* =========================================================
-   R&C Printing Services — ProductsPage.js
-   Handles: category/type/price filtering, sorting, search,
-   and a working "Add to Cart" panel.
+   R&C Printing Services — Prodbrowse.js
+   Fetches front-page-visible products from the database
+   and handles filtering, sorting, search, and cart.
    ========================================================= */
 
 document.addEventListener('DOMContentLoaded', () => {
 
-  /* ---------------------------------------------------------
-     0. PRODUCT DATA
-     Replace image paths / prices / names with your real catalog.
-  --------------------------------------------------------- */
-  const PRODUCTS = [
-    { id: 'p01', name: 'Classic Singlet',        category: 'Sublimations',        type: 'Singlet',       price: 250, image: '../imgs/MugPicture.jpg' },
-    { id: 'p02', name: 'Car Sunshade',            category: 'Sublimations',        type: 'Car Sunshade',  price: 180, image: '../imgs/MugPicture.jpg' },
-    { id: 'p03', name: 'Sublimation Pillow Case', category: 'Sublimations',        type: 'Pillow Case',   price: 220, image: '../imgs/MugPicture.jpg' },
-    { id: 'p04', name: 'Sublimation Apron',       category: 'Sublimations',        type: 'Apron',         price: 200, image: '../imgs/MugPicture.jpg' },
-    { id: 'p05', name: 'Ceramic Mug 11oz',        category: 'Mugs & Tumbler',      type: 'Mug',           price: 150, image: '../imgs/MugPicture.jpg' },
-    { id: 'p06', name: 'Stainless Tumbler 500ml', category: 'Mugs & Tumbler',      type: 'Tumbler',       price: 320, image: '../imgs/MugPicture.jpg' },
-    { id: 'p07', name: 'Water Bottle 750ml',      category: 'Mugs & Tumbler',      type: 'Water Bottle',  price: 280, image: '../imgs/MugPicture.jpg' },
-    { id: 'p08', name: 'Travel Mug',              category: 'Mugs & Tumbler',      type: 'Travel Mug',    price: 260, image: '../imgs/MugPicture.jpg' },
-    { id: 'p09', name: 'Custom Sticker Sheet',    category: 'Office Requirements', type: 'Sticker',       price: 90,  image: '../imgs/MugPicture.jpg' },
-    { id: 'p10', name: 'ID Lace',                 category: 'Office Requirements', type: 'ID Lace',       price: 60,  image: '../imgs/MugPicture.jpg' },
-    { id: 'p11', name: 'Folder with Print',       category: 'Office Requirements', type: 'Folder',        price: 75,  image: '../imgs/MugPicture.jpg' },
-    { id: 'p12', name: 'Calling Card (100pcs)',   category: 'Office Requirements', type: 'Calling Card',  price: 180, image: '../imgs/MugPicture.jpg' },
-  ];
+  let PRODUCTS = [];
 
   /* ---------------------------------------------------------
      1. STATE
@@ -40,7 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
   /* ---------------------------------------------------------
      2. ELEMENT REFS
   --------------------------------------------------------- */
-  const grid          = document.getElementById('ProductGrid');
+  const grid           = document.getElementById('ProductGrid');
   const resultsCount   = document.getElementById('ResultsCount');
   const noResultsMsg   = document.getElementById('NoResultsMsg');
   const categoryList   = document.getElementById('CategoryList');
@@ -57,16 +40,53 @@ document.addEventListener('DOMContentLoaded', () => {
   const navUser   = document.getElementById('NavUser');
 
   /* ---------------------------------------------------------
-     3. BUILD "FILTER BY TYPE" CHECKBOXES
+     3. LOAD PRODUCTS FROM DATABASE
+  --------------------------------------------------------- */
+  async function loadProducts() {
+    try {
+      const res = await fetch('product_api.php?view=public');
+      const data = await res.json();
+      if (!data.success) throw new Error(data.error);
+
+      PRODUCTS = data.products.map(p => ({
+        id: 'p' + p.id,
+        name: p.name,
+        category: p.type_of_product || 'Other',
+        type: p.material_used || p.type_of_product || 'Other',
+        price: parseFloat(p.price),
+        image: p.image_path || null,
+      }));
+
+      buildCategoryButtons();
+      renderTypeCheckboxes();
+      applyFilters();
+      renderCart();
+    } catch (err) {
+      grid.innerHTML = `<p style="color:#ef4444;padding:20px;">Failed to load products: ${err.message}</p>`;
+    }
+  }
+
+  /* ---------------------------------------------------------
+     3b. BUILD CATEGORY BUTTONS DYNAMICALLY
+  --------------------------------------------------------- */
+  function buildCategoryButtons() {
+    const categories = [...new Set(PRODUCTS.map(p => p.category))].sort();
+    categoryList.innerHTML = `<li><button class="CategoryBtn ActiveCategory" data-category="all">All Products</button></li>`;
+    categories.forEach(cat => {
+      categoryList.innerHTML += `<li><button class="CategoryBtn" data-category="${cat}">${cat}</button></li>`;
+    });
+  }
+
+  /* ---------------------------------------------------------
+     4. BUILD "FILTER BY TYPE" CHECKBOXES
   --------------------------------------------------------- */
   function renderTypeCheckboxes() {
     const relevant = state.category === 'all'
       ? PRODUCTS
       : PRODUCTS.filter(p => p.category === state.category);
 
-    const uniqueTypes = [...new Set(relevant.map(p => p.type))];
+    const uniqueTypes = [...new Set(relevant.map(p => p.type))].sort();
 
-    // Drop selected types that no longer apply to this category
     [...state.types].forEach(t => {
       if (!uniqueTypes.includes(t)) state.types.delete(t);
     });
@@ -89,7 +109,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   /* ---------------------------------------------------------
-     4. CATEGORY BUTTONS
+     5. CATEGORY BUTTONS
   --------------------------------------------------------- */
   categoryList.addEventListener('click', (e) => {
     const btn = e.target.closest('.CategoryBtn');
@@ -104,7 +124,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   /* ---------------------------------------------------------
-     5. PRICE FILTER
+     6. PRICE FILTER
   --------------------------------------------------------- */
   minPriceInput.addEventListener('input', () => {
     state.minPrice = minPriceInput.value ? Number(minPriceInput.value) : null;
@@ -117,7 +137,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   /* ---------------------------------------------------------
-     6. SORT
+     7. SORT
   --------------------------------------------------------- */
   sortSelect.addEventListener('change', () => {
     state.sort = sortSelect.value;
@@ -125,7 +145,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   /* ---------------------------------------------------------
-     7. CLEAR FILTERS
+     8. CLEAR FILTERS
   --------------------------------------------------------- */
   clearFiltersBtn.addEventListener('click', () => {
     state.category = 'all';
@@ -136,7 +156,8 @@ document.addEventListener('DOMContentLoaded', () => {
     state.sort = 'default';
 
     categoryList.querySelectorAll('.CategoryBtn').forEach(b => b.classList.remove('ActiveCategory'));
-    categoryList.querySelector('[data-category="all"]').classList.add('ActiveCategory');
+    const allBtn = categoryList.querySelector('[data-category="all"]');
+    if (allBtn) allBtn.classList.add('ActiveCategory');
     minPriceInput.value = '';
     maxPriceInput.value = '';
     sortSelect.value = 'default';
@@ -147,7 +168,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   /* ---------------------------------------------------------
-     8. FILTER + SORT + RENDER PIPELINE
+     9. FILTER + SORT + RENDER PIPELINE
   --------------------------------------------------------- */
   function applyFilters() {
     let results = PRODUCTS.filter(p => {
@@ -175,19 +196,24 @@ document.addEventListener('DOMContentLoaded', () => {
 
     noResultsMsg.style.display = products.length ? 'none' : 'block';
 
-    grid.innerHTML = products.map(p => `
+    grid.innerHTML = products.map(p => {
+      const imgHtml = p.image
+        ? `<img src="${p.image}" alt="${p.name}" class="ProductImage">`
+        : `<div class="ProductImagePlaceholder"></div>`;
+
+      return `
       <div class="ProductCard" data-id="${p.id}">
         <div class="ProductImageWrap">
           <span class="CategoryTag">${p.type}</span>
-          <img src="${p.image}" alt="${p.name}" class="ProductImage">
+          ${imgHtml}
         </div>
         <div class="ProductInfo">
           <h3>${p.name}</h3>
           <span class="ProductPrice">₱${p.price.toFixed(2)}</span>
           <button class="AddToCartBtn" data-id="${p.id}">Add to Cart</button>
         </div>
-      </div>
-    `).join('');
+      </div>`;
+    }).join('');
 
     grid.querySelectorAll('.AddToCartBtn').forEach(btn => {
       btn.addEventListener('click', () => {
@@ -199,7 +225,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   /* ---------------------------------------------------------
-     9. SEARCH BAR (injected into navbar)
+     10. SEARCH BAR
   --------------------------------------------------------- */
   const searchBar = document.createElement('div');
   searchBar.className = 'SearchBar';
@@ -222,7 +248,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   /* ---------------------------------------------------------
-     10. CHAT ICON (placeholder tooltip)
+     11. CHAT ICON
   --------------------------------------------------------- */
   const chatTooltip = document.createElement('div');
   chatTooltip.className = 'ChatTooltip';
@@ -237,15 +263,39 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   /* ---------------------------------------------------------
-     11. USER DROPDOWN
+     12. USER DROPDOWN
   --------------------------------------------------------- */
   const userDropdown = document.createElement('div');
   userDropdown.className = 'UserDropdown';
   userDropdown.style.display = 'none';
-  userDropdown.innerHTML = `
-    <a href="LogInPage.html">Log In</a>
-    <a href="SignUpPage.html">Sign Up</a>
-  `;
+
+  // Check session to determine what to show
+  fetch('../Registration/check_session.php')
+    .then(r => r.json())
+    .then(data => {
+      if (data.logged_in) {
+        userDropdown.innerHTML = `<a href="../Registration/logout.php" class="logout-link">Log Out</a>`;
+        // Add logout confirmation
+        userDropdown.querySelector('.logout-link').addEventListener('click', function(e) {
+          e.preventDefault();
+          if (confirm('Are you sure you want to log out?')) {
+            window.location.href = this.href;
+          }
+        });
+      } else {
+        userDropdown.innerHTML = `
+          <a href="../Registration/LogInPage.html">Log In</a>
+          <a href="../Registration/SignUpPage.html">Sign Up</a>
+        `;
+      }
+    })
+    .catch(() => {
+      userDropdown.innerHTML = `
+        <a href="../Registration/LogInPage.html">Log In</a>
+        <a href="../Registration/SignUpPage.html">Sign Up</a>
+      `;
+    });
+
   nav.appendChild(userDropdown);
 
   navUser.addEventListener('click', (e) => {
@@ -269,7 +319,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   /* ---------------------------------------------------------
-     12. CART PANEL
+     13. CART PANEL
   --------------------------------------------------------- */
   const cartBadge = document.createElement('span');
   cartBadge.className = 'CartBadge';
@@ -305,12 +355,9 @@ document.addEventListener('DOMContentLoaded', () => {
   const cartFooter     = cartPanel.querySelector('.CartFooter');
   const cartTotalValue = cartPanel.querySelector('.CartTotalValue');
 
-  // Load cart from localStorage so it survives page reloads / other pages
-  let cart = JSON.parse(localStorage.getItem('rc_cart') || '{}'); // { productId: qty }
+  let cart = JSON.parse(localStorage.getItem('rc_cart') || '{}');
 
-  function saveCart() {
-    localStorage.setItem('rc_cart', JSON.stringify(cart));
-  }
+  function saveCart() { localStorage.setItem('rc_cart', JSON.stringify(cart)); }
 
   function addToCart(id) {
     cart[id] = (cart[id] || 0) + 1;
@@ -348,10 +395,14 @@ document.addEventListener('DOMContentLoaded', () => {
       total += product.price * qty;
       totalQty += qty;
 
+      const imgHtml = product.image
+        ? `<img src="${product.image}" alt="${product.name}" class="CartItemImg">`
+        : `<div class="CartItemImg" style="background:#e5e7eb;border-radius:6px;"></div>`;
+
       const li = document.createElement('li');
       li.className = 'CartItem';
       li.innerHTML = `
-        <img src="${product.image}" alt="${product.name}" class="CartItemImg">
+        ${imgHtml}
         <div class="CartItemDetails">
           <span class="CartItemName">${product.name}</span>
           <span class="CartItemPrice">₱${product.price.toFixed(2)}</span>
@@ -402,14 +453,12 @@ document.addEventListener('DOMContentLoaded', () => {
   cartOverlay.addEventListener('click', closeCart);
 
   cartPanel.querySelector('.CheckoutBtn').addEventListener('click', () => {
-    alert('Checkout isn\'t wired up to a payment system yet — connect this button to your backend/payment provider when ready.');
+    alert('Checkout coming soon!');
   });
 
   /* ---------------------------------------------------------
-     13. INITIAL RENDER
+     14. INIT — Load from DB
   --------------------------------------------------------- */
-  renderTypeCheckboxes();
-  applyFilters();
-  renderCart();
+  loadProducts();
 
 });

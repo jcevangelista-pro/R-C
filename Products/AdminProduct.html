@@ -220,6 +220,14 @@
     object-fit: cover;
   }
 
+  .no-image-placeholder {
+    width: calc(100% - 16px);
+    height: 56%;
+    border-radius: 12px;
+    margin: 8px 8px 0;
+    background: #e5e7eb;
+  }
+
   .ProductName {
     color: #1b1f4b;
     font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
@@ -472,25 +480,83 @@
     </div>
 
     <div class="panel2">
-      <div class="PCContainer">
-
+      <div class="PCContainer" id="productContainer">
+        <!-- Add Product card (always first) -->
         <div class="ProductCard" id="AddProduct">
           <div id="WhiteBg"><button id="addButton">+</button></div>
           <p class="TAddProduct">Add Product</p>
         </div>
+        <!-- Products loaded dynamically -->
+      </div>
+    </div>
 
-        <div id="ModalContainer">
-          <div id="ContentModal">
-            <div class="TextAP">Add Product</div>
-            <div>
-              <button id="MAddProduct">+</button>
-            </div>
+    <!-- Add Product Modal -->
+    <div id="ModalContainer">
+      <div id="ContentModal">
+        <div class="TextAP">Add Product</div>
+        <div>
+          <button id="MAddProduct" type="button">+</button>
+          <input type="file" id="addImageInput" accept="image/*" style="display:none;">
+          <img id="addImagePreview" style="display:none;width:100%;height:140px;object-fit:cover;border-radius:10px;margin-bottom:10px;">
+        </div>
 
-            <div class="ProductDetails">
+        <div class="ProductDetails">
+          <div>
+            <input type="text" class="PDInput" placeholder="Name of Product" id="PDInput1">
+          </div>
+          <select class="DropDown" id="DropDownMaterial">
+            <option value="" disabled selected>Material Used</option>
+            <option value="Ceramic">Ceramic</option>
+            <option value="Stainless Steel">Stainless Steel</option>
+            <option value="Plastic">Plastic</option>
+            <option value="Glass">Glass</option>
+            <option value="Paper">Paper</option>
+            <option value="Fabric">Fabric</option>
+            <option value="Vinyl">Vinyl</option>
+            <option value="Wood">Wood</option>
+          </select>
+          <select class="DropDown" id="DropDownType">
+            <option value="" disabled selected>Type of Product</option>
+            <option value="Mug & Tumbler">Mug &amp; Tumbler</option>
+            <option value="T-Shirt">T-Shirt</option>
+            <option value="Sticker">Sticker</option>
+            <option value="Tarpaulin">Tarpaulin</option>
+            <option value="ID & Card">ID &amp; Card</option>
+            <option value="Keychain">Keychain</option>
+            <option value="Notebook">Notebook</option>
+            <option value="Sublimation">Sublimation</option>
+          </select>
+          <div>
+            <input type="text" class="PDInput" placeholder="Product Price" id="PDInput2">
+          </div>
+        </div>
+
+        <div class="PDButtons">
+          <button id="ProductClose">CANCEL</button>
+          <button id="ProductAdding">ADD</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Update Product Modal -->
+    <div id="ProductContent">
+      <div id="PCCard">
+        <div class="TextUP">Update Product</div>
+        <input type="hidden" id="updateProductId">
+
+        <div class="PUContentCard">
+          <div class="ProductPictureUpdate">
+            <img src="" alt="" class="ProductPicture" id="updateImagePreview">
+            <button type="button" id="changeImageBtn" style="margin-top:8px;border:none;background:#ec4899;color:#fff;padding:6px 12px;border-radius:6px;font-size:12px;cursor:pointer;">Change Image</button>
+            <input type="file" id="updateImageInput" accept="image/*" style="display:none;">
+          </div>
+
+          <div>
+            <div class="UProductDetails">
               <div>
-                <input type="text" class="PDInput" placeholder="Name of Product" id="PDInput1">
+                <input type="text" class="PDInput" placeholder="Name of Product" id="UPDInput1">
               </div>
-              <select class="DropDown" id="DropDownMaterial">
+              <select class="DropDown" id="UDropDownMaterial">
                 <option value="" disabled selected>Material Used</option>
                 <option value="Ceramic">Ceramic</option>
                 <option value="Stainless Steel">Stainless Steel</option>
@@ -501,7 +567,7 @@
                 <option value="Vinyl">Vinyl</option>
                 <option value="Wood">Wood</option>
               </select>
-              <select class="DropDown" id="DropDownType">
+              <select class="DropDown" id="UDropDownType">
                 <option value="" disabled selected>Type of Product</option>
                 <option value="Mug & Tumbler">Mug &amp; Tumbler</option>
                 <option value="T-Shirt">T-Shirt</option>
@@ -513,107 +579,229 @@
                 <option value="Sublimation">Sublimation</option>
               </select>
               <div>
-                <input type="text" class="PDInput" placeholder="Product Price" id="PDInput2">
+                <input type="text" class="PDInput" placeholder="Product Price" id="UPDInput2">
               </div>
             </div>
 
-            <div class="PDButtons">
-              <button id="ProductClose"><img src="" alt="">CANCEL</button>
-              <button id="ProductAdding"><img src="" alt="">ADD</button>
-            </div>
-          </div>
-        </div>
+            <input type="checkbox" id="FrontPageVisibility">
+            <label for="FrontPageVisibility" class="Label">Set Visible to Front Page</label>
 
-        <div class="ProductCard" id="ProductContent1">
-          <img src="../imgs/MugPicture.jpg" alt="" class="ProductPicture">
-          <p class="ProductName">Tumbler (360ml)</p>
-          <p class="ProductType">Mug &amp; Tumbler</p>
-        </div>
-
-        <div id="ProductContent">
-          <div id="PCCard">
-            <div class="TextUP">Update Product</div>
-
-            <div class="PUContentCard">
-              <div class="ProductPictureUpdate">
-                <img src="MugPicture.jpg" alt="" class="ProductPicture">
-              </div>
-
-              <div>
-                <div class="UProductDetails">
-                  <div>
-                    <input type="text" class="PDInput" placeholder="Name of Product" id="UPDInput1">
-                  </div>
-                  <select class="DropDown" id="UDropDownMaterial">
-                    <option value="" disabled selected>Material Used</option>
-                    <option value="Ceramic">Ceramic</option>
-                    <option value="Stainless Steel">Stainless Steel</option>
-                    <option value="Plastic">Plastic</option>
-                    <option value="Glass">Glass</option>
-                    <option value="Paper">Paper</option>
-                    <option value="Fabric">Fabric</option>
-                    <option value="Vinyl">Vinyl</option>
-                    <option value="Wood">Wood</option>
-                  </select>
-                  <select class="DropDown" id="UDropDownType">
-                    <option value="" disabled selected>Type of Product</option>
-                    <option value="Mug & Tumbler">Mug &amp; Tumbler</option>
-                    <option value="T-Shirt">T-Shirt</option>
-                    <option value="Sticker">Sticker</option>
-                    <option value="Tarpaulin">Tarpaulin</option>
-                    <option value="ID & Card">ID &amp; Card</option>
-                    <option value="Keychain">Keychain</option>
-                    <option value="Notebook">Notebook</option>
-                    <option value="Sublimation">Sublimation</option>
-                  </select>
-                  <div>
-                    <input type="text" class="PDInput" placeholder="Product Price" id="UPDInput2">
-                  </div>
-                </div>
-
-                <input type="checkbox" id="FrontPageVisibility" required>
-                <label for="FrontPageVisibility" class="Label">Set Visible to Front Page</label>
-
-                <div class="UPDButtons">
-                  <button id="ProductCancel">CANCEL</button>
-                  <button id="ProductArchive">ARCHIVE</button>
-                  <button id="ProductUpdate">UPDATE</button>
-                </div>
-              </div>
+            <div class="UPDButtons">
+              <button id="ProductCancel">CANCEL</button>
+              <button id="ProductArchive">ARCHIVE</button>
+              <button id="ProductUpdate">UPDATE</button>
             </div>
           </div>
         </div>
-
       </div>
     </div>
 
   </div><!-- /.main -->
 
 <script>
-  const addButton = document.getElementById ('addButton');
-  const ModalContainer = document.getElementById ('ModalContainer');
-  const ProductClose = document.getElementById ('ProductClose');
+const PRODUCT_API = 'product_api.php';
+let productsData = [];
 
-  addButton.addEventListener('click', () => {
-      ModalContainer.classList.add('show');
-  });
+// ── Load products from DB ───────────────────────────────────
+async function loadProducts() {
+  try {
+    const res = await fetch(PRODUCT_API);
+    const data = await res.json();
+    if (!data.success) throw new Error(data.error);
+    productsData = data.products;
 
-  ProductClose.addEventListener('click', () => {
-      ModalContainer.classList.remove('show');
-  });
-   
-  /* Product Content Modal */
-  const ProductContent1 = document.getElementById ('ProductContent1');
-  const ProductContent = document.getElementById ('ProductContent');
-  const ProductCancel = document.getElementById ('ProductCancel');
+    document.getElementById('TTopCategory1').textContent = data.stats.total;
+    document.getElementById('TTopCategory2').textContent = '—';
+    document.getElementById('TTopCategory3').textContent = data.stats.top_category;
 
-  ProductContent1.addEventListener('click', () => {
-      ProductContent.classList.add('show');
-  });
+    renderProducts(data.products);
+  } catch (err) {
+    console.error(err);
+  }
+}
 
-  ProductCancel.addEventListener('click', () => {
-    ProductContent.classList.remove('show');
+function renderProducts(products) {
+  const container = document.getElementById('productContainer');
+  // Keep the Add Product card, remove the rest
+  const addCard = document.getElementById('AddProduct');
+  container.innerHTML = '';
+  container.appendChild(addCard);
+
+  products.forEach(p => {
+    const card = document.createElement('div');
+    card.className = 'ProductCard';
+    card.dataset.id = p.id;
+
+    if (p.image_path) {
+      card.innerHTML = `
+        <img src="${p.image_path}" alt="" class="ProductPicture">
+        <p class="ProductName">${escHtml(p.name)}</p>
+        <p class="ProductType">${escHtml(p.type_of_product || '')}</p>
+      `;
+    } else {
+      card.innerHTML = `
+        <div class="no-image-placeholder"></div>
+        <p class="ProductName">${escHtml(p.name)}</p>
+        <p class="ProductType">${escHtml(p.type_of_product || '')}</p>
+      `;
+    }
+
+    card.addEventListener('click', () => openUpdateModal(p));
+    container.appendChild(card);
   });
+}
+
+function escHtml(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+// ── ADD PRODUCT ─────────────────────────────────────────────
+const addButton = document.getElementById('addButton');
+const ModalContainer = document.getElementById('ModalContainer');
+const ProductClose = document.getElementById('ProductClose');
+const ProductAdding = document.getElementById('ProductAdding');
+const MAddProduct = document.getElementById('MAddProduct');
+const addImageInput = document.getElementById('addImageInput');
+const addImagePreview = document.getElementById('addImagePreview');
+
+addButton.addEventListener('click', () => {
+  document.getElementById('PDInput1').value = '';
+  document.getElementById('PDInput2').value = '';
+  document.getElementById('DropDownMaterial').selectedIndex = 0;
+  document.getElementById('DropDownType').selectedIndex = 0;
+  addImagePreview.style.display = 'none';
+  MAddProduct.style.display = '';
+  addImageInput.value = '';
+  ModalContainer.classList.add('show');
+});
+
+ProductClose.addEventListener('click', () => { ModalContainer.classList.remove('show'); });
+
+// Image upload button in Add modal
+MAddProduct.addEventListener('click', () => { addImageInput.click(); });
+
+addImageInput.addEventListener('change', function() {
+  if (this.files && this.files[0]) {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      addImagePreview.src = e.target.result;
+      addImagePreview.style.display = 'block';
+      MAddProduct.style.display = 'none';
+    };
+    reader.readAsDataURL(this.files[0]);
+  }
+});
+
+// Submit add
+ProductAdding.addEventListener('click', async () => {
+  const name = document.getElementById('PDInput1').value.trim();
+  const price = document.getElementById('PDInput2').value.trim();
+  const material = document.getElementById('DropDownMaterial').value;
+  const type = document.getElementById('DropDownType').value;
+
+  if (!name || !price) { alert('Name and price are required.'); return; }
+
+  const formData = new FormData();
+  formData.append('action', 'add');
+  formData.append('name', name);
+  formData.append('price', price);
+  formData.append('material_used', material);
+  formData.append('type_of_product', type);
+  if (addImageInput.files[0]) {
+    formData.append('image', addImageInput.files[0]);
+  }
+
+  try {
+    const res = await fetch(PRODUCT_API, { method: 'POST', body: formData });
+    const data = await res.json();
+    if (data.success) { ModalContainer.classList.remove('show'); loadProducts(); }
+    else { alert(data.error); }
+  } catch (err) { alert('Error adding product.'); }
+});
+
+// ── UPDATE PRODUCT ──────────────────────────────────────────
+const ProductContent = document.getElementById('ProductContent');
+const ProductCancel = document.getElementById('ProductCancel');
+const ProductUpdate = document.getElementById('ProductUpdate');
+const ProductArchive = document.getElementById('ProductArchive');
+const updateImageInput = document.getElementById('updateImageInput');
+const updateImagePreview = document.getElementById('updateImagePreview');
+const changeImageBtn = document.getElementById('changeImageBtn');
+
+function openUpdateModal(product) {
+  document.getElementById('updateProductId').value = product.id;
+  document.getElementById('UPDInput1').value = product.name;
+  document.getElementById('UPDInput2').value = product.price;
+  document.getElementById('UDropDownMaterial').value = product.material_used || '';
+  document.getElementById('UDropDownType').value = product.type_of_product || '';
+  document.getElementById('FrontPageVisibility').checked = product.front_page_visible == 1;
+  updateImagePreview.src = product.image_path ? product.image_path : '';
+  if (!product.image_path) updateImagePreview.style.display = 'none';
+  else updateImagePreview.style.display = '';
+  updateImageInput.value = '';
+  ProductContent.classList.add('show');
+}
+
+ProductCancel.addEventListener('click', () => { ProductContent.classList.remove('show'); });
+
+changeImageBtn.addEventListener('click', () => { updateImageInput.click(); });
+
+updateImageInput.addEventListener('change', function() {
+  if (this.files && this.files[0]) {
+    const reader = new FileReader();
+    reader.onload = function(e) { updateImagePreview.src = e.target.result; };
+    reader.readAsDataURL(this.files[0]);
+  }
+});
+
+// Submit update
+ProductUpdate.addEventListener('click', async () => {
+  const id = document.getElementById('updateProductId').value;
+  const name = document.getElementById('UPDInput1').value.trim();
+  const price = document.getElementById('UPDInput2').value.trim();
+  const material = document.getElementById('UDropDownMaterial').value;
+  const type = document.getElementById('UDropDownType').value;
+  const frontPage = document.getElementById('FrontPageVisibility').checked;
+
+  if (!name) { alert('Name is required.'); return; }
+
+  const formData = new FormData();
+  formData.append('action', 'update');
+  formData.append('id', id);
+  formData.append('name', name);
+  formData.append('price', price);
+  formData.append('material_used', material);
+  formData.append('type_of_product', type);
+  if (frontPage) formData.append('front_page_visible', '1');
+  if (updateImageInput.files[0]) {
+    formData.append('image', updateImageInput.files[0]);
+  }
+
+  try {
+    const res = await fetch(PRODUCT_API, { method: 'POST', body: formData });
+    const data = await res.json();
+    if (data.success) { ProductContent.classList.remove('show'); loadProducts(); }
+    else { alert(data.error); }
+  } catch (err) { alert('Error updating product.'); }
+});
+
+// Archive
+ProductArchive.addEventListener('click', async () => {
+  const id = document.getElementById('updateProductId').value;
+  if (!confirm('Are you sure you want to archive this product?')) return;
+
+  const formData = new FormData();
+  formData.append('action', 'archive');
+  formData.append('id', id);
+
+  try {
+    const res = await fetch(PRODUCT_API, { method: 'POST', body: formData });
+    const data = await res.json();
+    if (data.success) { ProductContent.classList.remove('show'); loadProducts(); }
+    else { alert(data.error); }
+  } catch (err) { alert('Error archiving product.'); }
+});
+
+// ── Init ────────────────────────────────────────────────────
+loadProducts();
 </script>
 <script src="../Registration/admin_session.js"></script>
 </body>

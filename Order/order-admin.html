@@ -80,49 +80,8 @@
             <th></th>
           </tr>
         </thead>
-        <tbody>
-          <tr>
-            <td>ORD-2026-00124</td>
-            <td>Jane Doe</td>
-            <td>Tumbler (360 ml)</td>
-            <td>P90.00</td>
-            <td>
-              <div class="order-actions">
-                <button class="btn-accept" onclick="acceptOrder('ORD-2026-00124')">Accept</button>
-                <button class="btn-reject" onclick="rejectOrder('ORD-2026-00124')">Reject</button>
-                <span class="order-arrow" onclick="viewOrder('ORD-2026-00124')">&gt;</span>
-              </div>
-            </td>
-          </tr>
-          <tr>
-            <td>ORD-2026-00125</td>
-            <td>Janey Doe</td>
-            <td>Tumbler (360 ml)</td>
-            <td>P90.00</td>
-            <td>
-              <div class="order-actions">
-                <button class="btn-accept" onclick="acceptOrder('ORD-2026-00125')">Accept</button>
-                <button class="btn-reject" onclick="rejectOrder('ORD-2026-00125')">Reject</button>
-                <span class="order-arrow" onclick="viewOrder('ORD-2026-00125')">&gt;</span>
-              </div>
-            </td>
-          </tr>
-          <tr>
-            <td>ORD-2026-00126</td>
-            <td>Janie Doe</td>
-            <td>Tumbler (360 ml)</td>
-            <td>P90.00</td>
-            <td>
-              <div class="order-actions">
-                <button class="btn-accept" onclick="acceptOrder('ORD-2026-00126')">Accept</button>
-                <button class="btn-reject" onclick="rejectOrder('ORD-2026-00126')">Reject</button>
-                <span class="order-arrow" onclick="viewOrder('ORD-2026-00126')">&gt;</span>
-              </div>
-            </td>
-          </tr>
-          <tr class="table-empty-row">
-            <td colspan="5"></td>
-          </tr>
+        <tbody id="pendingBody">
+          <tr><td colspan="5" style="text-align:center;color:#9ca3af;padding:20px;">Loading...</td></tr>
         </tbody>
       </table>
     </div>
@@ -147,23 +106,8 @@
             <th></th>
           </tr>
         </thead>
-        <tbody>
-          <tr>
-            <td>ORD-2026-00124</td>
-            <td>Jane Doe</td>
-            <td>Tumbler (360 ml)</td>
-            <td>P90.00</td>
-            <td>
-              <div class="order-actions">
-                <button class="btn-accept" onclick="acceptOrder('ORD-2026-00124')">Accept</button>
-                <button class="btn-reject" onclick="rejectOrder('ORD-2026-00124')">Reject</button>
-                <span class="order-arrow" onclick="viewOrder('ORD-2026-00124')">&gt;</span>
-              </div>
-            </td>
-          
-          <tr class="table-empty-row">
-            <td colspan="5"></td>
-          </tr>
+        <tbody id="pendingRushBody">
+          <tr><td colspan="5" style="text-align:center;color:#9ca3af;padding:20px;">Loading...</td></tr>
         </tbody>
       </table>
     </div>
@@ -189,46 +133,8 @@
             <th></th>
           </tr>
         </thead>
-        <tbody>
-          <tr>
-            <td>ORD-2026-00124</td>
-            <td>2026-10-02</td>
-            <td>Jane Doe</td>
-            <td>Tumbler (360 ml)</td>
-            <td>P90.00</td>
-            <td><span class="order-status-badge order-status-delivered">DELIVERED</span></td>
-            <td>
-              <span class="order-arrow"
-                onclick="openOrderDetailModal('ORD-2026-00124','Tumbler (360 ml)','Jane Doe','P90.00','DELIVERED','Damored, Moiraine','MAY 26, 2026','3:52 PM','MAY 26, 2026','3:52 PM','MAY 26, 2026','3:52 PM')">&gt;</span>
-            </td>
-          </tr>
-          <tr>
-            <td>ORD-2026-00125</td>
-            <td>2026-10-02</td>
-            <td>Janey Doe</td>
-            <td>Tumbler (360 ml)</td>
-            <td>P90.00</td>
-            <td><span class="order-status-badge order-status-delivered">DELIVERED</span></td>
-            <td>
-              <span class="order-arrow"
-                onclick="openOrderDetailModal('ORD-2026-00125','Tumbler (360 ml)','Janey Doe','P90.00','DELIVERED','Damored, Moiraine','MAY 26, 2026','3:52 PM','MAY 26, 2026','3:52 PM','MAY 26, 2026','3:52 PM')">&gt;</span>
-            </td>
-          </tr>
-          <tr>
-            <td>ORD-2026-00126</td>
-            <td>2026-10-02</td>
-            <td>Janie Doe</td>
-            <td>Tumbler (360 ml)</td>
-            <td>P90.00</td>
-            <td><span class="order-status-badge order-status-cancelled">CANCELLED</span></td>
-            <td>
-              <span class="order-arrow"
-                onclick="openOrderDetailModal('ORD-2026-00126','Tumbler (360 ml)','Janie Doe','P90.00','CANCELLED','Damored, Moiraine','MAY 26, 2026','3:52 PM','MAY 26, 2026','3:52 PM','MAY 26, 2026','3:52 PM')">&gt;</span>
-            </td>
-          </tr>
-          <tr class="table-empty-row">
-            <td colspan="7"></td>
-          </tr>
+        <tbody id="historyBody">
+          <tr><td colspan="7" style="text-align:center;color:#9ca3af;padding:20px;">Loading...</td></tr>
         </tbody>
       </table>
     </div>
@@ -253,18 +159,8 @@
             <th> </th>
           </tr>
         </thead>
-        <tbody>
-          <tr>
-            <td>ORD-2026-00124</td>
-            <td>Jane Doe</td>
-            <td>Tumbler (360 ml)</td>
-            <td>P90.00</td>
-            <td><span class="order-status-badge-process order-status-brown">PENDING VERIFICATION</span></td>
-            <td><span class="order-arrow" onclick="openOrderReviewModal()">&gt;</span></td>
-          </tr>
-          <tr class="history-empty-row">
-            <td colspan="5"></td>
-          </tr>
+        <tbody id="processBody">
+          <tr><td colspan="6" style="text-align:center;color:#9ca3af;padding:20px;">Loading...</td></tr>
         </tbody>
       </table>
     </div>
