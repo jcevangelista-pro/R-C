@@ -33,18 +33,21 @@
         </li>
 
         <li>
-            <a href="#">
+            <a href="../CART/cart.html">
                 <img src="../imgs/trolley.png" alt="Cart" class="Img">
             </a>
         </li>
 
         <li><a href="../LandingPage/LandingPage.html">HOME</a></li>
-        <li><a href="../Products/ProductPage.html">PRODUCTS</a></li>
+        <li><a href="../Products/Prodbrowse.html">PRODUCTS</a></li>
         <li><a href="../Portfolio/PortfolioPage.html" class="ActiveLink">PORTFOLIO</a></li>
-        <li>
-            <a href="#">
+        <li class="user-menu-item">
+            <a href="#" id="NavUser">
                 <img src="../imgs/user.png" alt="User" class="Img">
             </a>
+            <div class="user-dropdown" id="userDropdown">
+                <a href="../Registration/logout.php" class="logout-link">Log Out</a>
+            </div>
         </li>
     </ul>
 
@@ -284,5 +287,33 @@
 
 </div>
 
+<script src="../CART/cart_badge.js"></script>
+<script>
+// User dropdown toggle
+const navUser = document.getElementById('NavUser');
+const userDropdown = document.getElementById('userDropdown');
+
+navUser.addEventListener('click', function(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    userDropdown.classList.toggle('show');
+});
+
+document.addEventListener('click', function(e) {
+    if (!userDropdown.contains(e.target) && e.target !== navUser) {
+        userDropdown.classList.remove('show');
+    }
+});
+
+// Logout confirmation
+document.querySelectorAll('.logout-link').forEach(function(link) {
+    link.addEventListener('click', function(e) {
+        e.preventDefault();
+        if (confirm('Are you sure you want to log out?')) {
+            window.location.href = this.href;
+        }
+    });
+});
+</script>
 </body>
 </html>

@@ -9,21 +9,37 @@ body{
     box-shadow: inset 0 -2px 8px rgba(0, 0, 0, 0.1);
     display: flex;
     justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+#BName {
+    text-decoration: none;
+    color: #F868AA;
+    font-size: 2rem;
+    font-weight: bold;
+    white-space: nowrap;
 }
 
 .Navbar ul {
     list-style-type: none;
-    padding: 0rem;
-    margin: 0rem;
+    padding: 0;
+    margin: 0;
+    margin-left: auto;
     overflow: visible;
+    display: flex;
+    align-items: center;
+    gap: 15px;
 }
 
 .Navbar a{
     color: #F868AA;
     text-decoration: none;
-    padding: 15px;
+    padding: 10px 12px;
     display: block;
-    text-align: left;
 }
 
 .Navbar a:hover{
@@ -35,8 +51,9 @@ body{
 }
 
 .Img{
-    width: 1.2vw;
-    height: 2.5vh;
+    width: 24px;
+    height: 24px;
+    object-fit: contain;
 }
 
 .RContainer {

@@ -14,6 +14,11 @@
                 window.location.href = '../Registration/LogInPage.html';
                 return;
             }
+            // Block customers from admin pages
+            if (data.role === 'customer') {
+                window.location.href = '../LandingPage/LandingPage.html';
+                return;
+            }
             // Update owner-tag text with role
             const ownerTag = document.querySelector('.owner-tag');
             if (ownerTag && data.role) {

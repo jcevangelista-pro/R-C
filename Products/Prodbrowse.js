@@ -327,6 +327,20 @@ document.addEventListener('DOMContentLoaded', () => {
   navCart.style.position = 'relative';
   navCart.appendChild(cartBadge);
 
+  // Fetch real cart count from database
+  fetch('../CART/cart_api.php')
+    .then(r => r.json())
+    .then(data => {
+      if (data.success && data.items && data.items.length > 0) {
+        const totalQty = data.items.reduce((sum, item) => sum + item.quantity, 0);
+        cartBadge.textContent = totalQty;
+        cartBadge.style.display = totalQty > 0 ? '' : 'none';
+      } else {
+        cartBadge.style.display = 'none';
+      }
+    })
+    .catch(() => { cartBadge.style.display = 'none'; });
+
   const cartOverlay = document.createElement('div');
   cartOverlay.className = 'CartOverlay';
   document.body.appendChild(cartOverlay);
@@ -363,6 +377,29 @@ document.addEventListener('DOMContentLoaded', () => {
     cart[id] = (cart[id] || 0) + 1;
     saveCart();
     renderCart();
+
+    // Also save to database
+    const numericId = id.replace('p', '');
+    fetch('../CART/cart_api.php', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ action: 'add', product_id: parseInt(numericId), quantity: 1 })
+    })
+    .then(r => r.json())
+    .then(data => {
+      if (data.success) {
+        // Update badge from DB
+        fetch('../CART/cart_api.php')
+          .then(r => r.json())
+          .then(d => {
+            if (d.success && d.items) {
+              const totalQty = d.items.reduce((sum, item) => sum + item.quantity, 0);
+              cartBadge.textContent = totalQty;
+            }
+          });
+      }
+    })
+    .catch(() => {});
   }
 
   function changeQty(id, delta) {
@@ -418,7 +455,19 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     cartTotalValue.textContent = `₱${total.toFixed(2)}`;
-    cartBadge.textContent = totalQty;
+    // Update badge from database (not localStorage)
+    fetch('../CART/cart_api.php')
+      .then(r => r.json())
+      .then(data => {
+        if (data.success && data.items) {
+          const dbTotal = data.items.reduce((sum, item) => sum + item.quantity, 0);
+          cartBadge.textContent = dbTotal;
+          cartBadge.style.display = dbTotal > 0 ? '' : 'none';
+        } else {
+          cartBadge.style.display = 'none';
+        }
+      })
+      .catch(() => { cartBadge.textContent = totalQty; cartBadge.style.display = totalQty > 0 ? '' : 'none'; });
   }
 
   cartItemsList.addEventListener('click', (e) => {
@@ -445,8 +494,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   navCart.addEventListener('click', (e) => {
     e.preventDefault();
-    closeAllNavWidgets(null);
-    openCart();
+    window.location.href = '../CART/cart.html';
   });
 
   cartPanel.querySelector('.CartCloseBtn').addEventListener('click', closeCart);

@@ -42,10 +42,15 @@ function updateCartBadge(){
 /* ================= RENDER CART ROWS ================= */
 function renderCartRows(){
   const wrap = document.getElementById('cartRows');
-  wrap.innerHTML = cartItems.map((item, idx) => `
+  wrap.innerHTML = cartItems.map((item, idx) => {
+    const imgHtml = item.image
+      ? `<img src="../Products/${item.image}" style="width:6vw;height:6vw;object-fit:cover;border-radius:8px;">`
+      : `<div style="width:6vw;height:6vw;background:#e5e7eb;border-radius:8px;"></div>`;
+
+    return `
     <div class="cart-row ${selectedIndexes.has(idx) ? 'selected' : ''}" data-index="${idx}">
       <span class="radio-dot" data-radio-index="${idx}"></span>
-      <div class="row-thumb"><img src="../imgs/MugPicture.jpg" style="width:6vw"></div>
+      <div class="row-thumb">${imgHtml}</div>
       <div>
         <div class="row-name">${item.name}</div>
         <div class="row-category">${item.category}</div>
@@ -54,8 +59,8 @@ function renderCartRows(){
       <div class="row-qty">${item.qty}</div>
       <div class="row-total">${money(itemTotal(item))}</div>
       <div class="row-chevron" data-chevron-index="${idx}">›</div>
-    </div>
-  `).join('');
+    </div>`;
+  }).join('');
  
   wrap.querySelectorAll('.radio-dot').forEach(dot => {
     dot.addEventListener('click', (e) => {
@@ -105,6 +110,31 @@ function openDeliveryModal(){
   closeOrderModal();
   closeSummaryModal();
   renderDeliverySelection();
+
+  // Load saved delivery info from DB
+  fetch('cart_api.php', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({ action: 'get_delivery' })
+  })
+  .then(r => r.json())
+  .then(data => {
+    if (data.success && data.delivery) {
+      const d = data.delivery;
+      document.getElementById('fldFirstName').value = d.first_name || '';
+      document.getElementById('fldMiddleName').value = d.middle_name || '';
+      document.getElementById('fldLastName').value = d.last_name || '';
+      document.getElementById('fldEmail').value = d.email || '';
+      document.getElementById('fldPhone').value = d.phone_num || '';
+
+      // Parse address into fields if it contains commas
+      if (d.address && d.address !== '—' && d.address.trim()) {
+        document.getElementById('fldAddress').value = d.address;
+      }
+    }
+  })
+  .catch(() => {});
+
   deliveryModal.classList.add('open');
 }
  
@@ -145,6 +175,19 @@ deliveryDoneBtn.addEventListener('click', () => {
     deliveryInfo.address = (addressParts + (zip ? ', ' + zip : '')) || "No address provided";
     deliveryInfo.phone = val('fldPhone') || "09XX-XXX-XXXX";
     deliveryInfo.email = val('fldEmail') || "";
+
+    // Save to database
+    fetch('cart_api.php', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        action: 'save_delivery',
+        phone_num: deliveryInfo.phone,
+        address: deliveryInfo.address,
+        email: deliveryInfo.email
+      })
+    }).catch(() => {});
+
   } else {
     deliveryInfo.name = "R&C Printing Services (Pickup)";
     deliveryInfo.address = "St. Joseph Windfield 2 Village, Cabuyao City, Laguna";
@@ -229,6 +272,28 @@ orderDoneBtn.addEventListener('click', () => {
   closeOrderModal();
   renderCartRows();
 });
+
+// Remove item from cart
+const orderRemoveBtn = document.getElementById('orderRemoveBtn');
+orderRemoveBtn.addEventListener('click', async () => {
+  const item = cartItems[activeItemIndex];
+  if (!confirm(`Are you sure you want to remove "${item.name}" from your cart?`)) return;
+
+  // Remove from database
+  if (item.cart_id) {
+    await fetch('cart_api.php', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ action: 'remove', cart_id: item.cart_id })
+    });
+  }
+
+  // Remove from local array
+  cartItems.splice(activeItemIndex, 1);
+  selectedIndexes.clear();
+  closeOrderModal();
+  renderCartRows();
+});
  
 orderModal.addEventListener('click', (e) => {
   if (e.target === orderModal) closeOrderModal();
@@ -263,6 +328,15 @@ document.getElementById('odQtyInput').addEventListener('input', (e) => {
   item.qty = v;
   renderOrderModal();
   renderCartRows();
+
+  // Sync to database
+  if (item.cart_id) {
+    fetch('cart_api.php', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ action: 'update_qty', cart_id: item.cart_id, quantity: v })
+    }).catch(() => {});
+  }
 });
  
 document.getElementById('orderPhotoInput').addEventListener('change', (e) => {

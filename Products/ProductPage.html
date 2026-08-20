@@ -14,7 +14,7 @@
         <ul>
             <li><a href=""><img src="../imgs/search.png" alt="" class="Img"></a></li>
             <li><a href=""><img src="../imgs/typing.png" alt="" class="Img"></a></li>
-            <li><a href=""><img src="../imgs/trolley.png" alt="" class="Img"></a></li>
+            <li><a href="../CART/cart.html"><img src="../imgs/trolley.png" alt="" class="Img"></a></li>
             <li><a href="../LandingPage/LandingPage.html">HOME</a></li>
             <li><a href="ProductPage.html">PRODUCTS</a></li>
             <li><a href="../Portfolio/PortfolioPage.html">PORTFOLIO</a></li>
@@ -85,9 +85,9 @@
                     <div class="Quantity">
                         <div class="label">QUANTITY</div>
                         <div class="stepper">
-                            <button class="ButtonDA">-</button>
-                            <div class="qty">10</div>
-                            <button class="ButtonDA">+</button>
+                            <button class="ButtonDA" id="modalMinusBtn">-</button>
+                            <div class="qty" id="modalQtyDisplay">1</div>
+                            <button class="ButtonDA" id="modalPlusBtn">+</button>
                         </div>
                     </div>
 
@@ -120,6 +120,7 @@
         });
     }
     </script>
+    <script src="../CART/cart_badge.js"></script>
     <script src="Product.js"></script>
 </body>
 </html>

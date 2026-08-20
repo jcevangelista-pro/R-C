@@ -21,7 +21,7 @@
         <ul>
             <li><a href=""><img src="../imgs/search.png" alt="" class="Img"></a></li>
             <li><a href=""><img src="../imgs/typing.png" alt="" class="Img"></a></li>
-            <li><a href=""><img src="../imgs/trolley.png" alt="" class="Img"></a></li>
+            <li><a href="../CART/cart.html"><img src="../imgs/trolley.png" alt="" class="Img"></a></li>
             <li><a href="LandingPage.php">HOME</a></li>
             <li><a href="../Products/Prodbrowse.html">PRODUCTS</a></li>
             <li><a href="../Portfolio/PortfolioPage.html">PORTFOLIO</a></li>
@@ -138,7 +138,7 @@
                 const price = 'P' + parseFloat(p.price).toFixed(2);
                 const encodedName = encodeURIComponent(p.name);
                 const encodedType = encodeURIComponent(p.type_of_product || '');
-                const href = `../Products/ProductPage.html?name=${encodedName}&type=${encodedType}&price=${price}&img=${p.image_path || ''}`;
+                const href = `../Products/ProductPage.html?id=${p.id}&name=${encodedName}&type=${encodedType}&price=${price}&img=${p.image_path || ''}`;
 
                 return `
                 <a class="CardProducts" href="${href}">
@@ -156,6 +156,6 @@
 
     loadBestSellers();
     </script>
-    
+    <script src="../CART/cart_badge.js"></script>
 </body>
 </html>
