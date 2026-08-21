@@ -444,20 +444,56 @@ summaryNextBtn.addEventListener('click', () => {
   renderSummaryModal();
 });
  
-summaryCheckoutBtn.addEventListener('click', () => {
-  // Remove checked-out items from the cart (highest index first so splicing doesn't shift earlier indexes)
-  const sortedIndexes = [...checkoutIndexes].sort((a, b) => b - a);
-  sortedIndexes.forEach(idx => {
-    cartItems.splice(idx, 1);
+summaryCheckoutBtn.addEventListener('click', async () => {
+  // Collect cart_ids of selected items
+  const selectedCartIds = [];
+  checkoutIndexes.forEach(idx => {
+    const item = cartItems[idx];
+    if (item && item.cart_id) selectedCartIds.push(item.cart_id);
   });
- 
-  selectedIndexes.clear();
-  closeSummaryModal();
-  renderCartRows();
+
+  if (selectedCartIds.length === 0) {
+    alert('No valid items to checkout.');
+    return;
+  }
+
+  // Determine delivery and rush info
+  const isRush = checkoutIndexes.some(idx => cartItems[idx] && cartItems[idx].orderType === 'rush');
+
+  try {
+    const res = await fetch('cart_api.php', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({
+        action: 'checkout',
+        cart_ids: selectedCartIds,
+        delivery_method: deliveryInfo.method === 'pickup' ? 'Pickup' : 'Delivery',
+        delivery_address: deliveryInfo.address || '',
+        is_rush: isRush
+      })
+    });
+    const data = await res.json();
+
+    if (data.success) {
+      alert('Order placed successfully! Order ID: ' + data.order_id);
+
+      // Remove checked-out items from local array
+      const sortedIndexes = [...checkoutIndexes].sort((a, b) => b - a);
+      sortedIndexes.forEach(idx => { cartItems.splice(idx, 1); });
+
+      selectedIndexes.clear();
+      closeSummaryModal();
+      renderCartRows();
+    } else {
+      alert(data.error || 'Failed to place order.');
+    }
+  } catch (err) {
+    alert('Error placing order. Please try again.');
+  }
 });
  
 /* ================= INIT ================= */
-renderCartRows();
+// renderCartRows is called by cartdata.js after data loads from DB
  
 
 

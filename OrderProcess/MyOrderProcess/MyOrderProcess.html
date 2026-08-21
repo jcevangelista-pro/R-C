@@ -15,7 +15,6 @@
 
     <!-- R&C CSS AFTER Bootstrap -->
     <link rel="stylesheet" href="../../CART/cart.css">
-    <link rel="stylesheet" href="OrderProcess.css">
     <link rel="stylesheet" href="MyOrderProcess.css">
     
 </head>
@@ -28,21 +27,25 @@
         <li><a href=""><img src="../../imgs/search.png" alt="" class="Img"></a></li>
         <li><a href=""><img src="../../imgs/typing.png" alt="" class="Img"></a></li>
         <li class="cart-icon-item"><a href="">
-            <img src="MyOrders/Alarm.png" alt="" class="Img">
+            <img src="../OrderProcessImgs/Alarm.png" alt="" class="Img">
             <span class="cart-badge" id="">0</span>
         </a></li>
         <li class="cart-icon-item"><a href="">
             <img src="../../imgs/trolley.png" alt="" class="Img">
             <span class="cart-badge" id="cartBadge">0</span>
         </a></li>
-        <li class="cart-icon-item"><a href="">
-            <img src="MyOrders/Bill.png" alt="" class="Img">
+        <li class="cart-icon-item"><a href="../../MyOrders/Myorder.html">
+            <img src="../OrderProcessImgs/billing.png" alt="" class="Img">
             <span class="cart-badge" id="">0</span>
         </a></li>
         <li><a href="">HOME</a></li>
         <li><a href="">PRODUCTS</a></li>
         <li><a href="">PORTFOLIO</a></li>
-        <li><a href=""><img src="../../imgs/user.png" alt="" class="Img"></a></li>
+        <li class="user-menu-item"><a href="" id="NavUser"><img src="../../imgs/user.png" alt="" class="Img"></a>
+            <div class="user-dropdown" id="userDropdown">
+                <a href="../../Registration/logout.php" class="logout-link">Log Out</a>
+            </div>
+        </li>
     </ul>
 </nav>
  
@@ -190,6 +193,18 @@
                                         </div>
                                     </div>
                                 </div>
+
+                                <!-- CHAT BOX (Step 2) -->
+                                <div class="bs-calltoaction bs-calltoaction-primary">
+                                    <div class="chat-container" id="chatStep2">
+                                        <div class="chat-header">💬 Verification Chat</div>
+                                        <div class="chat-messages" id="chatMessages2"></div>
+                                        <div class="chat-input-row">
+                                            <input type="text" class="chat-input" id="chatInput2" placeholder="Type a message...">
+                                            <button class="chat-send-btn" onclick="sendMessage(2)">Send</button>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                             <!-- ===== STEP 3 ===== -->
                             <div class="tab-pane" role="tabpanel" id="step3">
@@ -258,11 +273,11 @@
                                                 <div class="od-inline-row">
                                                     <div class="od-stat">
                                                         <span class="stat-label">PRODUCT TOTAL:</span>
-                                                        <p class="stat-value" id="odPrice">P45.00</p>
+                                                        <p class="stat-value" id="step3ProductTotal">P0.00</p>
                                                     </div>
                                                     <div class="od-stat">
                                                         <span class="stat-label">AMOUNT TO PAY:</span>
-                                                        <p class="stat-value" id="odTotalPrice">P90.00</p>
+                                                        <p class="stat-value" id="step3AmountToPay">P0.00</p>
                                                     </div>
                                                 </div>
                                                 
@@ -299,6 +314,18 @@
                                             </div>
                                         </div>    
                                         
+                                    </div>
+                                </div>
+
+                                <!-- CHAT BOX inside Step 3 Payment Method -->
+                                <div class="bs-calltoaction bs-calltoaction-primary">
+                                    <div class="chat-container" id="chatStep3">
+                                        <div class="chat-header">💬 Payment Chat</div>
+                                        <div class="chat-messages" id="chatMessages3"></div>
+                                        <div class="chat-input-row">
+                                            <input type="text" class="chat-input" id="chatInput3" placeholder="Type a message...">
+                                            <button class="chat-send-btn" onclick="sendMessage(3)">Send</button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -400,7 +427,7 @@
                                                 <div class="od-inline-row">
                                                     <div class="od-stat">
                                                         <span class="stat-label">DELIVERY FEE:</span>
-                                                        <p class="stat-value" id="odPrice">P90.00</p>
+                                                        <p class="stat-value" id="step5DeliveryFee">P0.00</p>
                                                     </div>
                                                     <div class="field">
                                                         <label class="stat-label">DELIVERY FEE IMAGE:</label>
@@ -414,11 +441,11 @@
                                                 <div class="od-inline-row">
                                                     <div class="od-stat">
                                                         <span class="stat-label">PRODUCT BALANCE:</span>
-                                                        <p class="stat-value" id="odPrice">P45.00</p>
+                                                        <p class="stat-value" id="step5Balance">P0.00</p>
                                                     </div>
                                                     <div class="od-stat">
                                                         <span class="stat-label">AMOUNT TO PAY:</span>
-                                                        <p class="stat-value" id="odTotalPrice">P90.00</p>
+                                                        <p class="stat-value" id="step5AmountToPay">P0.00</p>
                                                     </div>
                                                 </div>
                                                 
@@ -458,6 +485,17 @@
                                     </div>
                                 </div>
 
+                                <!-- CHAT BOX inside Step 5 Final Payment -->
+                                <div class="bs-calltoaction bs-calltoaction-primary">
+                                    <div class="chat-container" id="chatStep5">
+                                        <div class="chat-header">💬 Final Payment Chat</div>
+                                        <div class="chat-messages" id="chatMessages5"></div>
+                                        <div class="chat-input-row">
+                                            <input type="text" class="chat-input" id="chatInput5" placeholder="Type a message...">
+                                            <button class="chat-send-btn" onclick="sendMessage(5)">Send</button>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                             <!-- ===== STEP 6 ===== -->
                             <div class="tab-pane" role="tabpanel" id="step6">
@@ -484,6 +522,18 @@
                                                     <p>August 10, 2026 | 7:42 AM</p>
                                                 </div>
                                             </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- CHAT BOX (Step 6) -->
+                                <div class="bs-calltoaction bs-calltoaction-primary">
+                                    <div class="chat-container" id="chatStep6">
+                                        <div class="chat-header">💬 Delivery Chat</div>
+                                        <div class="chat-messages" id="chatMessages6"></div>
+                                        <div class="chat-input-row">
+                                            <input type="text" class="chat-input" id="chatInput6" placeholder="Type a message...">
+                                            <button class="chat-send-btn" onclick="sendMessage(6)">Send</button>
                                         </div>
                                     </div>
                                 </div>
@@ -531,7 +581,7 @@
 
                                                 <div class="LocationContainer">
                                                     <div class="LImg">
-                                                        <img src="OrderProcessImgs\Location.png" alt="">
+                                                        <img src="../OrderProcessImgs/Location.png" alt="">
                                                     </div>
                                                     <div class="CInformation">
                                                         <p class="DNText">Delivery (via Lalamove)</p>
@@ -874,11 +924,25 @@
  
 </main>
  
-<script src="cartData.js"></script>
-<script src="cart.js"></script>
 <script src='https://code.jquery.com/jquery-2.2.4.min.js'></script>
 <script src='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js'></script>
-<script src="MyOrderProcess.js"></script>
+<script src="MyOrderProcess.js?v=3"></script>
+<script>
+const navUser = document.getElementById('NavUser');
+const userDropdown = document.getElementById('userDropdown');
+if (navUser && userDropdown) {
+    navUser.addEventListener('click', function(e) { e.preventDefault(); e.stopPropagation(); userDropdown.classList.toggle('show'); });
+    document.addEventListener('click', function(e) { if (!userDropdown.contains(e.target) && e.target !== navUser) userDropdown.classList.remove('show'); });
+    document.querySelectorAll('.logout-link').forEach(function(link) { link.addEventListener('click', function(e) { e.preventDefault(); if (confirm('Are you sure you want to log out?')) window.location.href = this.href; }); });
+}
+</script>
+<style>
+.user-menu-item { position: relative; }
+.user-dropdown { display:none; position:absolute; top:100%; right:0; background:#fff; border-radius:10px; box-shadow:0 10px 24px rgba(107,33,168,0.2); min-width:150px; z-index:1000; overflow:hidden; }
+.user-dropdown.show { display:flex; flex-direction:column; }
+.user-dropdown a { padding:10px 16px; font-size:13px; color:#1E3163!important; text-decoration:none; font-weight:600!important; display:block; }
+.user-dropdown a:hover { background:#ffe4f0; }
+</style>
  
 </body>
 </html>

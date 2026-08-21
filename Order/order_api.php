@@ -76,7 +76,9 @@ try {
                    CONCAT(u.first_name, ' ', u.last_name) AS customer_name,
                    (SELECT p.name FROM order_details od JOIN products p ON p.product_id = od.product_id WHERE od.order_id = o.order_id LIMIT 1) AS product_name,
                    o.total_amount,
-                   o.order_status
+                   o.order_status,
+                   (SELECT ps.step_name FROM order_process op JOIN process_steps ps ON ps.process_step_id = op.process_step_id WHERE op.order_id = o.order_id AND op.status = 'In Progress' ORDER BY ps.step_number LIMIT 1) AS current_step,
+                   (SELECT ps.step_number FROM order_process op JOIN process_steps ps ON ps.process_step_id = op.process_step_id WHERE op.order_id = o.order_id AND op.status = 'In Progress' ORDER BY ps.step_number LIMIT 1) AS current_step_number
             FROM orders o
             JOIN customers c ON o.customer_id = c.customer_id
             JOIN users u ON c.user_id = u.user_id
@@ -115,6 +117,25 @@ try {
 
             $stmt = $pdo->prepare("UPDATE orders SET order_status = 'In Progress', accepted_by = ?, date_accepted = NOW() WHERE order_id = ?");
             $stmt->execute([$userId, $orderId]);
+
+            // Create all 8 process steps for this order
+            $stmt = $pdo->prepare("SELECT process_step_id FROM process_steps ORDER BY step_number");
+            $stmt->execute();
+            $stepIds = $stmt->fetchAll(PDO::FETCH_COLUMN);
+
+            foreach ($stepIds as $index => $stepId) {
+                $status = ($index === 0) ? 'Completed' : 'Pending';
+                $stmtInsert = $pdo->prepare("
+                    INSERT IGNORE INTO order_process (order_id, process_step_id, status, completed_by, completed_at)
+                    VALUES (?, ?, ?, ?, ?)
+                ");
+                if ($index === 0) {
+                    $stmtInsert->execute([$orderId, $stepId, $status, $userId, date('Y-m-d H:i:s')]);
+                } else {
+                    $stmtInsert->execute([$orderId, $stepId, $status, null, null]);
+                }
+            }
+
             echo json_encode(['success' => true, 'message' => 'Order accepted.']);
             exit;
         }
@@ -136,6 +157,114 @@ try {
             $stmt = $pdo->prepare("UPDATE orders SET order_status = 'Completed', date_finished = NOW() WHERE order_id = ?");
             $stmt->execute([$orderId]);
             echo json_encode(['success' => true, 'message' => 'Order completed.']);
+            exit;
+        }
+
+        // Get process steps for an order
+        if ($action === 'get_steps') {
+            $orderId = $body['order_id'] ?? '';
+            if (!$orderId) { echo json_encode(['success' => false, 'error' => 'Order ID required.']); exit; }
+
+            $stmt = $pdo->prepare("
+                SELECT op.process_id, op.status, op.completed_at, ps.step_number, ps.step_name,
+                       CONCAT(u.first_name, ' ', u.last_name) AS completed_by_name
+                FROM order_process op
+                JOIN process_steps ps ON ps.process_step_id = op.process_step_id
+                LEFT JOIN users u ON u.user_id = op.completed_by
+                WHERE op.order_id = ?
+                ORDER BY ps.step_number
+            ");
+            $stmt->execute([$orderId]);
+            $steps = $stmt->fetchAll();
+
+            // Get order info
+            $stmt = $pdo->prepare("
+                SELECT o.order_id, o.order_status, o.total_amount, o.product_total,
+                       o.discount_percent, o.amount_deducted, o.is_rush, o.customization_type,
+                       o.delivery_method, o.delivery_address,
+                       CONCAT(u.first_name, ' ', u.last_name) AS customer_name
+                FROM orders o
+                JOIN customers c ON o.customer_id = c.customer_id
+                JOIN users u ON c.user_id = u.user_id
+                WHERE o.order_id = ?
+            ");
+            $stmt->execute([$orderId]);
+            $order = $stmt->fetch();
+
+            // Get order items
+            $stmt = $pdo->prepare("
+                SELECT od.product_id, od.quantity, od.unit_price, p.name, p.type_of_product, p.image_path
+                FROM order_details od
+                JOIN products p ON p.product_id = od.product_id
+                WHERE od.order_id = ?
+            ");
+            $stmt->execute([$orderId]);
+            $items = $stmt->fetchAll();
+
+            echo json_encode(['success' => true, 'steps' => $steps, 'order' => $order, 'items' => $items]);
+            exit;
+        }
+
+        // Apply discount to an order
+        if ($action === 'apply_discount') {
+            $orderId = $body['order_id'] ?? '';
+            $discountPercent = (float)($body['discount_percent'] ?? 0);
+
+            if (!$orderId) { echo json_encode(['success' => false, 'error' => 'Order ID required.']); exit; }
+
+            // Get product total
+            $stmt = $pdo->prepare("SELECT product_total FROM orders WHERE order_id = ?");
+            $stmt->execute([$orderId]);
+            $productTotal = (float)$stmt->fetchColumn();
+
+            $amountDeducted = round($productTotal * ($discountPercent / 100), 2);
+            $newTotal = $productTotal - $amountDeducted;
+
+            // Update order
+            $stmt = $pdo->prepare("UPDATE orders SET discount_percent = ?, amount_deducted = ?, total_amount = ? + rush_fee + delivery_fee WHERE order_id = ?");
+            $stmt->execute([$discountPercent, $amountDeducted, $newTotal, $orderId]);
+
+            echo json_encode(['success' => true, 'message' => 'Discount applied.', 'amount_deducted' => $amountDeducted, 'new_total' => $newTotal]);
+            exit;
+        }
+
+        // Advance to next step
+        if ($action === 'advance_step') {
+            $orderId = $body['order_id'] ?? '';
+            $stepNumber = (int)($body['step_number'] ?? 0);
+            $userId = $_SESSION['user_id'] ?? null;
+
+            if (!$orderId || !$stepNumber) {
+                echo json_encode(['success' => false, 'error' => 'Order ID and step number required.']);
+                exit;
+            }
+
+            // Mark current step as completed
+            $stmt = $pdo->prepare("
+                UPDATE order_process op
+                JOIN process_steps ps ON ps.process_step_id = op.process_step_id
+                SET op.status = 'Completed', op.completed_by = ?, op.completed_at = NOW()
+                WHERE op.order_id = ? AND ps.step_number = ?
+            ");
+            $stmt->execute([$userId, $orderId, $stepNumber]);
+
+            // If step 8, mark order as completed
+            if ($stepNumber >= 8) {
+                $stmt = $pdo->prepare("UPDATE orders SET order_status = 'Completed', date_finished = NOW() WHERE order_id = ?");
+                $stmt->execute([$orderId]);
+            } else {
+                // Mark next step as In Progress
+                $nextStep = $stepNumber + 1;
+                $stmt = $pdo->prepare("
+                    UPDATE order_process op
+                    JOIN process_steps ps ON ps.process_step_id = op.process_step_id
+                    SET op.status = 'In Progress'
+                    WHERE op.order_id = ? AND ps.step_number = ?
+                ");
+                $stmt->execute([$orderId, $nextStep]);
+            }
+
+            echo json_encode(['success' => true, 'message' => 'Step advanced.']);
             exit;
         }
 

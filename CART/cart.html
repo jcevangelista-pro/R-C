@@ -19,15 +19,21 @@
     <a href="#" id="BName">R&amp;C PRINTING SERVICES</a>
     <ul>
         <li><a href=""><img src="../imgs/Search.png" alt="" class="Img"></a></li>
-        <li><a href=""><img src="../imgs/typing.png" alt="" class="Img"></a></li>
-        <li class="cart-icon-item"><a href="">
+        <!-- <li><a href=""><img src="../imgs/typing.png" alt="" class="Img"></a></li> -->
+        <li><a href=""><img src="../OrderProcess/OrderProcessImgs/Alarm.png" alt="" class="Img"></a></li>
+        <li class="cart-icon-item"><a href="cart.html">
             <img src="../imgs/trolley.png" alt="" class="Img">
             <span class="cart-badge" id="cartBadge">0</span>
         </a></li>
+        <li><a href="../MyOrders/Myorder.html"><img src="../OrderProcess/OrderProcessImgs/billing.png" alt="" class="Img"></a></li>
         <li><a href="../LandingPage/LandingPage.html">HOME</a></li>
         <li><a href="../Products/Prodbrowse.html">PRODUCTS</a></li>
         <li><a href="../Portfolio/PortfolioPage.html">PORTFOLIO</a></li>
-        <li><a href=""><img src="../imgs/user.png" alt="" class="Img"></a></li>
+        <li class="user-menu-item"><a href="" id="NavUser"><img src="../imgs/user.png" alt="" class="Img"></a>
+            <div class="user-dropdown" id="userDropdown">
+                <a href="../Registration/logout.php" class="logout-link">Log Out</a>
+            </div>
+        </li>
     </ul>
 </nav>
  
@@ -131,6 +137,7 @@
                     <div class="option-row">
                         <label class="checkbox-option">
                             <span class="box active"></span> <span id="sumOrderTypeLabel">Rush Order</span>
+                            <!-- <span class="box "></span> <span id="sumOrderTypeLabel">Rush Order</span> -->
                         </label>
                     </div>
                 </div>
@@ -387,6 +394,23 @@
  
 <script src="cartData.js"></script>
 <script src="cart.js"></script>
+<script>
+// User dropdown toggle + logout
+const navUser = document.getElementById('NavUser');
+const userDropdown = document.getElementById('userDropdown');
+if (navUser && userDropdown) {
+    navUser.addEventListener('click', function(e) { e.preventDefault(); e.stopPropagation(); userDropdown.classList.toggle('show'); });
+    document.addEventListener('click', function(e) { if (!userDropdown.contains(e.target) && e.target !== navUser) userDropdown.classList.remove('show'); });
+    document.querySelectorAll('.logout-link').forEach(function(link) { link.addEventListener('click', function(e) { e.preventDefault(); if (confirm('Are you sure you want to log out?')) window.location.href = this.href; }); });
+}
+</script>
+<style>
+.user-menu-item { position: relative; }
+.user-dropdown { display:none; position:absolute; top:100%; right:0; background:#fff; border-radius:10px; box-shadow:0 10px 24px rgba(107,33,168,0.2); min-width:150px; z-index:1000; overflow:hidden; }
+.user-dropdown.show { display:flex; flex-direction:column; }
+.user-dropdown a { padding:10px 16px; font-size:13px; color:#1E3163!important; text-decoration:none; font-weight:600!important; display:block; }
+.user-dropdown a:hover { background:#ffe4f0; }
+</style>
  
 </body>
 </html>

@@ -8,25 +8,22 @@
 </head>
 <body>
 
-    <!-- ── NAVIGATION BAR (same as LandingPage) ────────────── -->
+    <!-- ── NAVIGATION BAR ────────────── -->
     <nav class="Navbar">
         <a href="../LandingPage/LandingPage.html" id="BName">R&C PRINTING SERVICES</a>
         <ul>
             <li><a href=""><img src="../imgs/search.png" alt="" class="Img"></a></li>
             <li><a href=""><img src="../imgs/typing.png" alt="" class="Img"></a></li>
+            <li><a href=""><img src="../OrderProcess/OrderProcessImgs/Alarm.png" alt="" class="Img"></a></li>
             <li><a href="../CART/cart.html"><img src="../imgs/trolley.png" alt="" class="Img"></a></li>
+            <li><a href="../MyOrders/Myorder.html"><img src="../OrderProcess/OrderProcessImgs/billing.png" alt="" class="Img"></a></li>
             <li><a href="../LandingPage/LandingPage.html">HOME</a></li>
-            <li><a href="ProductPage.html">PRODUCTS</a></li>
+            <li><a href="../Products/Prodbrowse.html">PRODUCTS</a></li>
             <li><a href="../Portfolio/PortfolioPage.html">PORTFOLIO</a></li>
-            <li class="mobile-menu-item">
-                <a href=""><img src="../imgs/user.png" alt="" class="Img"></a>
-                <div class="mobile-sidebar">
-                    <a href=""><img src="../imgs/search.png" alt="" class="sidebar-icon"> Search</a>
-                    <a href=""><img src="../imgs/typing.png" alt="" class="sidebar-icon"> Messages</a>
-                    <a href=""><img src="../imgs/trolley.png" alt="" class="sidebar-icon"> Cart</a>
-                    <a href="../LandingPage/LandingPage.html">HOME</a>
-                    <a href="ProductPage.html">PRODUCTS</a>
-                    <a href="../Portfolio/PortfolioPage.html">PORTFOLIO</a>
+            <li class="user-menu-item">
+                <a href="" id="NavUser"><img src="../imgs/user.png" alt="" class="Img"></a>
+                <div class="user-dropdown" id="userDropdown">
+                    <a href="../Registration/logout.php" class="logout-link">Log Out</a>
                 </div>
             </li>
         </ul>
@@ -121,6 +118,31 @@
     }
     </script>
     <script src="../CART/cart_badge.js"></script>
+    <script>
+    // User dropdown toggle
+    const navUser = document.getElementById('NavUser');
+    const userDropdown = document.getElementById('userDropdown');
+    if (navUser && userDropdown) {
+        navUser.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            userDropdown.classList.toggle('show');
+        });
+        document.addEventListener('click', function(e) {
+            if (!userDropdown.contains(e.target) && e.target !== navUser) {
+                userDropdown.classList.remove('show');
+            }
+        });
+        document.querySelectorAll('.logout-link').forEach(function(link) {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                if (confirm('Are you sure you want to log out?')) {
+                    window.location.href = this.href;
+                }
+            });
+        });
+    }
+    </script>
     <script src="Product.js"></script>
 </body>
 </html>

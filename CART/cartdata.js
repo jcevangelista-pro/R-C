@@ -1,5 +1,5 @@
 // Cart items loaded from database
-let cartItems = [];
+var cartItems = [];
 
 async function loadCartFromDB() {
     try {

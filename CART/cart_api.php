@@ -172,6 +172,75 @@ try {
             exit;
         }
 
+        // Checkout: create an order from selected cart items
+        if ($action === 'checkout') {
+            $cartIds = $body['cart_ids'] ?? [];
+            $deliveryMethod = $body['delivery_method'] ?? 'Pickup';
+            $deliveryAddress = trim($body['delivery_address'] ?? '');
+            $isRush = !empty($body['is_rush']) ? 1 : 0;
+
+            if (empty($cartIds)) {
+                echo json_encode(['success' => false, 'error' => 'No items selected for checkout.']);
+                exit;
+            }
+
+            // Get selected cart items
+            $placeholders = implode(',', array_fill(0, count($cartIds), '?'));
+            $stmt = $pdo->prepare("
+                SELECT c.cart_id, c.product_id, c.quantity, p.price
+                FROM cart c
+                JOIN products p ON p.product_id = c.product_id
+                WHERE c.cart_id IN ($placeholders) AND c.customer_id = ?
+            ");
+            $params = array_merge($cartIds, [$customerId]);
+            $stmt->execute($params);
+            $items = $stmt->fetchAll();
+
+            if (empty($items)) {
+                echo json_encode(['success' => false, 'error' => 'Selected items not found in cart.']);
+                exit;
+            }
+
+            // Calculate totals
+            $productTotal = 0;
+            foreach ($items as $item) {
+                $productTotal += $item['price'] * $item['quantity'];
+            }
+
+            $rushFee = $isRush ? round($productTotal * 0.8, 2) : 0;
+            $totalAmount = $productTotal + $rushFee;
+
+            // Generate order ID
+            $year = date('Y');
+            $stmt = $pdo->query("SELECT COUNT(*) FROM orders");
+            $orderCount = (int)$stmt->fetchColumn() + 1;
+            $orderId = "ORD-{$year}-" . str_pad($orderCount, 5, '0', STR_PAD_LEFT);
+
+            // Create order
+            $stmt = $pdo->prepare("
+                INSERT INTO orders (order_id, customer_id, is_rush, rush_fee, product_total, total_amount, delivery_method, delivery_address, order_status, payment_status)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'Pending', 'Unpaid')
+            ");
+            $stmt->execute([$orderId, $customerId, $isRush, $rushFee, $productTotal, $totalAmount, $deliveryMethod, $deliveryAddress ?: null]);
+
+            // Create order details
+            $stmtDetail = $pdo->prepare("INSERT INTO order_details (order_id, product_id, quantity, unit_price) VALUES (?, ?, ?, ?)");
+            foreach ($items as $item) {
+                $stmtDetail->execute([$orderId, $item['product_id'], $item['quantity'], $item['price']]);
+            }
+
+            // Remove checked-out items from cart
+            $stmt = $pdo->prepare("DELETE FROM cart WHERE cart_id IN ($placeholders) AND customer_id = ?");
+            $stmt->execute($params);
+
+            echo json_encode([
+                'success' => true,
+                'message' => 'Order placed successfully!',
+                'order_id' => $orderId
+            ]);
+            exit;
+        }
+
         echo json_encode(['success' => false, 'error' => 'Invalid action.']);
         exit;
     }

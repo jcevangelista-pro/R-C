@@ -41,6 +41,27 @@ try {
             exit;
         }
 
+        // Portfolio view: all front-page products grouped by type_of_product
+        if ($view === 'portfolio') {
+            $stmt = $pdo->query("
+                SELECT product_id AS id, name, type_of_product, price, image_path
+                FROM products
+                WHERE is_archived = 0 AND is_active = 1 AND front_page_visible = 1
+                ORDER BY type_of_product, name
+            ");
+            $rows = $stmt->fetchAll();
+
+            // Group by type
+            $grouped = [];
+            foreach ($rows as $row) {
+                $type = $row['type_of_product'] ?: 'Other';
+                $grouped[$type][] = $row;
+            }
+
+            echo json_encode(['success' => true, 'products' => $grouped]);
+            exit;
+        }
+
         // Admin view: all active products
         $stmt = $pdo->query("
             SELECT product_id AS id, name, description, material_used, type_of_product, price, image_path, front_page_visible, is_archived, is_active

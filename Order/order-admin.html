@@ -229,221 +229,225 @@
     </div>
   </div>
 
-  <!-- ===== ADDED: Order Review Status Modal (Steps 2-6) ===== -->
-  <!-- ===== Not wired to any button yet — trigger it yourself   -->
-  <!-- ===== by calling openOrderReviewModal() where needed.     -->
-  <!-- ============================================================ -->
+  <!-- ===== Order Process Modal (8 Steps) ===== -->
   <div class="overlay" id="orderReviewOverlay">
     <div class="review-modal">
-      <button class="review-back-btn" onclick="backReviewStep()">&lt;</button>
-      <div class="review-title">Order Review Status</div>
+      <button class="review-back-btn" onclick="closeOrderReviewModal()">&lt;</button>
+      <div class="review-title">Order Process</div>
       <hr>
- 
-      <div class="review-top-row">
-        <div class="review-step-label" id="reviewStepLabel">
-          <span class="step-number">STEP 2:</span> <span class="step-title">VERIFICATION</span>
-        </div>
-        <div class="review-note">
-          <div class="review-note-title">NOTE:</div>
-          <div class="review-note-text">Please review all necessary details from the messenger conversation before approving. Once approved, the status will proceed to the next step.</div>
-        </div>
+
+      <div class="review-order-info">
+        <span id="reviewOrderId">—</span> | <span id="reviewCustomerName">—</span>
       </div>
- 
-      <!-- STEP 2: VERIFICATION -->
-      <div class="review-step active" id="reviewStep2">
-        <div class="review-step2-grid">
-          <div class="review-item-thumb">
-            <img src="../imgs/MugPicture.jpg" alt="">
-          </div>
-          <div>
-            <div class="review-label">Name</div>
-            <div class="review-value">Tumbler (360ml)</div>
-            <div class="review-value" style="font-size:12px; font-weight:600; margin-top:2px;">Mug &amp; Tumbler</div>
-          </div>
-          <div>
-            <div class="review-label">Quantity</div>
-            <div class="review-stepper">
-              <button type="button">-</button>
-              <div class="qty">2</div>
-              <button type="button">+</button>
+
+      <!-- 8-Step Progress Indicators -->
+      <div class="review-steps-bar">
+        <div class="review-step-dot completed" data-step="1">1</div>
+        <div class="review-step-dot" data-step="2">2</div>
+        <div class="review-step-dot" data-step="3">3</div>
+        <div class="review-step-dot" data-step="4">4</div>
+        <div class="review-step-dot" data-step="5">5</div>
+        <div class="review-step-dot" data-step="6">6</div>
+        <div class="review-step-dot" data-step="7">7</div>
+        <div class="review-step-dot" data-step="8">8</div>
+      </div>
+
+      <!-- Step Details -->
+      <div class="review-step-content" id="reviewStepContent">
+        <h3 id="reviewStepTitle">STEP 1: Order Details</h3>
+        <p id="reviewStepStatus" class="review-step-status">COMPLETED</p>
+        <p id="reviewStepCompletedBy" class="review-step-meta"></p>
+        <p id="reviewStepCompletedAt" class="review-step-meta"></p>
+      </div>
+
+      <!-- Step 2 Verification Details (hidden by default) -->
+      <div class="review-verification-details" id="reviewVerificationBox" style="display:none;">
+        <div class="verif-items" id="verifItems"></div>
+        <div class="verif-discount-row">
+          <div class="verif-field">
+            <span class="verif-label">APPLY DISCOUNT</span>
+            <div class="verif-discount-input">
+              <input type="number" id="verifDiscountInput" value="0" min="0" max="100"> <span>%</span>
             </div>
           </div>
-          <div>
-            <div class="review-label">Price</div>
-            <div class="review-value">P45.00</div>
+          <div class="verif-field">
+            <span class="verif-label">AMOUNT DEDUCTED</span>
+            <p class="verif-value" id="verifAmountDeducted">P0.00</p>
           </div>
-          <div>
-            <div class="review-label">Total Price</div>
-            <div class="review-value">P90.00</div>
+          <div class="verif-field">
+            <span class="verif-label">NEW PRODUCT TOTAL</span>
+            <p class="verif-value verif-large" id="verifNewTotal">P0.00</p>
           </div>
- 
-          <div>
-            <div class="review-label">Design Selection</div>
-            <div class="review-value" style="font-size:12px;">Upload own photo/design</div>
-          </div>
-          <div>
-            <div class="review-label">Apply Discount</div>
-            <div class="review-discount-input">
-              <input type="text" value="10"> %
-            </div>
-          </div>
-          <div>
-            <div class="review-label">Amount Reducted</div>
-            <div class="review-value">P9.00</div>
-          </div>
-          <div>
-            <div class="review-label">New Product Total</div>
-            <div class="review-value large">P81.00</div>
-          </div>
-        </div>
- 
-        <div class="review-photo-desc-grid">
-          <div>
-            <div class="review-label">Order Photo</div>
-            <div class="review-upload-box">
-              <svg viewBox="0 0 24 24" fill="none" stroke="#ec4899" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <polyline points="9 3 3 3 3 9"></polyline>
-                <polyline points="15 3 21 3 21 9"></polyline>
-                <polyline points="3 15 3 21 9 21"></polyline>
-                <polyline points="21 15 21 21 15 21"></polyline>
-              </svg>
-            </div>
-          </div>
-          <div>
-            <div class="review-label">Order Description</div>
-            <div class="review-description-text">Please place the uploaded graduation photo at the center of the shirt with a blue and gold theme. Add the text "Batch 2026" below the image using bold font. Remove the background of the photo and make the image clearer and brighter. Use a minimal image style.</div>
-          </div>
-        </div>
- 
-        <div class="review-btn-row">
-          <button type="button" class="review-approve-btn" onclick="approveReviewStep()">APPROVE</button>
         </div>
       </div>
- 
-      <!-- STEP 3: INITIAL PAYMENT -->
-      <div class="review-step" id="reviewStep3">
-        <div class="review-field-grid">
-          <div>
-            <div class="review-label">Design Selection:</div>
-            <div class="review-value">Bank</div>
+
+      <!-- Step 3 Initial Payment Details -->
+      <div class="review-verification-details" id="reviewStep3Box" style="display:none;">
+        <div class="verif-discount-row">
+          <div class="verif-field">
+            <span class="verif-label">PAYMENT METHOD</span>
+            <p class="verif-value" id="s3PaymentMethod">—</p>
           </div>
-          <div>
-            <div class="review-label">Product Total</div>
-            <div class="review-value">P90.00</div>
+          <div class="verif-field">
+            <span class="verif-label">PRODUCT TOTAL</span>
+            <p class="verif-value" id="s3ProductTotal">P0.00</p>
           </div>
-          <div>
-            <div class="review-label">Remaining Balance</div>
-            <div class="review-value">P40.50</div>
+          <div class="verif-field">
+            <span class="verif-label">REMAINING BALANCE</span>
+            <p class="verif-value" id="s3RemainingBalance">P0.00</p>
           </div>
-          <div>
-            <div class="review-label">New Product Total</div>
-            <div class="review-value">P81.00</div>
+          <div class="verif-field">
+            <span class="verif-label">NEW PRODUCT TOTAL</span>
+            <p class="verif-value verif-large" id="s3NewProductTotal">P0.00</p>
           </div>
-          <div>
-            <div class="review-label">Reference Number:</div>
-            <div class="review-ref-box">4829173645</div>
-          </div>
- 
-          <div>
-            <div class="review-label">Payment Type:</div>
-            <div class="review-value" style="font-size:12px;">50% Down Payment</div>
-          </div>
-          <div>
-            <div class="review-label">Discount Applied:</div>
-            <div class="review-value">10%</div>
-          </div>
-          <div>
-            <div class="review-label">Amount Reducted</div>
-            <div class="review-value">P9.00</div>
-          </div>
-          <div>
-            <div class="review-label">Amount To Pay:</div>
-            <div class="review-value large">P40.50</div>
-          </div>
-          <div>
-            <div class="review-label">Screenshot of Payment:</div>
-            <div class="review-photo-link">View Photo</div>
+          <div class="verif-field">
+            <span class="verif-label">REFERENCE NUMBER</span>
+            <p class="verif-value" id="s3RefNumber" style="font-size:13px;">—</p>
           </div>
         </div>
- 
-        <div class="review-btn-row">
-          <button type="button" class="review-approve-btn" onclick="approveReviewStep()">APPROVE</button>
+        <div class="verif-discount-row">
+          <div class="verif-field">
+            <span class="verif-label">PAYMENT TYPE</span>
+            <p class="verif-value" id="s3PaymentType" style="font-size:13px;">—</p>
+          </div>
+          <div class="verif-field">
+            <span class="verif-label">DISCOUNT APPLIED</span>
+            <p class="verif-value" id="s3Discount">0%</p>
+          </div>
+          <div class="verif-field">
+            <span class="verif-label">AMOUNT DEDUCTED</span>
+            <p class="verif-value" id="s3AmountDeducted">P0.00</p>
+          </div>
+          <div class="verif-field">
+            <span class="verif-label">AMOUNT TO PAY</span>
+            <p class="verif-value verif-large" id="s3AmountToPay">P0.00</p>
+          </div>
+          <div class="verif-field">
+            <span class="verif-label">SCREENSHOT OF PAYMENT</span>
+            <p class="verif-value" id="s3Screenshot" style="font-size:12px;color:#6b7280;">—</p>
+          </div>
         </div>
       </div>
- 
-      <!-- STEP 4: PROCESSING ORDER -->
-      <div class="review-step" id="reviewStep4">
-        <div class="review-photo-desc-grid">
-          <div>
-            <div class="review-label">Delivery Fee Photo</div>
-            <div class="review-upload-box">
-              <svg viewBox="0 0 24 24" fill="none" stroke="#ec4899" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
-                <circle cx="12" cy="13" r="4"></circle>
-              </svg>
-            </div>
+
+      <!-- Step 4 Processing Details -->
+      <div class="review-verification-details" id="reviewStep4Box" style="display:none;">
+        <div class="verif-discount-row">
+          <div class="verif-field">
+            <span class="verif-label">ORDER STATUS</span>
+            <p class="verif-value">PROCESSING</p>
           </div>
-          <div>
-            <div class="review-label">Delivery Fee</div>
-            <div class="review-value large" style="margin-bottom:16px;">P50.00</div>
-            <div class="review-plain-text">Done Processing Raw Materials Into Desired Product? Press Approve</div>
+          <div class="verif-field">
+            <span class="verif-label">PRODUCT TOTAL</span>
+            <p class="verif-value" id="s4ProductTotal">P0.00</p>
+          </div>
+          <div class="verif-field">
+            <span class="verif-label">DELIVERY FEE</span>
+            <p class="verif-value" id="s4DeliveryFee">P0.00</p>
           </div>
         </div>
- 
-        <div class="review-btn-row">
-          <button type="button" class="review-approve-btn" onclick="approveReviewStep()">APPROVE</button>
+        <p style="color:#6b7280;font-size:13px;margin-top:12px;">Done processing raw materials into desired product? Press APPROVE to advance.</p>
+      </div>
+
+      <!-- Step 5 Final Payment Details -->
+      <div class="review-verification-details" id="reviewStep5Box" style="display:none;">
+        <div class="verif-discount-row">
+          <div class="verif-field">
+            <span class="verif-label">PAYMENT METHOD</span>
+            <p class="verif-value" id="s5PaymentMethod">—</p>
+          </div>
+          <div class="verif-field">
+            <span class="verif-label">PRODUCT BALANCE</span>
+            <p class="verif-value" id="s5ProductBalance">P0.00</p>
+          </div>
+          <div class="verif-field">
+            <span class="verif-label">DELIVERY FEE</span>
+            <p class="verif-value" id="s5DeliveryFee">P0.00</p>
+          </div>
+          <div class="verif-field">
+            <span class="verif-label">AMOUNT TO PAY</span>
+            <p class="verif-value verif-large" id="s5AmountToPay">P0.00</p>
+          </div>
+        </div>
+        <div class="verif-discount-row">
+          <div class="verif-field">
+            <span class="verif-label">PAYMENT TYPE</span>
+            <p class="verif-value" id="s5PaymentType" style="font-size:13px;">—</p>
+          </div>
+          <div class="verif-field">
+            <span class="verif-label">REFERENCE NUMBER</span>
+            <p class="verif-value" id="s5RefNumber" style="font-size:13px;">—</p>
+          </div>
+          <div class="verif-field">
+            <span class="verif-label">SCREENSHOT OF PAYMENT</span>
+            <p class="verif-value" id="s5Screenshot" style="font-size:12px;color:#6b7280;">—</p>
+          </div>
         </div>
       </div>
- 
-      <!-- STEP 5: FINAL PAYMENT -->
-      <div class="review-step" id="reviewStep5">
-        <div class="review-field-grid cols-4">
-          <div>
-            <div class="review-label">Payment Selection</div>
-            <div class="review-value">Bank</div>
+
+      <!-- Step 6 Out for Delivery Details -->
+      <div class="review-verification-details" id="reviewStep6Box" style="display:none;">
+        <div class="verif-discount-row">
+          <div class="verif-field">
+            <span class="verif-label">DELIVERY METHOD</span>
+            <p class="verif-value" id="s6DeliveryMethod">—</p>
           </div>
-          <div>
-            <div class="review-label">Product Balance</div>
-            <div class="review-value">P40.50</div>
+          <div class="verif-field">
+            <span class="verif-label">DELIVERY ADDRESS</span>
+            <p class="verif-value" id="s6Address" style="font-size:12px;">—</p>
           </div>
-          <div>
-            <div class="review-label">Delivery Fee</div>
-            <div class="review-value">P50.00</div>
+          <div class="verif-field">
+            <span class="verif-label">TOTAL AMOUNT</span>
+            <p class="verif-value verif-large" id="s6TotalAmount">P0.00</p>
           </div>
-          <div>
-            <div class="review-label">Amount To Pay:</div>
-            <div class="review-value large">P90.50</div>
-          </div>
- 
-          <div>
-            <div class="review-label">Payment Type:</div>
-            <div class="review-value" style="font-size:12px;">50% Down Payment</div>
-          </div>
-          <div>
-            <div class="review-label">Reference Number:</div>
-            <div class="review-ref-box">4829173645</div>
-          </div>
-          <div>
-            <div class="review-label">Screenshot of Payment:</div>
-            <div class="review-photo-link">View Photo</div>
-          </div>
-          <div></div>
         </div>
- 
-        <div class="review-btn-row">
-          <button type="button" class="review-approve-btn" onclick="approveReviewStep()">APPROVE</button>
+        <p style="color:#6b7280;font-size:13px;margin-top:12px;">Has the order been delivered/picked up successfully? Press APPROVE to advance.</p>
+      </div>
+
+      <!-- Step 7 Order Received Details -->
+      <div class="review-verification-details" id="reviewStep7Box" style="display:none;">
+        <div class="verif-discount-row">
+          <div class="verif-field">
+            <span class="verif-label">STATUS</span>
+            <p class="verif-value">AWAITING CUSTOMER CONFIRMATION</p>
+          </div>
+          <div class="verif-field">
+            <span class="verif-label">TOTAL AMOUNT PAID</span>
+            <p class="verif-value verif-large" id="s7TotalPaid">P0.00</p>
+          </div>
+        </div>
+        <p style="color:#6b7280;font-size:13px;margin-top:12px;">Waiting for customer to confirm receipt. Press APPROVE to mark as received.</p>
+      </div>
+
+      <!-- Step 8 Order Completed Details -->
+      <div class="review-verification-details" id="reviewStep8Box" style="display:none;">
+        <div class="verif-discount-row">
+          <div class="verif-field">
+            <span class="verif-label">ORDER STATUS</span>
+            <p class="verif-value" style="color:#22c55e;">COMPLETED</p>
+          </div>
+          <div class="verif-field">
+            <span class="verif-label">TOTAL AMOUNT</span>
+            <p class="verif-value verif-large" id="s8TotalAmount">P0.00</p>
+          </div>
+        </div>
+        <p style="color:#6b7280;font-size:13px;margin-top:12px;">Mark this order as officially completed.</p>
+      </div>
+
+      <!-- Admin Action -->
+      <div class="review-action-row" id="reviewActionRow" style="display:none;">
+        <button class="review-approve-btn" id="reviewAdvanceBtn">APPROVE & ADVANCE</button>
+      </div>
+
+      <!-- Admin Chat Box -->
+      <div class="admin-chat-container" id="adminChatBox" style="display:none;">
+        <div class="admin-chat-header">💬 Chat with Customer</div>
+        <div class="admin-chat-messages" id="adminChatMessages"></div>
+        <div class="admin-chat-input-row">
+          <input type="text" class="admin-chat-input" id="adminChatInput" placeholder="Type a message...">
+          <button class="admin-chat-send-btn" id="adminChatSendBtn">Send</button>
         </div>
       </div>
- 
-      <!-- STEP 6: OUT FOR DELIVERY -->
-      <div class="review-step" id="reviewStep6">
-        <div class="review-plain-text" style="font-size:16px;">Lalamove Has Delivered The Item Successfully To The Customer? Press Approve</div>
- 
-        <div class="review-btn-row">
-          <button type="button" class="review-approve-btn" onclick="approveReviewStep()">APPROVE</button>
-        </div>
-      </div>
- 
+
     </div>
   </div>
 

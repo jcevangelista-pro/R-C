@@ -20,8 +20,10 @@
             <a href="LandingPage.php" id="BName">R&C PRINTING SERVICES</a>
         <ul>
             <li><a href=""><img src="../imgs/search.png" alt="" class="Img"></a></li>
-            <li><a href=""><img src="../imgs/typing.png" alt="" class="Img"></a></li>
+            <!-- <li><a href=""><img src="../imgs/typing.png" alt="" class="Img"></a></li> -->
+            <li><a href=""><img src="../OrderProcess/OrderProcessImgs/Alarm.png" alt="" class="Img"></a></li>
             <li><a href="../CART/cart.html"><img src="../imgs/trolley.png" alt="" class="Img"></a></li>
+            <li><a href="../MyOrders/Myorder.html"><img src="../OrderProcess/OrderProcessImgs/billing.png" alt="" class="Img"></a></li>
             <li><a href="LandingPage.php">HOME</a></li>
             <li><a href="../Products/Prodbrowse.html">PRODUCTS</a></li>
             <li><a href="../Portfolio/PortfolioPage.html">PORTFOLIO</a></li>

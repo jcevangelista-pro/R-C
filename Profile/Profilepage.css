@@ -1,0 +1,879 @@
+/* =========================
+   ROOT
+========================= */
+
+:root {
+    --violet: #a78bfa;
+}
+
+
+/* =========================
+   BODY
+========================= */
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+
+    background: radial-gradient(
+        farthest-corner at 0px 10px,
+        #AABCEB,
+        #FFB2E9,
+        #ffffff,
+        #FFB2E9
+    );
+}
+
+
+/* =========================
+   NAVBAR
+========================= */
+
+.Navbar {
+    background: white;
+
+    border-bottom: 1px solid #F868AA;
+
+    box-shadow:
+        inset 0 -2px 8px rgba(0, 0, 0, 0.1);
+
+    display: flex;
+    align-items: center;
+
+    padding: 10px 20px;
+
+    position: sticky;
+    top: 0;
+
+    z-index: 1000;
+}
+
+
+/* =========================
+   ACTIVE NAVIGATION LINK
+========================= */
+
+.Navbar ul li a.ActiveLink {
+    position: relative;
+
+    font-weight: bold;
+}
+
+.Navbar ul li a.ActiveLink::after {
+    content: '';
+
+    position: absolute;
+
+    left: 12px;
+    right: 12px;
+
+    bottom: 2px;
+
+    height: 3px;
+
+    background: var(--violet);
+
+    border-radius: 2px;
+}
+
+
+/* =========================
+   BUSINESS NAME
+========================= */
+
+#BName {
+    text-decoration: none;
+
+    color: #F868AA;
+
+    font-size: 2rem;
+
+    font-weight: bold;
+
+    white-space: nowrap;
+
+    margin-right: auto;
+}
+
+
+/* =========================
+   NAVIGATION LINKS
+========================= */
+
+.Navbar ul {
+    list-style: none;
+
+    margin: 0;
+    margin-left: auto;
+
+    padding: 0;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 15px;
+}
+
+
+.Navbar a {
+    color: #F868AA;
+
+    text-decoration: none;
+
+    padding: 10px 12px;
+
+    display: block;
+}
+
+
+.Navbar a:hover {
+    color: #f3a4c8;
+}
+
+
+/* =========================
+   USER ICON
+========================= */
+
+.Img {
+    width: 24px;
+    height: 24px;
+
+    object-fit: contain;
+}
+
+
+/* ==================================================
+   PROFILE PAGE
+================================================== */
+
+.ProfilePage {
+    width: 100%;
+
+    min-height: calc(100vh - 70px);
+
+    padding: 45px 32px 60px;
+
+    box-sizing: border-box;
+}
+
+
+.ProfileWrapper {
+    width: 100%;
+
+    max-width: 1000px;
+
+    margin: 0 auto;
+}
+
+
+/* ==================================================
+   PROFILE HEADER
+================================================== */
+
+.ProfileHeader {
+    width: 100%;
+
+    box-sizing: border-box;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 30px;
+
+    padding: 35px 40px;
+
+    margin-bottom: 25px;
+
+    background: rgba(203, 175, 241, 0.75);
+
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+
+    border-radius: 20px;
+
+    box-shadow:
+        0 8px 32px rgba(160, 120, 220, 0.35),
+        0 2px 8px rgba(160, 120, 220, 0.18);
+}
+
+
+/* ==================================================
+   PROFILE IMAGE
+================================================== */
+
+.ProfilePictureWrapper {
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    flex-shrink: 0;
+}
+
+
+.ProfilePicture {
+    width: 125px;
+    height: 125px;
+
+    object-fit: cover;
+
+    border-radius: 50%;
+
+    border: 5px solid white;
+
+    background: white;
+
+    box-shadow:
+        0 6px 18px rgba(0, 0, 0, 0.18);
+}
+
+
+/* ==================================================
+   CHANGE PHOTO
+================================================== */
+
+.ChangePhoto {
+    margin-top: 10px;
+
+    border: none;
+
+    background: transparent;
+
+    color: white;
+
+    font-size: 0.8rem;
+
+    font-weight: bold;
+
+    cursor: pointer;
+}
+
+.ChangePhoto:hover {
+    color: #F868AA;
+
+    text-decoration: underline;
+}
+
+
+/* ==================================================
+   PROFILE HEADER INFORMATION
+================================================== */
+
+.ProfileHeaderInfo {
+    flex: 1;
+
+    color: white;
+}
+
+
+.ProfileHeaderInfo h1 {
+    margin: 0 0 8px;
+
+    font-size: 2rem;
+
+    font-weight: 800;
+
+    text-shadow:
+        2px 2px 5px rgba(0, 0, 0, 0.25);
+}
+
+
+.ProfileHeaderInfo p {
+    margin: 0 0 15px;
+
+    font-size: 0.95rem;
+
+    color: white;
+
+    text-shadow:
+        1px 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+
+/* ==================================================
+   CUSTOMER BADGE
+================================================== */
+
+.MemberBadge {
+    display: inline-block;
+
+    padding: 6px 15px;
+
+    border-radius: 20px;
+
+    background: rgba(255, 255, 255, 0.65);
+
+    color: #7256c7;
+
+    font-size: 0.75rem;
+
+    font-weight: bold;
+}
+
+
+/* ==================================================
+   PROFILE SECTION
+================================================== */
+
+.ProfileSection {
+    width: 100%;
+
+    box-sizing: border-box;
+
+    padding: 30px 35px;
+
+    margin-bottom: 25px;
+
+    background: rgba(255, 255, 255, 0.82);
+
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+
+    border-radius: 20px;
+
+    box-shadow:
+        0 8px 25px rgba(160, 120, 220, 0.22);
+}
+
+
+/* ==================================================
+   SECTION HEADER
+================================================== */
+
+.SectionHeader {
+    margin-bottom: 25px;
+}
+
+
+.SectionHeader h2 {
+    margin: 0;
+
+    color: #1E3163;
+
+    font-size: 1.35rem;
+
+    font-weight: bold;
+}
+
+
+.SectionHeader p {
+    margin: 7px 0 0;
+
+    color: #777;
+
+    font-size: 0.85rem;
+}
+
+
+/* ==================================================
+   FORM GRID
+================================================== */
+
+.FormGrid {
+    display: grid;
+
+    grid-template-columns: 1fr 1fr;
+
+    gap: 20px;
+}
+
+
+.FormGroup {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 7px;
+}
+
+
+.FormGroup.FullWidth {
+    grid-column: 1 / -1;
+}
+
+
+/* ==================================================
+   LABELS
+================================================== */
+
+.FormGroup label,
+.PasswordGroup label {
+    color: #1E3163;
+
+    font-size: 0.85rem;
+
+    font-weight: bold;
+}
+
+
+/* ==================================================
+   INPUTS
+================================================== */
+
+.FormGroup input,
+.PasswordInput input {
+    width: 100%;
+
+    height: 45px;
+
+    box-sizing: border-box;
+
+    padding: 0 14px;
+
+    border: 1px solid #ddd;
+
+    border-radius: 10px;
+
+    background: white;
+
+    color: #333;
+
+    font-family: Arial, sans-serif;
+
+    font-size: 0.9rem;
+
+    outline: none;
+
+    transition: 0.2s ease;
+}
+
+
+.FormGroup input:focus,
+.PasswordInput input:focus {
+    border-color: #a78bfa;
+
+    box-shadow:
+        0 0 0 3px rgba(167, 139, 250, 0.15);
+}
+
+
+.FormGroup input:disabled {
+    background: #f1f1f1;
+
+    color: #777;
+
+    cursor: not-allowed;
+}
+
+
+/* ==================================================
+   FORM BUTTONS
+================================================== */
+
+.FormActions {
+    display: flex;
+
+    justify-content: flex-end;
+
+    align-items: center;
+
+    gap: 10px;
+
+    margin-top: 25px;
+}
+
+
+/* EDIT */
+
+.EditButton {
+    border: none;
+
+    border-radius: 10px;
+
+    padding: 11px 20px;
+
+    background: #b2ace3;
+
+    color: #1E3163;
+
+    font-family: Arial, sans-serif;
+
+    font-size: 0.85rem;
+
+    font-weight: bold;
+
+    cursor: pointer;
+
+    transition: 0.2s ease;
+}
+
+
+.EditButton:hover {
+    background: #a29bd8;
+
+    transform: translateY(-2px);
+}
+
+
+/* SAVE */
+
+.SaveButton {
+    border: none;
+
+    border-radius: 10px;
+
+    padding: 11px 20px;
+
+    background: #F868AA;
+
+    color: white;
+
+    font-family: Arial, sans-serif;
+
+    font-size: 0.85rem;
+
+    font-weight: bold;
+
+    cursor: pointer;
+
+    transition: 0.2s ease;
+}
+
+
+.SaveButton:hover {
+    background: #e94f96;
+
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 5px 15px rgba(248, 104, 170, 0.25);
+}
+
+
+.SaveButton:disabled {
+    background: #ccc;
+
+    color: #777;
+
+    cursor: not-allowed;
+
+    transform: none;
+
+    box-shadow: none;
+}
+
+
+/* ==================================================
+   PASSWORD
+================================================== */
+
+.PasswordGroup {
+    margin-bottom: 18px;
+}
+
+
+.PasswordInput {
+    position: relative;
+
+    width: 100%;
+}
+
+
+.PasswordInput input {
+    padding-right: 50px;
+}
+
+
+/* ==================================================
+   SHOW PASSWORD
+================================================== */
+
+.ShowPassword {
+    position: absolute;
+
+    right: 10px;
+
+    top: 50%;
+
+    transform: translateY(-50%);
+
+    width: 30px;
+    height: 30px;
+
+    border: none;
+
+    background: transparent;
+
+    cursor: pointer;
+
+    font-size: 1rem;
+
+    border-radius: 50%;
+}
+
+
+.ShowPassword:hover {
+    background: rgba(167, 139, 250, 0.15);
+}
+
+
+/* ==================================================
+   LOGOUT
+================================================== */
+
+.LogoutContainer {
+    display: flex;
+
+    justify-content: center;
+
+    margin-top: 5px;
+}
+
+
+.LogoutButton {
+    min-width: 150px;
+
+    padding: 11px 30px;
+
+    border: 1px solid #F868AA;
+
+    border-radius: 10px;
+
+    background: white;
+
+    color: #F868AA;
+
+    font-family: Arial, sans-serif;
+
+    font-size: 0.85rem;
+
+    font-weight: bold;
+
+    cursor: pointer;
+
+    transition: 0.2s ease;
+}
+
+
+.LogoutButton:hover {
+    background: #F868AA;
+
+    color: white;
+
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 5px 15px rgba(248, 104, 170, 0.25);
+}
+
+
+/* ==================================================
+   TABLET
+================================================== */
+
+@media (max-width: 900px) {
+
+    .ProfilePage {
+        padding: 35px 20px 50px;
+    }
+
+
+    .ProfileHeader {
+        padding: 30px;
+    }
+
+
+    .ProfileSection {
+        padding: 28px;
+    }
+
+}
+
+
+/* ==================================================
+   MOBILE
+================================================== */
+
+@media (max-width: 600px) {
+
+
+  /* =========================
+   NAVBAR
+========================= */
+
+.Navbar {
+    background: white;
+    border-bottom: 1px solid #F868AA;
+
+    box-shadow:
+        inset 0 -2px 8px rgba(0, 0, 0, 0.1);
+
+    display: flex;
+    align-items: center;
+
+    padding: 10px 20px;
+
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+/* =========================
+   ACTIVE NAVIGATION LINK
+========================= */
+
+
+.Navbar ul li a.ActiveLink {
+    position: relative;
+    font-weight: bold;
+}
+
+.Navbar ul li a.ActiveLink::after {
+    content: '';
+    position: absolute;
+    left: 12px;
+    right: 12px;
+    bottom: 2px;
+    height: 3px;
+    background: var(--violet);
+    border-radius: 2px;
+}
+:root {
+    --violet: #a78bfa;
+}
+/* R&C PRINTING SERVICES - LEFT */
+
+#BName {
+    text-decoration: none;
+    color: #F868AA;
+
+    font-size: 2rem;
+    font-weight: bold;
+
+    white-space: nowrap;
+
+    margin-right: auto;
+}
+
+
+/* NAVIGATION LINKS */
+
+.Navbar ul {
+    list-style: none;
+
+    margin: 0;
+    margin-left: auto;
+
+    padding: 0;
+
+    display: flex;
+    align-items: center;
+
+    gap: 15px;
+}
+
+.Navbar a {
+    color: #F868AA;
+    text-decoration: none;
+
+    padding: 10px 12px;
+
+    display: block;
+}
+
+
+/* =========================
+   GENERAL IMAGE
+========================= */
+
+.Img {
+    width: 24px;
+    height: 24px;
+
+    object-fit: contain;
+}
+
+
+    /* PROFILE */
+
+    .ProfilePage {
+        padding: 20px 12px 40px;
+    }
+
+
+    .ProfileHeader {
+        flex-direction: column;
+
+        text-align: center;
+
+        padding: 25px 18px;
+
+        gap: 15px;
+    }
+
+
+    .ProfilePicture {
+        width: 105px;
+        height: 105px;
+    }
+
+
+    .ProfileHeaderInfo h1 {
+        font-size: 1.6rem;
+    }
+
+
+    .ProfileHeaderInfo p {
+        font-size: 0.8rem;
+    }
+
+
+    /* SECTIONS */
+
+    .ProfileSection {
+        padding: 22px 18px;
+
+        border-radius: 17px;
+    }
+
+
+    .SectionHeader h2 {
+        font-size: 1.15rem;
+    }
+
+
+    .SectionHeader p {
+        font-size: 0.75rem;
+    }
+
+
+    /* FORM */
+
+    .FormGrid {
+        grid-template-columns: 1fr;
+
+        gap: 15px;
+    }
+
+
+    .FormGroup.FullWidth {
+        grid-column: auto;
+    }
+
+
+    /* BUTTONS */
+
+    .FormActions {
+        flex-direction: column;
+
+        align-items: stretch;
+    }
+
+
+    .EditButton,
+    .SaveButton {
+        width: 100%;
+    }
+
+
+    /* LOGOUT */
+
+    .LogoutButton {
+        width: 100%;
+    }
+
+}

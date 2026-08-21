@@ -256,11 +256,13 @@ document.addEventListener('DOMContentLoaded', () => {
   chatTooltip.textContent = 'Live chat is coming soon — message us on Facebook or Viber for now!';
   nav.appendChild(chatTooltip);
 
-  navChat.addEventListener('click', (e) => {
-    e.preventDefault();
-    closeAllNavWidgets(chatTooltip);
-    chatTooltip.style.display = chatTooltip.style.display === 'block' ? 'none' : 'block';
-  });
+  if (navChat) {
+    navChat.addEventListener('click', (e) => {
+      e.preventDefault();
+      closeAllNavWidgets(chatTooltip);
+      chatTooltip.style.display = chatTooltip.style.display === 'block' ? 'none' : 'block';
+    });
+  }
 
   /* ---------------------------------------------------------
      12. USER DROPDOWN
