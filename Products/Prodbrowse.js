@@ -276,7 +276,7 @@ document.addEventListener('DOMContentLoaded', () => {
     .then(r => r.json())
     .then(data => {
       if (data.logged_in) {
-        userDropdown.innerHTML = `<a href="../Registration/logout.php" class="logout-link">Log Out</a>`;
+        userDropdown.innerHTML = `<a href="../LandingPage/LandingPage.html">Home</a><a href="../Products/Prodbrowse.html">Products</a><a href="../Portfolio/PortfolioPage.html">Portfolio</a><a href="../Profile/Profilepage.html">Profile</a><a href="../Registration/logout.php" class="logout-link">Log Out</a>`;
         // Add logout confirmation
         userDropdown.querySelector('.logout-link').addEventListener('click', function(e) {
           e.preventDefault();
@@ -323,26 +323,6 @@ document.addEventListener('DOMContentLoaded', () => {
   /* ---------------------------------------------------------
      13. CART PANEL
   --------------------------------------------------------- */
-  const cartBadge = document.createElement('span');
-  cartBadge.className = 'CartBadge';
-  cartBadge.textContent = '0';
-  navCart.style.position = 'relative';
-  navCart.appendChild(cartBadge);
-
-  // Fetch real cart count from database
-  fetch('../CART/cart_api.php')
-    .then(r => r.json())
-    .then(data => {
-      if (data.success && data.items && data.items.length > 0) {
-        const totalQty = data.items.reduce((sum, item) => sum + item.quantity, 0);
-        cartBadge.textContent = totalQty;
-        cartBadge.style.display = totalQty > 0 ? '' : 'none';
-      } else {
-        cartBadge.style.display = 'none';
-      }
-    })
-    .catch(() => { cartBadge.style.display = 'none'; });
-
   const cartOverlay = document.createElement('div');
   cartOverlay.className = 'CartOverlay';
   document.body.appendChild(cartOverlay);
@@ -396,7 +376,8 @@ document.addEventListener('DOMContentLoaded', () => {
           .then(d => {
             if (d.success && d.items) {
               const totalQty = d.items.reduce((sum, item) => sum + item.quantity, 0);
-              cartBadge.textContent = totalQty;
+              const badge = document.getElementById('navCartBadge');
+              if (badge) badge.textContent = totalQty;
             }
           });
       }
@@ -457,19 +438,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     cartTotalValue.textContent = `₱${total.toFixed(2)}`;
-    // Update badge from database (not localStorage)
-    fetch('../CART/cart_api.php')
-      .then(r => r.json())
-      .then(data => {
-        if (data.success && data.items) {
-          const dbTotal = data.items.reduce((sum, item) => sum + item.quantity, 0);
-          cartBadge.textContent = dbTotal;
-          cartBadge.style.display = dbTotal > 0 ? '' : 'none';
-        } else {
-          cartBadge.style.display = 'none';
-        }
-      })
-      .catch(() => { cartBadge.textContent = totalQty; cartBadge.style.display = totalQty > 0 ? '' : 'none'; });
   }
 
   cartItemsList.addEventListener('click', (e) => {

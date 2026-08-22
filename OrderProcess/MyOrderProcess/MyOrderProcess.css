@@ -1018,3 +1018,38 @@ body .Navbar a#BName {
     border-radius: 10px;
     z-index: 10;
 }
+
+
+/* ── MOBILE RESPONSIVE ───────────────────────────────────── */
+@media (max-width: 600px) {
+  .order-process-card { margin: 4px; border-radius: 10px; }
+  .order-process-header { font-size: 16px; padding: 14px; }
+  .wizard-inner { min-width: unset; overflow-x: auto; }
+  .order-steps { min-width: unset; overflow-x: auto; padding-bottom: 8px; }
+  .order-steps > li { min-width: 60px; }
+  .order-steps .round-tab { width: 44px; height: 44px; line-height: 40px; font-size: 16px; }
+  .order-steps .step-label { font-size: 9px; }
+  .connecting-line { top: 22px; }
+  .bs-calltoaction { padding: 10px; }
+  .status-card { grid-template-columns: 1fr; gap: 10px; }
+  #PaymentCard { height: auto; }
+  #FinalPaymentCard { height: auto; }
+  #OrderReceivedCard { height: auto; }
+  .BottomRowType { flex-direction: column; gap: 16px; }
+  .BRT-LeftColumn { width: 100%; margin-left: 0; }
+  .BRT-RightColumn { width: 100%; justify-content: flex-start; }
+  .MoP-PT-Row { flex-direction: column; gap: 16px; }
+  .od-inline-row { flex-wrap: wrap; gap: 10px; width: auto; }
+  .ScreenShot-RefNum-Row { flex-direction: column; gap: 12px; }
+  .GCLogo { width: 100px; height: auto; }
+  .GCQr { height: 160px; }
+  .LocationContainer { flex-direction: column; gap: 8px; }
+  .CInformation { width: 100%; }
+  .ItemImg { width: 100%; height: auto; }
+  .OrdSum-Receipt-Container { flex-direction: column; gap: 16px; }
+  .HeaderRowType { width: 100%; }
+  .chat-container { margin-top: 10px; }
+  .review-modal { padding: 14px 16px 20px; }
+  .review-steps-bar { gap: 6px; }
+  .review-step-dot { width: 28px; height: 28px; font-size: 11px; }
+}

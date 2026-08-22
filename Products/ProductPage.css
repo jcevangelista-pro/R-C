@@ -1,6 +1,6 @@
 body {
     margin: 0;
-    font-family: 'Segoe UI', Arial, sans-serif;
+    font-family: 'Poppins', 'Quicksand', sans-serif;
 }
 
 /* ── NAVBAR (matches PortfolioPage) ────────────────────────── */
@@ -85,11 +85,6 @@ body {
     font-weight: bold;
     white-space: nowrap;
     margin-right: auto;
-}
-
-.Img {
-    width: 1.2vw;
-    height: 2.5vh;
 }
 
 /* ── MAIN CONTAINER (gradient like LandingPage) ──────────── */
@@ -519,4 +514,45 @@ body {
 
 .user-dropdown a:hover {
     background: #ffe4f0;
+}
+
+
+/* ── ACTIVE LINK ─────────────────────────────────────────── */
+.Navbar ul li a.ActiveLink {
+    position: relative;
+    font-weight: bold;
+}
+
+.Navbar ul li a.ActiveLink::after {
+    content: '';
+    position: absolute;
+    left: 12px;
+    right: 12px;
+    bottom: 2px;
+    height: 3px;
+    background: #a78bfa;
+    border-radius: 2px;
+}
+
+
+/* ── MOBILE RESPONSIVE (≤600px) ─────────────────────────── */
+@media (max-width: 600px) {
+  .RContainer { padding: 0.8rem 0; }
+  .WSContainer { width: 96vw; padding: 8px 8px 16px; }
+  .BBContainer { padding-top: 4px; }
+  #BackButton, #MBackButton { width: 28px; height: 28px; font-size: 16px; line-height: 28px; margin: 6px 6px 0 0; }
+  .PIContainer { flex-direction: column; gap: 12px; padding: 0 10px 10px; }
+  .ProductContainer { width: 100%; min-height: 35vw; }
+  .ProductImage { max-height: 35vw; }
+  #ProductName, .product-name { font-size: 1.4rem; margin-top: 8px; }
+  #ProductType, .product-type { font-size: 0.9rem; }
+  #ProductPrice, .product-price { font-size: 1.4rem; margin-bottom: 14px; }
+  #OpenModal, .btn-add-cart { width: 100%; padding: 12px; font-size: 0.9rem; }
+  #ProductDescription, .product-desc { font-size: 0.72rem; max-width: 100%; }
+  .stepper { width: 9rem; height: 2.4rem; }
+  .qty { font-size: 1.2rem; }
+  .ButtonDA { font-size: 1.2rem; }
+  .modal-card { width: 96vw; max-height: 88vh; padding-bottom: 16px; }
+  .modal-card .PIContainer { flex-direction: column; padding: 0 10px 10px; }
+  .modal-card .ProductContainer { width: 100%; min-height: 35vw; }
 }

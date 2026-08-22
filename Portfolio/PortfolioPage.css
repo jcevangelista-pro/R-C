@@ -396,3 +396,21 @@ h2 {
 .user-dropdown a:hover {
     background: #ffe4f0;
 }
+
+
+/* ── MOBILE RESPONSIVE ───────────────────────────────────── */
+@media (max-width: 768px) {
+    .Navbar { padding: 8px 12px; }
+    #BName { font-size: 1rem; left: auto; position: relative; transform: none; }
+    .Navbar ul { gap: 6px; }
+    .ServicesContainer { padding: 10px; }
+    .HeaderSection h1 { font-size: 1.5rem; }
+    .ProductGrid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    .ProductCard { width: auto; }
+    .SocialsBox { padding: 20px 10px; }
+}
+
+@media (max-width: 480px) {
+    .ProductGrid { grid-template-columns: 1fr 1fr; }
+    .HeaderSection h1 { font-size: 1.2rem; }
+}

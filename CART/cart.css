@@ -736,3 +736,28 @@ body{
 
 
 
+
+
+/* ── MOBILE RESPONSIVE ───────────────────────────────────── */
+@media (max-width: 600px) {
+  .cart-card { border-radius: 10px; margin: 0 8px; }
+  .cart-header { flex-direction: column; align-items: flex-start; gap: 8px; padding: 14px 14px 10px; }
+  .cart-table-head { display: none; }
+  .cart-row { flex-wrap: wrap; gap: 6px; padding: 12px 14px; }
+  .row-thumb img, .row-thumb { width: 50px !important; height: 50px !important; }
+  .row-name { font-size: 13px; }
+  .row-category { font-size: 11px; }
+  .row-price, .row-qty, .row-total, .row-status { font-size: 12px; }
+  .cart-footer { padding: 12px 14px; flex-direction: column; gap: 10px; align-items: stretch; }
+  .checkout-btn { width: 100%; padding: 12px; }
+  .modal-overlay { padding: 10px; }
+  .delivery-modal-card, .order-modal-card { width: 100%; max-height: 92vh; padding: 16px; border-radius: 12px; }
+  .od-grid { flex-direction: column; gap: 10px; }
+  .od-details-col { width: 100%; }
+  .od-inline-row { flex-wrap: wrap; gap: 10px; }
+  .field-row.three, .field-row.two { flex-direction: column; gap: 10px; }
+  .field-row.two.uneven { flex-direction: column; }
+  .selection-block.bottom-row { flex-direction: column; gap: 10px; }
+  .done-btn { width: 100%; }
+  .remove-btn { width: 100%; }
+}

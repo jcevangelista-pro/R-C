@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notifications - R&C Printing Services</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="notifications.css">
+</head>
+<body>
+
+<!-- ── NAVIGATION BAR ──────────────────────────────────── -->
+<nav class="Navbar">
+    <a href="../LandingPage/LandingPage.html" id="BName">R&C PRINTING SERVICES</a>
+    <ul>
+        <li><a href=""><img src="../imgs/search.png" alt="" class="Img"></a></li>
+        <li><a href="notifications.html"><img src="../OrderProcess/OrderProcessImgs/Alarm.png" alt="" class="Img"></a></li>
+        <li><a href="../CART/cart.html"><img src="../imgs/trolley.png" alt="" class="Img"></a></li>
+        <li><a href="../MyOrders/Myorder.html"><img src="../OrderProcess/OrderProcessImgs/billing.png" alt="" class="Img"></a></li>
+        <li><a href="../LandingPage/LandingPage.html">HOME</a></li>
+        <li><a href="../Products/Prodbrowse.html">PRODUCTS</a></li>
+        <li><a href="../Portfolio/PortfolioPage.html">PORTFOLIO</a></li>
+        <li class="user-menu-item">
+            <a href="" id="NavUser"><img src="../imgs/user.png" alt="" class="Img"></a>
+            <div class="user-dropdown" id="userDropdown">
+                <a href="../Profile/Profilepage.html">Profile</a>
+                <a href="../Registration/logout.php" class="logout-link">Log Out</a>
+            </div>
+        </li>
+    </ul>
+</nav>
+
+<!-- ── NOTIFICATIONS CONTENT ───────────────────────────── -->
+<main class="page">
+    <div class="notif-card">
+        <div class="notif-header">
+            <h1>Notifications</h1>
+            <button class="mark-all-btn" id="markAllBtn">Mark all as read</button>
+        </div>
+
+        <div class="notif-list" id="notifList">
+            <p class="notif-loading">Loading notifications...</p>
+        </div>
+    </div>
+</main>
+
+<script src="../CART/cart_badge.js"></script>
+<script>
+// User dropdown
+const navUser = document.getElementById('NavUser');
+const userDropdown = document.getElementById('userDropdown');
+if (navUser && userDropdown) {
+    navUser.addEventListener('click', function(e) { e.preventDefault(); e.stopPropagation(); userDropdown.classList.toggle('show'); });
+    document.addEventListener('click', function(e) { if (!userDropdown.contains(e.target) && e.target !== navUser) userDropdown.classList.remove('show'); });
+    document.querySelectorAll('.logout-link').forEach(function(link) { link.addEventListener('click', function(e) { e.preventDefault(); if (confirm('Are you sure you want to log out?')) window.location.href = this.href; }); });
+}
+
+// Load notifications
+async function loadNotifications() {
+    try {
+        const res = await fetch('notifications_api.php');
+        const data = await res.json();
+        if (!data.success) throw new Error(data.error);
+
+        const list = document.getElementById('notifList');
+
+        if (data.notifications.length === 0) {
+            list.innerHTML = '<p class="notif-empty">No notifications yet.</p>';
+            return;
+        }
+
+        list.innerHTML = data.notifications.map(n => {
+            const timeAgo = formatTime(n.created_at);
+            const readClass = n.is_read ? 'read' : 'unread';
+            const orderId = n.order_id || '';
+            return `
+            <div class="notif-item ${readClass}" data-id="${n.notification_id}" data-order="${orderId}">
+                <div class="notif-dot"></div>
+                <div class="notif-content">
+                    <div class="notif-title">${n.title}</div>
+                    <div class="notif-message">${n.message}</div>
+                    <div class="notif-meta">
+                        <span class="notif-sender">From: ${n.sender_name} (${n.sender_role})</span>
+                        <span class="notif-time">${timeAgo}</span>
+                    </div>
+                </div>
+            </div>`;
+        }).join('');
+
+        // Click to mark as read and navigate to order
+        list.querySelectorAll('.notif-item').forEach(item => {
+            item.addEventListener('click', async function() {
+                const id = this.dataset.id;
+                const orderId = this.dataset.order;
+
+                // Mark as read
+                if (this.classList.contains('unread')) {
+                    await fetch('notifications_api.php', {
+                        method: 'POST',
+                        headers: {'Content-Type':'application/json'},
+                        body: JSON.stringify({ action: 'mark_read', notification_id: parseInt(id) })
+                    });
+                    this.classList.remove('unread');
+                    this.classList.add('read');
+                }
+
+                // Navigate to order process if order_id exists
+                if (orderId) {
+                    window.location.href = '../OrderProcess/MyOrderProcess/MyOrderProcess.html?order=' + orderId;
+                }
+            });
+        });
+
+    } catch (err) {
+        document.getElementById('notifList').innerHTML = `<p class="notif-empty" style="color:#ef4444;">Failed to load notifications.</p>`;
+    }
+}
+
+// Mark all as read
+document.getElementById('markAllBtn').addEventListener('click', async function() {
+    await fetch('notifications_api.php', {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({ action: 'mark_all_read' })
+    });
+    document.querySelectorAll('.notif-item.unread').forEach(item => {
+        item.classList.remove('unread');
+        item.classList.add('read');
+    });
+});
+
+function formatTime(dateStr) {
+    const date = new Date(dateStr);
+    const now = new Date();
+    const diff = Math.floor((now - date) / 1000);
+
+    if (diff < 60) return 'Just now';
+    if (diff < 3600) return Math.floor(diff / 60) + 'm ago';
+    if (diff < 86400) return Math.floor(diff / 3600) + 'h ago';
+    if (diff < 604800) return Math.floor(diff / 86400) + 'd ago';
+    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+}
+
+loadNotifications();
+</script>
+</body>
+</html>

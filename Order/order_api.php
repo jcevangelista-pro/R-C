@@ -264,6 +264,34 @@ try {
                 $stmt->execute([$orderId, $nextStep]);
             }
 
+            // Create notification for the customer
+            $stmt = $pdo->prepare("SELECT customer_id FROM orders WHERE order_id = ?");
+            $stmt->execute([$orderId]);
+            $customerId = $stmt->fetchColumn();
+
+            $stmt = $pdo->prepare("SELECT user_id FROM customers WHERE customer_id = ?");
+            $stmt->execute([$customerId]);
+            $customerUserId = $stmt->fetchColumn();
+
+            if ($customerUserId) {
+                // Get the process_id for this step
+                $stmt = $pdo->prepare("
+                    SELECT op.process_id FROM order_process op
+                    JOIN process_steps ps ON ps.process_step_id = op.process_step_id
+                    WHERE op.order_id = ? AND ps.step_number = ?
+                ");
+                $stmt->execute([$orderId, $stepNumber]);
+                $processId = $stmt->fetchColumn();
+
+                $stepNames = [1=>'Order Details',2=>'Verification',3=>'Initial Payment',4=>'Processing',5=>'Final Payment',6=>'Out for Delivery',7=>'Order Received',8=>'Order Completed'];
+                $stepName = $stepNames[$stepNumber] ?? "Step $stepNumber";
+                $title = "Step Approved: $stepName";
+                $message = "Your order $orderId has been approved at step $stepNumber ($stepName).";
+
+                $stmt = $pdo->prepare("INSERT INTO notifications (process_id, user_id, sent_by, title, message) VALUES (?, ?, ?, ?, ?)");
+                $stmt->execute([$processId, $customerUserId, $userId, $title, $message]);
+            }
+
             echo json_encode(['success' => true, 'message' => 'Step advanced.']);
             exit;
         }

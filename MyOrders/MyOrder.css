@@ -137,3 +137,19 @@
 .status-pending { color: #eab308; font-weight: 700; font-size: 12px; }
 .status-completed { color: #22c55e; font-weight: 700; font-size: 12px; }
 .status-cancelled { color: #ef4444; font-weight: 700; font-size: 12px; }
+
+
+/* ── MOBILE RESPONSIVE (≤600px) ─────────────────────────── */
+@media (max-width: 600px) {
+  .cart-card { border-radius: 10px; margin: 0 8px; }
+  .cart-header { flex-direction: column; align-items: flex-start; gap: 8px; padding: 12px 12px 8px; }
+  .cart-table-head { display: none; }
+  .order-tabs { flex-wrap: wrap; gap: 4px; }
+  .order-tab { font-size: 10px; padding: 6px 10px; }
+  .order-row { flex-wrap: wrap; gap: 6px; padding: 10px 12px; }
+  .order-row .row-thumb { width: 50px !important; height: 50px !important; }
+  .row-name { font-size: 13px; }
+  .row-price, .row-qty, .row-total { font-size: 12px; }
+  .row-status { font-size: 11px; }
+  .row-chevron { margin-left: auto; }
+}

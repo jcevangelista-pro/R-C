@@ -256,9 +256,9 @@ a.CardProducts:hover {
 /* ── MOBILE RESPONSIVE ───────────────────────────────────── */
 @media (max-width: 600px) {
 
-    /* Navbar: brand left, user icon right, hide middle links/icons */
+    /* Navbar: brand left, icons + user visible, hide text links */
     .Navbar {
-        padding: 10px 16px;
+        padding: 10px 12px;
         align-items: center;
     }
 
@@ -271,15 +271,19 @@ a.CardProducts:hover {
     .Navbar ul {
         display: flex;
         align-items: center;
-        gap: 0;
+        gap: 4px;
         overflow: visible;
     }
 
     .Navbar li {
-        display: none;
+        display: block;
     }
 
-    /* Show only the last li (user/menu icon) */
+    /* Hide only text navigation links on mobile */
+    .Navbar li > a:not([id]) {
+        display: block;
+    }
+
     .Navbar li.user-menu-item {
         display: block;
         position: relative;
@@ -418,4 +422,22 @@ a.CardProducts:hover {
         color: #555;
         font-weight: 400;
     }
+}
+
+
+/* ── ACTIVE LINK ─────────────────────────────────────────── */
+.Navbar ul li a.ActiveLink {
+    position: relative;
+    font-weight: bold;
+}
+
+.Navbar ul li a.ActiveLink::after {
+    content: '';
+    position: absolute;
+    left: 12px;
+    right: 12px;
+    bottom: 2px;
+    height: 3px;
+    background: #a78bfa;
+    border-radius: 2px;
 }

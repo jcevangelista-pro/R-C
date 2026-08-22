@@ -1,0 +1,89 @@
+/* ============================================================
+   SHARED MOBILE RESPONSIVE — Customer Interface
+   Include on all customer-facing pages
+   ============================================================ */
+
+@media (max-width: 768px) {
+
+    /* ── NAVBAR ──────────────────────────────────────────── */
+    .Navbar {
+        padding: 8px 12px;
+        flex-wrap: wrap;
+    }
+
+    .Navbar #BName {
+        font-size: 1rem;
+        padding: 6px 0;
+    }
+
+    .Navbar ul {
+        gap: 6px;
+    }
+
+    .Navbar a {
+        padding: 6px 8px;
+        font-size: 12px;
+    }
+
+    .Img {
+        width: 20px;
+        height: 20px;
+    }
+
+    /* Hide text nav links on mobile, keep icons */
+    .Navbar ul li a[href*="LandingPage"]:not([id="BName"]),
+    .Navbar ul li a[href*="Prodbrowse"],
+    .Navbar ul li a[href*="PortfolioPage"] {
+        display: none;
+    }
+
+    /* Show text links inside user dropdown instead */
+    .user-dropdown {
+        min-width: 160px;
+    }
+
+    .user-dropdown .mobile-nav-links {
+        display: block;
+    }
+
+    /* ── BADGE ADJUSTMENTS ───────────────────────────────── */
+    .nav-badge {
+        top: -4px;
+        right: -4px;
+        font-size: 9px;
+        min-width: 14px;
+        height: 14px;
+        line-height: 14px;
+    }
+
+    /* ── USER DROPDOWN ───────────────────────────────────── */
+    .user-dropdown.show {
+        display: flex;
+        flex-direction: column;
+    }
+}
+
+@media (max-width: 480px) {
+
+    .Navbar {
+        padding: 6px 8px;
+    }
+
+    .Navbar #BName {
+        font-size: 0.85rem;
+    }
+
+    .Navbar ul {
+        gap: 3px;
+    }
+
+    .Navbar a {
+        padding: 5px 5px;
+        font-size: 11px;
+    }
+
+    .Img {
+        width: 18px;
+        height: 18px;
+    }
+}

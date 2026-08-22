@@ -24,12 +24,13 @@
             <li><a href=""><img src="../OrderProcess/OrderProcessImgs/Alarm.png" alt="" class="Img"></a></li>
             <li><a href="../CART/cart.html"><img src="../imgs/trolley.png" alt="" class="Img"></a></li>
             <li><a href="../MyOrders/Myorder.html"><img src="../OrderProcess/OrderProcessImgs/billing.png" alt="" class="Img"></a></li>
-            <li><a href="LandingPage.php">HOME</a></li>
+            <li><a href="LandingPage.php" class="ActiveLink">HOME</a></li>
             <li><a href="../Products/Prodbrowse.html">PRODUCTS</a></li>
             <li><a href="../Portfolio/PortfolioPage.html">PORTFOLIO</a></li>
             <li class="user-menu-item">
                 <a href="" id="NavUser"><img src="../imgs/user.png" alt="" class="Img"></a>
                 <div class="user-dropdown" id="userDropdown">
+                    <a href="../Profile/Profilepage.html">Profile</a>
                     <a href="../Registration/logout.php" class="logout-link">Log Out</a>
                 </div>
             </li>

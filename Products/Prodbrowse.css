@@ -84,6 +84,8 @@ h1, h2, h3 {
     padding: 10px 12px;
 
     display: block;
+    font-weight: 600;
+    font-size: 14px;
 }
 
 .Navbar ul li a.ActiveLink {
@@ -746,4 +748,13 @@ h1, h2, h3 {
   height: 100%;
   background: #e5e7eb;
   border-radius: 8px;
+}
+
+
+/* ── MOBILE: remove sticky sidebar ───────────────────────── */
+@media (max-width: 860px) {
+  .FilterSidebar {
+    position: static !important;
+    top: auto !important;
+  }
 }
