@@ -248,6 +248,60 @@ try {
             ");
             $stmt->execute([$userId, $orderId, $stepNumber]);
 
+            // ── STEP 4: Deduct inventory materials ─────────────
+            if ($stepNumber === 4) {
+                // Get all order items
+                $stmt = $pdo->prepare("
+                    SELECT od.product_id, od.quantity AS order_qty
+                    FROM order_details od
+                    WHERE od.order_id = ?
+                ");
+                $stmt->execute([$orderId]);
+                $orderItems = $stmt->fetchAll();
+
+                foreach ($orderItems as $item) {
+                    // Get BOM: materials required for this product
+                    $stmt = $pdo->prepare("
+                        SELECT pm.inventory_id, pm.quantity_required
+                        FROM product_materials pm
+                        WHERE pm.product_id = ?
+                    ");
+                    $stmt->execute([$item['product_id']]);
+                    $materials = $stmt->fetchAll();
+
+                    foreach ($materials as $material) {
+                        $totalDeduct = $material['quantity_required'] * $item['order_qty'];
+
+                        // Get current stock
+                        $stmt = $pdo->prepare("SELECT stock FROM inventory WHERE inventory_id = ?");
+                        $stmt->execute([$material['inventory_id']]);
+                        $currentStock = (float)$stmt->fetchColumn();
+                        $newStock = max(0, $currentStock - $totalDeduct);
+
+                        // Deduct from inventory
+                        $stmt = $pdo->prepare("UPDATE inventory SET stock = ? WHERE inventory_id = ?");
+                        $stmt->execute([$newStock, $material['inventory_id']]);
+
+                        // Record in inventory_history (FR-23, FR-26, FR-27)
+                        $stmt = $pdo->prepare("
+                            INSERT INTO inventory_history
+                                (inventory_id, order_id, action, quantity, stock_before, stock_after, reason, updated_by)
+                            VALUES (?, ?, 'Deducted', ?, ?, ?, ?, ?)
+                        ");
+                        $stmt->execute([
+                            $material['inventory_id'],
+                            $orderId,
+                            $totalDeduct,
+                            $currentStock,
+                            $newStock,
+                            "Auto-deducted for Order $orderId (Processing step approved)",
+                            $userId
+                        ]);
+                    }
+                }
+            }
+            // ── END inventory deduction ─────────────────────────
+
             // If step 8, mark order as completed
             if ($stepNumber >= 8) {
                 $stmt = $pdo->prepare("UPDATE orders SET order_status = 'Completed', date_finished = NOW() WHERE order_id = ?");
