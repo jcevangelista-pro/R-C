@@ -31,6 +31,7 @@ function money(val) {
 }
 
 function esc(s) { return String(s).replace(/'/g, "\\'").replace(/"/g, '&quot;'); }
+function htmlEscape(s) { return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 
 // ── Render Pending Orders ───────────────────────────────────
 function renderPendingTable(orders, tbodyId) {
@@ -265,6 +266,7 @@ function renderStepDetail(stepNum) {
 
         metaBy.textContent = stepData.completed_by_name ? `Completed by: ${stepData.completed_by_name}` : '';
         metaAt.textContent = stepData.completed_at ? `At: ${new Date(stepData.completed_at).toLocaleString()}` : '';
+        document.getElementById('reviewStepNotes').value = stepData.notes || '';
 
         // Show advance button only for the current active step
         if (stepData.status === 'In Progress' || stepData.status === 'Pending') {
@@ -338,6 +340,8 @@ function renderStepDetail(stepNum) {
 
 document.getElementById('reviewAdvanceBtn').addEventListener('click', async function() {
     if (!reviewOrderId || !reviewViewingStep) return;
+    if (reviewViewingStep === 2 && !(await saveVerificationAndQuotation())) return;
+    if (!(await saveCurrentStepEvidence())) return;
     if (!confirm(`Approve Step ${reviewViewingStep} and advance to the next step?`)) return;
 
     const res = await fetch(ORDER_API, {
@@ -355,6 +359,19 @@ document.getElementById('reviewAdvanceBtn').addEventListener('click', async func
         alert(data.error);
     }
 });
+
+async function saveCurrentStepEvidence() {
+    const form = new FormData();
+    form.append('action','save_evidence'); form.append('order_id',reviewOrderId);
+    form.append('step_number',reviewViewingStep);
+    form.append('notes',document.getElementById('reviewStepNotes').value.trim());
+    const file = document.getElementById('reviewStepEvidence');
+    if (file.files[0]) form.append('evidence',file.files[0]);
+    const response = await fetch(ORDER_API,{method:'POST',body:form});
+    const data = await response.json();
+    if (!data.success) { alert(data.error); return false; }
+    return true;
+}
 
 function closeOrderReviewModal() {
     document.getElementById('orderReviewOverlay').classList.remove('show');
@@ -382,8 +399,8 @@ function renderVerificationDetails() {
             <div>${imgHtml}</div>
             <div>
                 <span class="verif-label">NAME</span>
-                <div class="verif-item-name">${item.name}</div>
-                <div class="verif-item-category">${item.type_of_product || ''}</div>
+                <div class="verif-item-name">${htmlEscape(item.name)}</div>
+                <div class="verif-item-category">${htmlEscape(item.type_of_product || '')}</div>
             </div>
             <div>
                 <span class="verif-label">QUANTITY</span>
@@ -402,6 +419,8 @@ function renderVerificationDetails() {
     const discountInput = document.getElementById('verifDiscountInput');
     const currentDiscount = reviewOrderData ? parseFloat(reviewOrderData.discount_percent) : 0;
     discountInput.value = currentDiscount;
+    document.getElementById('quotationAmountInput').value = reviewOrderData && reviewOrderData.quotation_amount !== null ? reviewOrderData.quotation_amount : productTotal;
+    document.getElementById('quotationNotesInput').value = reviewOrderData ? (reviewOrderData.quotation_notes || '') : '';
     updateDiscountDisplay(currentDiscount, productTotal);
 }
 
@@ -421,19 +440,32 @@ document.getElementById('verifDiscountInput').addEventListener('input', function
     updateDiscountDisplay(val);
 });
 
-// Apply discount when advancing from step 2
-const originalAdvanceHandler = document.getElementById('reviewAdvanceBtn').onclick;
-document.getElementById('reviewAdvanceBtn').addEventListener('click', async function(e) {
-    // If on step 2, save discount first
-    if (reviewViewingStep === 2) {
+// Save verification values before Step 2 advances.
+async function saveVerificationAndQuotation() {
+    try {
         const discount = parseFloat(document.getElementById('verifDiscountInput').value) || 0;
-        await fetch(ORDER_API, {
+        const discountRes = await fetch(ORDER_API, {
             method: 'POST',
             headers: {'Content-Type':'application/json'},
             body: JSON.stringify({ action: 'apply_discount', order_id: reviewOrderId, discount_percent: discount })
         });
+        const discountData = await discountRes.json();
+        if (!discountData.success) { alert(discountData.error); return false; }
+        const quotationAmount = parseFloat(document.getElementById('quotationAmountInput').value);
+        if (!Number.isFinite(quotationAmount) || quotationAmount < 0) { alert('Enter a valid quotation amount.'); return false; }
+        const quotationNotes = document.getElementById('quotationNotesInput').value.trim();
+        const quotationRes = await fetch(ORDER_API, {
+            method:'POST', headers:{'Content-Type':'application/json'},
+            body:JSON.stringify({action:'save_quotation',order_id:reviewOrderId,quotation_amount:quotationAmount,quotation_notes:quotationNotes})
+        });
+        const quotationData = await quotationRes.json();
+        if (!quotationData.success) { alert(quotationData.error); return false; }
+        return true;
+    } catch (error) {
+        alert('Unable to save verification details.');
+        return false;
     }
-}, true); // Use capture to run before the existing handler
+}
 
 // ── Step 3: Initial Payment ─────────────────────────────────
 function renderStep3Details() {
@@ -456,7 +488,7 @@ function renderStep3Details() {
     document.getElementById('s3Discount').textContent = discount + '%';
     document.getElementById('s3AmountDeducted').textContent = 'P' + deducted.toFixed(2);
     document.getElementById('s3AmountToPay').textContent = 'P' + amountToPay.toFixed(2);
-    document.getElementById('s3Screenshot').textContent = o.payment_screenshot ? 'View Photo' : '—';
+    document.getElementById('s3Screenshot').innerHTML = o.payment_screenshot ? `<a target="_blank" rel="noopener" href="../OrderProcess/evidence.php?kind=payment&order_id=${encodeURIComponent(reviewOrderId)}">View Photo</a>` : '-';
 }
 
 // ── Step 4: Processing ──────────────────────────────────────
@@ -483,7 +515,7 @@ function renderStep5Details() {
     document.getElementById('s5AmountToPay').textContent = 'P' + amountToPay.toFixed(2);
     document.getElementById('s5PaymentType').textContent = o.payment_type || '—';
     document.getElementById('s5RefNumber').textContent = o.reference_number || '—';
-    document.getElementById('s5Screenshot').textContent = o.payment_screenshot ? 'View Photo' : '—';
+    document.getElementById('s5Screenshot').innerHTML = o.payment_screenshot ? `<a target="_blank" rel="noopener" href="../OrderProcess/evidence.php?kind=payment&order_id=${encodeURIComponent(reviewOrderId)}">View Photo</a>` : '-';
 }
 
 // ── Step 6: Out for Delivery ────────────────────────────────
@@ -525,8 +557,8 @@ function renderAdminChat(stepNum) {
 
         return `
         <div class="admin-chat-bubble ${bubbleClass}">
-            <div class="achat-sender">${senderLabel}</div>
-            <div>${msg.message}</div>
+            <div class="achat-sender">${htmlEscape(senderLabel)}</div>
+            <div>${htmlEscape(msg.message)}</div>
             <div class="achat-time">${time}</div>
         </div>`;
     }).join('');

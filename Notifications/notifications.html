@@ -48,6 +48,7 @@
 
 <script src="../CART/cart_badge.js"></script>
 <script>
+const escapeHtml = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 // User dropdown
 const navUser = document.getElementById('NavUser');
 const userDropdown = document.getElementById('userDropdown');
@@ -79,10 +80,10 @@ async function loadNotifications() {
             <div class="notif-item ${readClass}" data-id="${n.notification_id}" data-order="${orderId}">
                 <div class="notif-dot"></div>
                 <div class="notif-content">
-                    <div class="notif-title">${n.title}</div>
-                    <div class="notif-message">${n.message}</div>
+                    <div class="notif-title">${escapeHtml(n.title)}</div>
+                    <div class="notif-message">${escapeHtml(n.message)}</div>
                     <div class="notif-meta">
-                        <span class="notif-sender">From: ${n.sender_name} (${n.sender_role})</span>
+                        <span class="notif-sender">From: ${escapeHtml(n.sender_name)} (${escapeHtml(n.sender_role)})</span>
                         <span class="notif-time">${timeAgo}</span>
                     </div>
                 </div>

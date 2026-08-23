@@ -6,7 +6,8 @@
 
 document.addEventListener('DOMContentLoaded', () => {
 
-  let PRODUCTS = [];
+let PRODUCTS = [];
+const escapeHtml = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
   /* ---------------------------------------------------------
      1. STATE
@@ -73,7 +74,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const categories = [...new Set(PRODUCTS.map(p => p.category))].sort();
     categoryList.innerHTML = `<li><button class="CategoryBtn ActiveCategory" data-category="all">All Products</button></li>`;
     categories.forEach(cat => {
-      categoryList.innerHTML += `<li><button class="CategoryBtn" data-category="${cat}">${cat}</button></li>`;
+      categoryList.innerHTML += `<li><button class="CategoryBtn" data-category="${escapeHtml(cat)}">${escapeHtml(cat)}</button></li>`;
     });
   }
 
@@ -94,7 +95,7 @@ document.addEventListener('DOMContentLoaded', () => {
     typeList.innerHTML = uniqueTypes.map(type => `
       <li>
         <label class="TypeCheckbox">
-          <input type="checkbox" value="${type}" ${state.types.has(type) ? 'checked' : ''}>
+          <input type="checkbox" value="${escapeHtml(type)}" ${state.types.has(type) ? 'checked' : ''}>
           ${type}
         </label>
       </li>
@@ -198,17 +199,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
     grid.innerHTML = products.map(p => {
       const imgHtml = p.image
-        ? `<img src="${p.image}" alt="${p.name}" class="ProductImage">`
+        ? `<img src="${escapeHtml(p.image)}" alt="${escapeHtml(p.name)}" class="ProductImage">`
         : `<div class="ProductImagePlaceholder"></div>`;
 
       return `
       <div class="ProductCard" data-id="${p.id}">
         <div class="ProductImageWrap">
-          <span class="CategoryTag">${p.type}</span>
+          <span class="CategoryTag">${escapeHtml(p.type)}</span>
           ${imgHtml}
         </div>
         <div class="ProductInfo">
-          <h3>${p.name}</h3>
+          <h3>${escapeHtml(p.name)}</h3>
           <span class="ProductPrice">₱${p.price.toFixed(2)}</span>
           <button class="AddToCartBtn" data-id="${p.id}">Add to Cart</button>
         </div>
@@ -424,7 +425,7 @@ document.addEventListener('DOMContentLoaded', () => {
       li.innerHTML = `
         ${imgHtml}
         <div class="CartItemDetails">
-          <span class="CartItemName">${product.name}</span>
+          <span class="CartItemName">${escapeHtml(product.name)}</span>
           <span class="CartItemPrice">₱${product.price.toFixed(2)}</span>
           <div class="QtyControls">
             <button class="QtyBtn" data-action="decrease" data-id="${id}">−</button>

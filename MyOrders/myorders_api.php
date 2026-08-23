@@ -1,7 +1,6 @@
 <?php
-session_start();
-header('Content-Type: application/json');
-require_once __DIR__ . '/../database/connection.php';
+require_once __DIR__ . '/../database/api_bootstrap.php';
+require_role(['customer']);
 
 $userId = $_SESSION['user_id'] ?? null;
 $customerId = null;

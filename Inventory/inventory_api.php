@@ -1,7 +1,6 @@
 <?php
-session_start();
-header('Content-Type: application/json');
-require_once __DIR__ . '/../database/connection.php';
+require_once __DIR__ . '/../database/api_bootstrap.php';
+require_role(['admin', 'owner']);
 
 $method = $_SERVER['REQUEST_METHOD'];
 
@@ -26,8 +25,8 @@ try {
 
         // Add computed status
         foreach ($items as &$item) {
-            $item['stock'] = (int)$item['stock'];
-            $item['reorder_level'] = (int)$item['reorder_level'];
+            $item['stock'] = (float)$item['stock'];
+            $item['reorder_level'] = (float)$item['reorder_level'];
             if ($item['stock'] === 0) {
                 $item['status'] = 'Out of Stock';
             } elseif ($item['stock'] <= $item['reorder_level']) {
@@ -59,7 +58,7 @@ try {
         exit;
     }
 
-    $body = json_decode(file_get_contents('php://input'), true);
+    $body = json_body();
 
     // ── POST: update stock (add/deduct) ─────────────────────
     if ($method === 'POST') {
@@ -68,7 +67,7 @@ try {
         if ($action === 'update_stock') {
             $id = (int)($body['id'] ?? 0);
             $mode = $body['mode'] ?? 'add'; // 'add' or 'deduct'
-            $qty = (int)($body['quantity'] ?? 0);
+            $qty = round((float)($body['quantity'] ?? 0), 2);
             $remarks = trim($body['remarks'] ?? '');
             $userId = $_SESSION['user_id'] ?? null;
 
@@ -77,12 +76,16 @@ try {
                 exit;
             }
 
-            // Get current stock
-            $stmt = $pdo->prepare("SELECT stock FROM inventory WHERE inventory_id = ?");
+            $pdo->beginTransaction();
+            // Lock current stock so simultaneous changes cannot overwrite one another.
+            $stmt = $pdo->prepare("SELECT stock FROM inventory WHERE inventory_id = ? AND is_active=1 FOR UPDATE");
             $stmt->execute([$id]);
-            $current = (int)$stmt->fetchColumn();
+            $currentValue = $stmt->fetchColumn();
+            if ($currentValue === false) { $pdo->rollBack(); api_error('Inventory item not found or archived.', 404); }
+            $current = (float)$currentValue;
 
-            $newStock = $mode === 'add' ? $current + $qty : max(0, $current - $qty);
+            if ($mode === 'deduct' && $qty > $current) api_error('Insufficient stock for this deduction.', 409);
+            $newStock = $mode === 'add' ? $current + $qty : $current - $qty;
             $dbAction = $mode === 'add' ? 'Added' : 'Deducted';
 
             // Update stock
@@ -96,6 +99,9 @@ try {
             ");
             $stmt->execute([$id, $dbAction, $qty, $current, $newStock, $remarks, $userId]);
 
+            audit_event($pdo, 'inventory.stock_updated', null, ['inventory_id'=>$id,'action'=>$dbAction,'quantity'=>$qty]);
+            $pdo->commit();
+
             echo json_encode(['success' => true, 'message' => 'Stock updated.', 'new_stock' => $newStock]);
             exit;
         }
@@ -103,19 +109,12 @@ try {
         if ($action === 'add_material') {
             $itemName = trim($body['item_name'] ?? '');
             $category = $body['category'] ?? 'OTHER';
-            $stock = (int)($body['stock'] ?? 0);
+            $stock = round((float)($body['stock'] ?? 0), 2);
             $unit = trim($body['unit'] ?? '');
-            $reorderLevel = (int)($body['reorder_level'] ?? 10);
+            $reorderLevel = round((float)($body['reorder_level'] ?? 10), 2);
             $unitCost = (float)($body['unit_cost'] ?? 0);
             $description = trim($body['description'] ?? '');
             $userId = $_SESSION['user_id'] ?? null;
-
-            // Only owners can add materials
-            if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'owner') {
-                http_response_code(403);
-                echo json_encode(['success' => false, 'error' => 'Only owners can add materials.']);
-                exit;
-            }
 
             if (!$itemName || !$unit) {
                 echo json_encode(['success' => false, 'error' => 'Item name and unit are required.']);
@@ -163,6 +162,8 @@ try {
     echo json_encode(['success' => false, 'error' => 'Method not allowed.']);
 
 } catch (Exception $e) {
+    if (isset($pdo) && $pdo->inTransaction()) $pdo->rollBack();
+    error_log($e->__toString());
     http_response_code(500);
-    echo json_encode(['success' => false, 'error' => $e->getMessage()]);
+    echo json_encode(['success' => false, 'error' => 'Unable to process the inventory request.']);
 }

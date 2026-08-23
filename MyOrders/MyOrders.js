@@ -3,6 +3,7 @@
 function money(value) {
     return `₱${Number(value).toFixed(2)}`;
 }
+const escapeHtml = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
 /* ================= ORDER TOTAL ================= */
 
@@ -74,16 +75,16 @@ function renderFilteredOrders(type) {
             : 'status-pending';
 
         return `
-        <div class="order-row" data-order-id="${order.order_id}">
+            <div class="order-row" data-order-id="${escapeHtml(order.order_id)}">
             <div class="row-thumb">${imgHtml}</div>
             <div>
-                <div class="row-name">${order.name}</div>
-                <div class="row-category">${order.category}</div>
+                <div class="row-name">${escapeHtml(order.name)}</div>
+                <div class="row-category">${escapeHtml(order.category)}</div>
             </div>
             <div class="row-price">${money(order.price)}</div>
             <div class="row-qty">${order.qty}</div>
             <div class="row-total">${money(itemTotal(order))}</div>
-            <div class="row-status ${statusClass}">${order.status}</div>
+            <div class="row-status ${statusClass}">${escapeHtml(order.status)}</div>
             <div class="row-chevron">›</div>
         </div>`;
     }).join('');

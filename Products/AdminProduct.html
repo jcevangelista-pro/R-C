@@ -389,6 +389,17 @@
     width: 700px;
     padding: 28px 32px 24px;
     box-shadow: 0 8px 30px rgba(0,0,0,0.18);
+    max-height: calc(100vh - 40px);
+    overflow-y: auto;
+    box-sizing: border-box;
+  }
+
+  @media (max-width: 760px) {
+    #ModalContainer, #ProductContent { left:0; width:100vw; padding:12px; box-sizing:border-box; }
+    #PCCard, #ContentModal { width:100%; max-width:100%; }
+    .PUContentCard { flex-direction:column; }
+    .ProductPictureUpdate .ProductPicture { width:160px; height:160px; }
+    .bom-row { grid-template-columns:minmax(120px,1fr) 85px 36px !important; }
   }
 
   .PUContentCard {
@@ -586,6 +597,12 @@
             <input type="checkbox" id="FrontPageVisibility">
             <label for="FrontPageVisibility" class="Label">Set Visible to Front Page</label>
 
+            <div style="margin-top:14px;max-width:520px;">
+              <label class="Label" style="display:block;margin-bottom:6px;">Inventory materials required per product</label>
+              <div id="updateBomRows"></div>
+              <button type="button" id="addBomRow" style="margin-top:6px;border:1px solid #ec4899;background:#fff;color:#be185d;padding:7px 12px;border-radius:6px;cursor:pointer;">+ Add Material</button>
+            </div>
+
             <div class="UPDButtons">
               <button id="ProductCancel">CANCEL</button>
               <button id="ProductArchive">ARCHIVE</button>
@@ -601,6 +618,7 @@
 <script>
 const PRODUCT_API = 'product_api.php';
 let productsData = [];
+let inventoryOptions = [];
 
 // ── Load products from DB ───────────────────────────────────
 async function loadProducts() {
@@ -609,6 +627,7 @@ async function loadProducts() {
     const data = await res.json();
     if (!data.success) throw new Error(data.error);
     productsData = data.products;
+    inventoryOptions = data.inventory_options || [];
 
     document.getElementById('TTopCategory1').textContent = data.stats.total;
     document.getElementById('TTopCategory2').textContent = '—';
@@ -712,7 +731,13 @@ ProductAdding.addEventListener('click', async () => {
   try {
     const res = await fetch(PRODUCT_API, { method: 'POST', body: formData });
     const data = await res.json();
-    if (data.success) { ModalContainer.classList.remove('show'); loadProducts(); }
+    if (data.success) {
+      ModalContainer.classList.remove('show');
+      await loadProducts();
+      const created = productsData.find(p => Number(p.id) === Number(data.id));
+      if (created) openUpdateModal(created);
+      alert('Product created. Configure at least one inventory material before using it in production.');
+    }
     else { alert(data.error); }
   } catch (err) { alert('Error adding product.'); }
 });
@@ -737,7 +762,36 @@ function openUpdateModal(product) {
   if (!product.image_path) updateImagePreview.style.display = 'none';
   else updateImagePreview.style.display = '';
   updateImageInput.value = '';
+  renderBomRows(product.bom || []);
   ProductContent.classList.add('show');
+}
+
+function bomRowHtml(material = {}) {
+  const options = inventoryOptions.map(item => `<option value="${item.inventory_id}" ${String(item.inventory_id) === String(material.inventory_id || '') ? 'selected' : ''}>${escHtml(item.item_name)} (${escHtml(item.unit_of_measure)})</option>`).join('');
+  return `<div class="bom-row" style="display:grid;grid-template-columns:minmax(150px,1fr) 100px 36px;gap:6px;margin-bottom:6px;max-width:100%;">
+    <select class="DropDown bom-material" style="width:100%;"><option value="">Select material</option>${options}</select>
+    <input class="PDInput bom-quantity" type="number" min="0.01" step="0.01" value="${Number(material.quantity_required || 1)}" aria-label="Quantity required">
+    <button type="button" class="remove-bom" aria-label="Remove material" style="border:0;border-radius:6px;cursor:pointer;">×</button>
+  </div>`;
+}
+
+function renderBomRows(materials) {
+  const host = document.getElementById('updateBomRows');
+  host.innerHTML = (materials.length ? materials : [{}]).map(bomRowHtml).join('');
+}
+
+document.getElementById('addBomRow').addEventListener('click', () => {
+  document.getElementById('updateBomRows').insertAdjacentHTML('beforeend', bomRowHtml());
+});
+document.getElementById('updateBomRows').addEventListener('click', e => {
+  if (e.target.classList.contains('remove-bom')) e.target.closest('.bom-row').remove();
+});
+
+function collectBom() {
+  return [...document.querySelectorAll('#updateBomRows .bom-row')].map(row => ({
+    inventory_id: Number(row.querySelector('.bom-material').value),
+    quantity_required: Number(row.querySelector('.bom-quantity').value)
+  })).filter(item => item.inventory_id && item.quantity_required > 0);
 }
 
 ProductCancel.addEventListener('click', () => { ProductContent.classList.remove('show'); });
@@ -778,7 +832,16 @@ ProductUpdate.addEventListener('click', async () => {
   try {
     const res = await fetch(PRODUCT_API, { method: 'POST', body: formData });
     const data = await res.json();
-    if (data.success) { ProductContent.classList.remove('show'); loadProducts(); }
+    if (data.success) {
+      const bom = collectBom();
+      if (!bom.length) { alert('Add at least one inventory material so stock can be deducted for this product.'); return; }
+      const bomData = new FormData();
+      bomData.append('action', 'save_bom'); bomData.append('id', id); bomData.append('materials', JSON.stringify(bom));
+      const bomRes = await fetch(PRODUCT_API, {method:'POST', body:bomData});
+      const bomResult = await bomRes.json();
+      if (!bomResult.success) { alert(bomResult.error); return; }
+      ProductContent.classList.remove('show'); loadProducts();
+    }
     else { alert(data.error); }
   } catch (err) { alert('Error updating product.'); }
 });

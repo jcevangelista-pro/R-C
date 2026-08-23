@@ -459,6 +459,11 @@ summaryCheckoutBtn.addEventListener('click', async () => {
 
   // Determine delivery and rush info
   const isRush = checkoutIndexes.some(idx => cartItems[idx] && cartItems[idx].orderType === 'rush');
+  const customizationTypes = [...new Set(checkoutIndexes.map(idx => cartItems[idx] && cartItems[idx].designSelection).filter(Boolean))];
+  const customizationNotes = checkoutIndexes.map(idx => {
+    const item = cartItems[idx];
+    return item && item.description ? `${item.name}: ${item.description}` : '';
+  }).filter(Boolean).join('\n');
 
   try {
     const res = await fetch('cart_api.php', {
@@ -469,7 +474,9 @@ summaryCheckoutBtn.addEventListener('click', async () => {
         cart_ids: selectedCartIds,
         delivery_method: deliveryInfo.method === 'pickup' ? 'Pickup' : 'Delivery',
         delivery_address: deliveryInfo.address || '',
-        is_rush: isRush
+        is_rush: isRush,
+        customization_type: customizationTypes.join(', '),
+        design_description: customizationNotes
       })
     });
     const data = await res.json();

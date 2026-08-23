@@ -84,8 +84,8 @@ CREATE TABLE inventory (
     description          TEXT NULL,
     category             ENUM('MUGS','SHIRTS','PAPER','SUPPLY','PEN','FANS','OTHER') NOT NULL DEFAULT 'OTHER',
     unit_of_measure      VARCHAR(50) NOT NULL,
-    stock                INT NOT NULL DEFAULT 0,
-    reorder_level        INT NOT NULL DEFAULT 10,
+    stock                DECIMAL(12,2) NOT NULL DEFAULT 0.00,
+    reorder_level        DECIMAL(12,2) NOT NULL DEFAULT 10.00,
     unit_cost            DECIMAL(10,2) NOT NULL DEFAULT 0.00,
     is_active            BOOLEAN NOT NULL DEFAULT TRUE,
     remarks              TEXT,
@@ -138,6 +138,7 @@ CREATE TABLE orders (
     -- Customization (FR-13)
     customization_type  VARCHAR(150),
     design_description  TEXT,
+    customization_file_path VARCHAR(255) NULL,
 
     -- Discount (FR-14)
     discount_percent    DECIMAL(5, 2) NOT NULL DEFAULT 0.00,
@@ -151,6 +152,10 @@ CREATE TABLE orders (
     -- Quotation (FR-32)
     quotation_amount    DECIMAL(10, 2) NULL,
     quotation_notes     TEXT NULL,
+    quotation_status    ENUM('Draft','Sent','Accepted','Rejected','Revised') NOT NULL DEFAULT 'Draft',
+    quotation_created_by INT NULL,
+    quotation_sent_at   DATETIME NULL,
+    quotation_responded_at DATETIME NULL,
 
     -- Delivery
     delivery_method     ENUM('Pickup','Delivery') NOT NULL DEFAULT 'Pickup',
@@ -176,6 +181,7 @@ CREATE TABLE orders (
     date_requested      DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     date_accepted       DATETIME,
     date_finished       DATETIME,
+    inventory_deducted_at DATETIME NULL,
     created_at          DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at          DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 
@@ -185,6 +191,10 @@ CREATE TABLE orders (
 
     CONSTRAINT fk_orders_accepted_by
         FOREIGN KEY (accepted_by) REFERENCES users(user_id)
+        ON UPDATE CASCADE ON DELETE SET NULL,
+
+    CONSTRAINT fk_orders_quotation_user
+        FOREIGN KEY (quotation_created_by) REFERENCES users(user_id)
         ON UPDATE CASCADE ON DELETE SET NULL
 );
 
@@ -317,8 +327,8 @@ CREATE TABLE inventory_history (
     order_id        VARCHAR(20) NULL,
     action          ENUM('Added','Deducted','Adjusted') NOT NULL,
     quantity        DECIMAL(12,2) NOT NULL,
-    stock_before    INT NOT NULL,
-    stock_after     INT NOT NULL,
+    stock_before    DECIMAL(12,2) NOT NULL,
+    stock_after     DECIMAL(12,2) NOT NULL,
     reason          VARCHAR(255) NULL,
     notes           TEXT NULL,
     updated_by      INT,
@@ -340,6 +350,40 @@ CREATE TABLE inventory_history (
 CREATE INDEX idx_ih_inventory ON inventory_history(inventory_id);
 CREATE INDEX idx_ih_order ON inventory_history(order_id);
 CREATE INDEX idx_ih_date ON inventory_history(created_at);
+
+-- Verified payment ledger: submitted payments never affect paid totals until approved.
+CREATE TABLE payments (
+    payment_id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    order_id VARCHAR(20) NOT NULL,
+    submitted_by INT NOT NULL,
+    amount DECIMAL(10,2) NOT NULL,
+    payment_method ENUM('GCash','Bank') NOT NULL,
+    payment_type ENUM('Full Payment','50% Down Payment','Final Payment') NOT NULL,
+    reference_number VARCHAR(100),
+    proof_path VARCHAR(255),
+    status ENUM('Submitted','Verified','Rejected') NOT NULL DEFAULT 'Submitted',
+    verified_by INT NULL,
+    verified_at DATETIME NULL,
+    rejection_reason VARCHAR(255),
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (order_id) REFERENCES orders(order_id) ON DELETE RESTRICT,
+    FOREIGN KEY (submitted_by) REFERENCES users(user_id) ON DELETE RESTRICT,
+    FOREIGN KEY (verified_by) REFERENCES users(user_id) ON DELETE SET NULL,
+    INDEX idx_payments_order_status (order_id,status)
+);
+
+CREATE TABLE audit_logs (
+    audit_id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NULL,
+    order_id VARCHAR(20) NULL,
+    event_type VARCHAR(80) NOT NULL,
+    details_json JSON NULL,
+    ip_address VARCHAR(45),
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE SET NULL,
+    FOREIGN KEY (order_id) REFERENCES orders(order_id) ON DELETE SET NULL,
+    INDEX idx_audit_order_date (order_id,created_at)
+);
 
 -- ============================================================
 -- 12. CART (FR-09)
@@ -365,6 +409,7 @@ CREATE TABLE cart (
 );
 
 CREATE INDEX idx_cart_customer ON cart(customer_id);
+CREATE UNIQUE INDEX uq_cart_customer_product ON cart(customer_id, product_id);
 
 -- ============================================================
 -- SEED: Process Steps (FR-17)

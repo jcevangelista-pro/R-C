@@ -215,7 +215,7 @@
         <td class="col-actions">
           <div class="action-btns">
             <button class="btn-change" onclick="openUpdateModal(${u.id}, '${escJs(u.username)}', '${escJs(u.role)}')">Change</button>
-            <button class="btn-delete" onclick="openDeleteModal(${u.id}, '${escJs(u.username)}')">Delete</button>
+            <button class="btn-delete" onclick="openDeleteModal(${u.id}, '${escJs(u.username)}')" ${u.is_active == 0 ? 'disabled' : ''}>${u.is_active == 0 ? 'Inactive' : 'Deactivate'}</button>
           </div>
         </td>
       </tr>
@@ -292,7 +292,7 @@
       const data = await res.json();
       if (!data.success) throw new Error(data.error);
       closeDeleteModal();
-      showToast('Account deleted.');
+      showToast('Account deactivated.');
       loadUsers();
     } catch (err) {
       showToast(err.message, 'error');

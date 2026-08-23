@@ -3,10 +3,32 @@ let currentOrderId = null;
 let currentUserId = null;
 let orderMessages = [];
 let orderSteps = [];
+function htmlEscape(value) { return String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 
 document.addEventListener('DOMContentLoaded', function () {
     const tabs = document.querySelectorAll('.nav-tabs[role="tablist"] > li');
     const panes = document.querySelectorAll('.tab-content > .tab-pane');
+
+    // Existing markup contains repeated legacy IDs; scope upload behavior to each field/card.
+    document.querySelectorAll('.photo-upload').forEach(label => {
+        label.addEventListener('click', event => {
+            event.preventDefault();
+            const field = label.closest('.field') || label.parentElement;
+            const input = field ? field.querySelector('input[type="file"]') : null;
+            if (input) input.click();
+        });
+    });
+    document.querySelectorAll('input[type="file"][accept*="image"]').forEach(input => {
+        input.addEventListener('change', () => {
+            const field = input.closest('.field') || input.parentElement;
+            const preview = field ? field.querySelector('.photo-upload img') : null;
+            if (!preview || !input.files[0]) return;
+            preview.src = URL.createObjectURL(input.files[0]);
+            preview.style.display = 'block';
+            const icon = field.querySelector('.photo-upload span');
+            if (icon) icon.style.display = 'none';
+        });
+    });
 
     // Get order ID from URL
     const params = new URLSearchParams(window.location.search);
@@ -221,8 +243,8 @@ function renderChatForStep(stepNumber) {
 
         return `
         <div class="chat-bubble ${bubbleClass}">
-            <div class="chat-sender">${senderLabel}</div>
-            <div>${msg.message}</div>
+            <div class="chat-sender">${htmlEscape(senderLabel)}</div>
+            <div>${htmlEscape(msg.message)}</div>
             <div class="chat-time">${time}</div>
         </div>`;
     }).join('');
@@ -299,17 +321,15 @@ document.addEventListener('DOMContentLoaded', function() {
             if (!paymentType) { alert('Please select a payment type.'); return; }
 
             try {
-                const res = await fetch(ORDER_PROCESS_API, {
-                    method: 'POST',
-                    headers: {'Content-Type':'application/json'},
-                    body: JSON.stringify({
-                        action: 'submit_payment',
-                        order_id: currentOrderId,
-                        payment_method: paymentMethod,
-                        payment_type: paymentType,
-                        reference_number: referenceNumber
-                    })
-                });
+                const form = new FormData();
+                form.append('action','submit_payment');
+                form.append('order_id',currentOrderId);
+                form.append('payment_method',paymentMethod);
+                form.append('payment_type',paymentType);
+                form.append('reference_number',referenceNumber);
+                const proof = document.querySelector('#PaymentCard input[type="file"]');
+                if (proof && proof.files[0]) form.append('proof', proof.files[0]);
+                const res = await fetch(ORDER_PROCESS_API, {method:'POST',body:form});
                 const data = await res.json();
                 if (data.success) {
                     alert('Payment submitted successfully!');
@@ -334,15 +354,13 @@ document.addEventListener('DOMContentLoaded', function() {
             const referenceNumber = refInput ? refInput.value.trim() : '';
 
             try {
-                const res = await fetch(ORDER_PROCESS_API, {
-                    method: 'POST',
-                    headers: {'Content-Type':'application/json'},
-                    body: JSON.stringify({
-                        action: 'submit_final_payment',
-                        order_id: currentOrderId,
-                        reference_number: referenceNumber
-                    })
-                });
+                const form = new FormData();
+                form.append('action','submit_final_payment');
+                form.append('order_id',currentOrderId);
+                form.append('reference_number',referenceNumber);
+                const proof = document.querySelector('#FinalPaymentCard input[type="file"]');
+                if (proof && proof.files[0]) form.append('proof', proof.files[0]);
+                const res = await fetch(ORDER_PROCESS_API, {method:'POST',body:form});
                 const data = await res.json();
                 if (data.success) {
                     alert('Final payment submitted successfully!');

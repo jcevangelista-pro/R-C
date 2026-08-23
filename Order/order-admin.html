@@ -258,7 +258,12 @@
         <p id="reviewStepStatus" class="review-step-status">COMPLETED</p>
         <p id="reviewStepCompletedBy" class="review-step-meta"></p>
         <p id="reviewStepCompletedAt" class="review-step-meta"></p>
+        <div id="reviewEvidenceFields" style="display:grid;grid-template-columns:minmax(160px,1fr) minmax(150px,1fr);gap:10px;margin-top:10px;">
+          <input id="reviewStepNotes" type="text" maxlength="2000" placeholder="Process notes" style="width:100%;box-sizing:border-box;padding:9px;border:1px solid #ddd;border-radius:6px;">
+          <input id="reviewStepEvidence" type="file" accept="image/jpeg,image/png,image/webp" style="width:100%;box-sizing:border-box;">
+        </div>
       </div>
+      <style>@media(max-width:600px){#reviewEvidenceFields{grid-template-columns:1fr!important;}}</style>
 
       <!-- Step 2 Verification Details (hidden by default) -->
       <div class="review-verification-details" id="reviewVerificationBox" style="display:none;">
@@ -277,6 +282,14 @@
           <div class="verif-field">
             <span class="verif-label">NEW PRODUCT TOTAL</span>
             <p class="verif-value verif-large" id="verifNewTotal">P0.00</p>
+          </div>
+          <div class="verif-field">
+            <label class="verif-label" for="quotationAmountInput">QUOTATION AMOUNT</label>
+            <input type="number" id="quotationAmountInput" min="0" step="0.01" style="width:100%;box-sizing:border-box;padding:8px;border:1px solid #ddd;border-radius:6px;">
+          </div>
+          <div class="verif-field" style="min-width:180px;">
+            <label class="verif-label" for="quotationNotesInput">QUOTATION NOTES</label>
+            <input type="text" id="quotationNotesInput" maxlength="1000" style="width:100%;box-sizing:border-box;padding:8px;border:1px solid #ddd;border-radius:6px;">
           </div>
         </div>
       </div>

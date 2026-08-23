@@ -1,5 +1,9 @@
 <?php
-session_start();
+if (session_status() !== PHP_SESSION_ACTIVE) {
+    $isHttps = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off');
+    session_set_cookie_params(['httponly'=>true,'secure'=>$isHttps,'samesite'=>'Lax','path'=>'/']);
+    session_start();
+}
 header('Content-Type: application/json');
 
 require_once __DIR__ . '/../database/connection.php';
@@ -62,6 +66,7 @@ switch ($action) {
         // Hash password
         $hash = password_hash($password, PASSWORD_BCRYPT);
 
+        $pdo->beginTransaction();
         // Insert user (role defaults to 'customer')
         $stmt = $pdo->prepare(
             'INSERT INTO users (first_name, middle_name, last_name, email, username, password_hash, role)
@@ -69,8 +74,12 @@ switch ($action) {
         );
         $stmt->execute([$firstName, $middleName ?: null, $lastName, $email, $username, $hash, 'customer']);
         $userId = $pdo->lastInsertId();
+        $stmt = $pdo->prepare("INSERT INTO customers (user_id, phone_num, address) VALUES (?, '', '')");
+        $stmt->execute([$userId]);
+        $pdo->commit();
 
         // Set session
+        session_regenerate_id(true);
         $_SESSION['user_id'] = $userId;
         $_SESSION['username'] = $username;
         $_SESSION['role'] = 'customer';
@@ -90,6 +99,17 @@ switch ($action) {
     case 'login':
         $username = trim($input['username'] ?? '');
         $password = $input['password'] ?? '';
+        $now = time();
+        $failures = array_values(array_filter($_SESSION['login_failures'] ?? [], fn($timestamp) => $timestamp > $now - 900));
+        if (count($failures) >= 5) {
+            http_response_code(429);
+            echo json_encode(['success'=>false,'error'=>'Too many login attempts. Try again in 15 minutes.']);
+            exit;
+        }
+        $recordFailure = function() use (&$failures): void {
+            $failures[] = time();
+            $_SESSION['login_failures'] = $failures;
+        };
 
         if (!$username || !$password) {
             echo json_encode(['success' => false, 'error' => 'Username and password are required.']);
@@ -102,6 +122,7 @@ switch ($action) {
         $user = $stmt->fetch();
 
         if (!$user) {
+            $recordFailure();
             echo json_encode(['success' => false, 'error' => 'Invalid username or password.']);
             exit;
         }
@@ -112,6 +133,7 @@ switch ($action) {
         }
 
         if (!password_verify($password, $user['password_hash'])) {
+            $recordFailure();
             echo json_encode(['success' => false, 'error' => 'Invalid username or password.']);
             exit;
         }
@@ -121,6 +143,8 @@ switch ($action) {
         $stmt->execute([$user['user_id']]);
 
         // Set session
+        session_regenerate_id(true);
+        unset($_SESSION['login_failures']);
         $_SESSION['user_id'] = $user['user_id'];
         $_SESSION['username'] = $user['username'];
         $_SESSION['role'] = $user['role'];

@@ -1,7 +1,6 @@
 <?php
-session_start();
-header('Content-Type: application/json');
-require_once __DIR__ . '/../database/connection.php';
+require_once __DIR__ . '/../database/api_bootstrap.php';
+require_role(['admin', 'owner']);
 
 $method = $_SERVER['REQUEST_METHOD'];
 
@@ -105,7 +104,8 @@ try {
     }
 
     // ── POST: order actions ─────────────────────────────────
-    $body = json_decode(file_get_contents('php://input'), true);
+    $contentType = strtolower($_SERVER['CONTENT_TYPE'] ?? '');
+    $body = str_contains($contentType, 'multipart/form-data') ? $_POST : json_body();
     $action = $body['action'] ?? '';
 
     if ($method === 'POST') {
@@ -115,8 +115,11 @@ try {
             $userId = $_SESSION['user_id'] ?? null;
             if (!$orderId) { echo json_encode(['success' => false, 'error' => 'Order ID required.']); exit; }
 
-            $stmt = $pdo->prepare("UPDATE orders SET order_status = 'In Progress', accepted_by = ?, date_accepted = NOW() WHERE order_id = ?");
+            require_order_access($pdo, $orderId, true);
+            $pdo->beginTransaction();
+            $stmt = $pdo->prepare("UPDATE orders SET order_status = 'In Progress', accepted_by = ?, date_accepted = NOW() WHERE order_id = ? AND order_status='Pending'");
             $stmt->execute([$userId, $orderId]);
+            if ($stmt->rowCount() !== 1) { $pdo->rollBack(); api_error('Only a pending order can be accepted.', 409); }
 
             // Create all 8 process steps for this order
             $stmt = $pdo->prepare("SELECT process_step_id FROM process_steps ORDER BY step_number");
@@ -124,7 +127,7 @@ try {
             $stepIds = $stmt->fetchAll(PDO::FETCH_COLUMN);
 
             foreach ($stepIds as $index => $stepId) {
-                $status = ($index === 0) ? 'Completed' : 'Pending';
+                $status = ($index === 0) ? 'Completed' : (($index === 1) ? 'In Progress' : 'Pending');
                 $stmtInsert = $pdo->prepare("
                     INSERT IGNORE INTO order_process (order_id, process_step_id, status, completed_by, completed_at)
                     VALUES (?, ?, ?, ?, ?)
@@ -136,6 +139,9 @@ try {
                 }
             }
 
+            audit_event($pdo, 'order.accepted', $orderId);
+            $pdo->commit();
+
             echo json_encode(['success' => true, 'message' => 'Order accepted.']);
             exit;
         }
@@ -144,8 +150,10 @@ try {
             $orderId = $body['order_id'] ?? '';
             if (!$orderId) { echo json_encode(['success' => false, 'error' => 'Order ID required.']); exit; }
 
-            $stmt = $pdo->prepare("UPDATE orders SET order_status = 'Cancelled' WHERE order_id = ?");
+            require_order_access($pdo, $orderId, true);
+            $stmt = $pdo->prepare("UPDATE orders SET order_status = 'Cancelled', date_finished=NOW() WHERE order_id = ? AND order_status='Pending'");
             $stmt->execute([$orderId]);
+            if ($stmt->rowCount() !== 1) api_error('Only a pending order can be rejected.', 409);
             echo json_encode(['success' => true, 'message' => 'Order rejected.']);
             exit;
         }
@@ -154,7 +162,8 @@ try {
             $orderId = $body['order_id'] ?? '';
             if (!$orderId) { echo json_encode(['success' => false, 'error' => 'Order ID required.']); exit; }
 
-            $stmt = $pdo->prepare("UPDATE orders SET order_status = 'Completed', date_finished = NOW() WHERE order_id = ?");
+            require_order_access($pdo, $orderId, true);
+            $stmt = $pdo->prepare("UPDATE orders SET order_status = 'Completed', date_finished = NOW() WHERE order_id = ? AND order_status='In Progress'");
             $stmt->execute([$orderId]);
             echo json_encode(['success' => true, 'message' => 'Order completed.']);
             exit;
@@ -166,7 +175,7 @@ try {
             if (!$orderId) { echo json_encode(['success' => false, 'error' => 'Order ID required.']); exit; }
 
             $stmt = $pdo->prepare("
-                SELECT op.process_id, op.status, op.completed_at, ps.step_number, ps.step_name,
+                SELECT op.process_id, op.status, op.process_date, op.notes, op.image, op.completed_at, ps.step_number, ps.step_name,
                        CONCAT(u.first_name, ' ', u.last_name) AS completed_by_name
                 FROM order_process op
                 JOIN process_steps ps ON ps.process_step_id = op.process_step_id
@@ -181,6 +190,9 @@ try {
             $stmt = $pdo->prepare("
                 SELECT o.order_id, o.order_status, o.total_amount, o.product_total,
                        o.discount_percent, o.amount_deducted, o.is_rush, o.customization_type,
+                       o.quotation_amount, o.quotation_notes, o.quotation_status,
+                       o.payment_method, o.payment_type, o.reference_number, o.payment_screenshot,
+                       o.amount_paid, o.remaining_balance, o.payment_status, o.rush_fee, o.delivery_fee,
                        o.delivery_method, o.delivery_address,
                        CONCAT(u.first_name, ' ', u.last_name) AS customer_name
                 FROM orders o
@@ -212,19 +224,47 @@ try {
 
             if (!$orderId) { echo json_encode(['success' => false, 'error' => 'Order ID required.']); exit; }
 
-            // Get product total
-            $stmt = $pdo->prepare("SELECT product_total FROM orders WHERE order_id = ?");
-            $stmt->execute([$orderId]);
-            $productTotal = (float)$stmt->fetchColumn();
-
-            $amountDeducted = round($productTotal * ($discountPercent / 100), 2);
-            $newTotal = $productTotal - $amountDeducted;
-
-            // Update order
-            $stmt = $pdo->prepare("UPDATE orders SET discount_percent = ?, amount_deducted = ?, total_amount = ? + rush_fee + delivery_fee WHERE order_id = ?");
-            $stmt->execute([$discountPercent, $amountDeducted, $newTotal, $orderId]);
+            if ($discountPercent < 0 || $discountPercent > 100) api_error('Discount must be between 0 and 100.', 422);
+            require_order_access($pdo, $orderId, true);
+            $stmt = $pdo->prepare("UPDATE orders SET discount_percent=? WHERE order_id=?");
+            $stmt->execute([$discountPercent, $orderId]);
+            $totals = calculate_order_totals($pdo, $orderId);
+            $amountDeducted = $totals['amount_deducted'];
+            $newTotal = $totals['total_amount'];
 
             echo json_encode(['success' => true, 'message' => 'Discount applied.', 'amount_deducted' => $amountDeducted, 'new_total' => $newTotal]);
+            exit;
+        }
+
+        if ($action === 'save_quotation') {
+            $orderId = trim($body['order_id'] ?? '');
+            $amount = (float)($body['quotation_amount'] ?? 0);
+            $notes = trim($body['quotation_notes'] ?? '');
+            if (!$orderId || $amount < 0) api_error('A valid order and quotation amount are required.', 422);
+            require_order_access($pdo, $orderId, true);
+            $stmt = $pdo->prepare("UPDATE orders SET quotation_amount=?, quotation_notes=?, quotation_status=IF(quotation_status='Accepted','Revised','Sent'), quotation_created_by=?, quotation_sent_at=NOW() WHERE order_id=? AND order_status='In Progress'");
+            $stmt->execute([$amount,$notes ?: null,current_user_id(),$orderId]);
+            if ($stmt->rowCount() !== 1) api_error('Quotation cannot be updated for this order.', 409);
+            audit_event($pdo, 'quotation.sent', $orderId, ['amount'=>$amount]);
+            echo json_encode(['success'=>true,'message'=>'Quotation sent.']);
+            exit;
+        }
+
+        if ($action === 'save_evidence') {
+            $orderId = trim($body['order_id'] ?? '');
+            $stepNumber = (int)($body['step_number'] ?? 0);
+            $notes = trim($body['notes'] ?? '');
+            if (!$orderId || $stepNumber < 1 || $stepNumber > 8) api_error('Valid order and process step are required.', 422);
+            require_order_access($pdo, $orderId, true);
+            $image = isset($_FILES['evidence']) ? store_image_upload($_FILES['evidence'], 'process-evidence') : null;
+            $sql = "UPDATE order_process op JOIN process_steps ps ON ps.process_step_id=op.process_step_id SET op.notes=?,op.process_date=CURDATE()";
+            $params = [$notes ?: null];
+            if ($image) { $sql .= ",op.image=?"; $params[] = $image; }
+            $sql .= " WHERE op.order_id=? AND ps.step_number=?";
+            array_push($params,$orderId,$stepNumber);
+            $pdo->prepare($sql)->execute($params);
+            audit_event($pdo, 'order.evidence_saved', $orderId, ['step_number'=>$stepNumber,'has_image'=>(bool)$image]);
+            echo json_encode(['success'=>true,'message'=>'Process evidence saved.','image'=>$image]);
             exit;
         }
 
@@ -239,6 +279,33 @@ try {
                 exit;
             }
 
+            require_order_access($pdo, $orderId, true);
+            $pdo->beginTransaction();
+            $lock = $pdo->prepare("SELECT o.order_status, o.inventory_deducted_at, op.status FROM orders o JOIN order_process op ON op.order_id=o.order_id JOIN process_steps ps ON ps.process_step_id=op.process_step_id WHERE o.order_id=? AND ps.step_number=? FOR UPDATE");
+            $lock->execute([$orderId, $stepNumber]);
+            $state = $lock->fetch();
+            if (!$state || $state['order_status'] !== 'In Progress' || $state['status'] !== 'In Progress') {
+                $pdo->rollBack(); api_error('This is not the current active order step.', 409);
+            }
+
+            if (in_array($stepNumber, [3, 5], true)) {
+                $paymentType = $stepNumber === 3 ? ['Full Payment','50% Down Payment'] : ['Final Payment'];
+                $marks = implode(',', array_fill(0, count($paymentType), '?'));
+                $params = array_merge([$userId], $paymentType, [$orderId]);
+                $verify = $pdo->prepare("UPDATE payments SET status='Verified', verified_by=?, verified_at=NOW() WHERE payment_type IN ($marks) AND order_id=? AND status='Submitted'");
+                $verify->execute($params);
+                if ($verify->rowCount() < 1) { $pdo->rollBack(); api_error('A submitted payment is required before approving this step.', 409); }
+                $paid = $pdo->prepare("SELECT COALESCE(SUM(amount),0) FROM payments WHERE order_id=? AND status='Verified'");
+                $paid->execute([$orderId]);
+                $amountPaid = round((float)$paid->fetchColumn(), 2);
+                $totalStmt = $pdo->prepare("SELECT total_amount FROM orders WHERE order_id=?");
+                $totalStmt->execute([$orderId]);
+                $totalAmount = (float)$totalStmt->fetchColumn();
+                $remaining = max(0, round($totalAmount-$amountPaid, 2));
+                $paymentStatus = $amountPaid <= 0 ? 'Unpaid' : ($remaining > 0 ? 'Partial' : 'Paid');
+                $pdo->prepare("UPDATE orders SET amount_paid=?,remaining_balance=?,payment_status=? WHERE order_id=?")->execute([$amountPaid,$remaining,$paymentStatus,$orderId]);
+            }
+
             // Mark current step as completed
             $stmt = $pdo->prepare("
                 UPDATE order_process op
@@ -250,55 +317,32 @@ try {
 
             // ── STEP 4: Deduct inventory materials ─────────────
             if ($stepNumber === 4) {
-                // Get all order items
-                $stmt = $pdo->prepare("
-                    SELECT od.product_id, od.quantity AS order_qty
-                    FROM order_details od
-                    WHERE od.order_id = ?
-                ");
-                $stmt->execute([$orderId]);
-                $orderItems = $stmt->fetchAll();
+                if ($state['inventory_deducted_at']) { $pdo->rollBack(); api_error('Inventory was already deducted for this order.', 409); }
+                $missing = $pdo->prepare("SELECT p.name FROM order_details od JOIN products p ON p.product_id=od.product_id LEFT JOIN product_materials pm ON pm.product_id=p.product_id WHERE od.order_id=? GROUP BY p.product_id,p.name HAVING COUNT(pm.product_material_id)=0");
+                $missing->execute([$orderId]);
+                $missingNames = $missing->fetchAll(PDO::FETCH_COLUMN);
+                if ($missingNames) { $pdo->rollBack(); api_error('BOM is required for every product: '.implode(', ', $missingNames), 409); }
 
-                foreach ($orderItems as $item) {
-                    // Get BOM: materials required for this product
-                    $stmt = $pdo->prepare("
-                        SELECT pm.inventory_id, pm.quantity_required
-                        FROM product_materials pm
-                        WHERE pm.product_id = ?
-                    ");
-                    $stmt->execute([$item['product_id']]);
-                    $materials = $stmt->fetchAll();
-
-                    foreach ($materials as $material) {
-                        $totalDeduct = $material['quantity_required'] * $item['order_qty'];
-
-                        // Get current stock
-                        $stmt = $pdo->prepare("SELECT stock FROM inventory WHERE inventory_id = ?");
-                        $stmt->execute([$material['inventory_id']]);
-                        $currentStock = (float)$stmt->fetchColumn();
-                        $newStock = max(0, $currentStock - $totalDeduct);
-
-                        // Deduct from inventory
-                        $stmt = $pdo->prepare("UPDATE inventory SET stock = ? WHERE inventory_id = ?");
-                        $stmt->execute([$newStock, $material['inventory_id']]);
-
-                        // Record in inventory_history (FR-23, FR-26, FR-27)
-                        $stmt = $pdo->prepare("
-                            INSERT INTO inventory_history
-                                (inventory_id, order_id, action, quantity, stock_before, stock_after, reason, updated_by)
-                            VALUES (?, ?, 'Deducted', ?, ?, ?, ?, ?)
-                        ");
-                        $stmt->execute([
-                            $material['inventory_id'],
-                            $orderId,
-                            $totalDeduct,
-                            $currentStock,
-                            $newStock,
-                            "Auto-deducted for Order $orderId (Processing step approved)",
-                            $userId
-                        ]);
-                    }
+                $requirements = $pdo->prepare("SELECT pm.inventory_id, i.item_name, SUM(pm.quantity_required*od.quantity) required_qty FROM order_details od JOIN product_materials pm ON pm.product_id=od.product_id JOIN inventory i ON i.inventory_id=pm.inventory_id WHERE od.order_id=? GROUP BY pm.inventory_id,i.item_name ORDER BY pm.inventory_id FOR UPDATE");
+                $requirements->execute([$orderId]);
+                $materials = $requirements->fetchAll();
+                $stockStmt = $pdo->prepare("SELECT stock FROM inventory WHERE inventory_id=? AND is_active=1 FOR UPDATE");
+                foreach ($materials as &$material) {
+                    $stockStmt->execute([$material['inventory_id']]);
+                    $stock = $stockStmt->fetchColumn();
+                    if ($stock === false) { $pdo->rollBack(); api_error('A required material is archived or missing: '.$material['item_name'], 409); }
+                    $material['stock_before'] = (float)$stock;
+                    if ((float)$stock < (float)$material['required_qty']) { $pdo->rollBack(); api_error('Insufficient stock for '.$material['item_name'].'.', 409); }
                 }
+                unset($material);
+                $updateStock = $pdo->prepare("UPDATE inventory SET stock=? WHERE inventory_id=?");
+                $history = $pdo->prepare("INSERT INTO inventory_history (inventory_id,order_id,action,quantity,stock_before,stock_after,reason,updated_by) VALUES (?,?,'Deducted',?,?,?,?,?)");
+                foreach ($materials as $material) {
+                    $after = round($material['stock_before']-(float)$material['required_qty'], 2);
+                    $updateStock->execute([$after,$material['inventory_id']]);
+                    $history->execute([$material['inventory_id'],$orderId,$material['required_qty'],$material['stock_before'],$after,"Automatic BOM deduction for $orderId",$userId]);
+                }
+                $pdo->prepare("UPDATE orders SET inventory_deducted_at=NOW() WHERE order_id=?")->execute([$orderId]);
             }
             // ── END inventory deduction ─────────────────────────
 
@@ -346,6 +390,9 @@ try {
                 $stmt->execute([$processId, $customerUserId, $userId, $title, $message]);
             }
 
+            audit_event($pdo, 'order.step_advanced', $orderId, ['step_number'=>$stepNumber]);
+            $pdo->commit();
+
             echo json_encode(['success' => true, 'message' => 'Step advanced.']);
             exit;
         }
@@ -358,6 +405,8 @@ try {
     echo json_encode(['success' => false, 'error' => 'Method not allowed.']);
 
 } catch (Exception $e) {
+    if (isset($pdo) && $pdo->inTransaction()) $pdo->rollBack();
+    error_log($e->__toString());
     http_response_code(500);
-    echo json_encode(['success' => false, 'error' => $e->getMessage()]);
+    echo json_encode(['success' => false, 'error' => 'Unable to process the order request.']);
 }

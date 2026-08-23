@@ -1,15 +1,10 @@
 <?php
-session_start();
-header('Content-Type: application/json');
-require_once __DIR__ . '/../database/connection.php';
+require_once __DIR__ . '/../database/api_bootstrap.php';
 
 $method = $_SERVER['REQUEST_METHOD'];
-$userId = $_SESSION['user_id'] ?? null;
+$userId = current_user_id();
 
-if (!$userId) {
-    echo json_encode(['success' => false, 'error' => 'Not logged in.']);
-    exit;
-}
+if (!$userId) api_error('Not logged in.', 401);
 
 try {
 
@@ -43,7 +38,7 @@ try {
 
     // ── POST: mark as read ──────────────────────────────────
     if ($method === 'POST') {
-        $body = json_decode(file_get_contents('php://input'), true);
+        $body = json_body();
         $action = $body['action'] ?? '';
 
         if ($action === 'mark_read') {

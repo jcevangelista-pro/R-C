@@ -4,8 +4,8 @@
 // Used by CustomerLand.html
 // ============================================================
 
-header('Content-Type: application/json');
-require_once __DIR__ . '/../database/connection.php';
+require_once __DIR__ . '/../database/api_bootstrap.php';
+require_role(['admin', 'owner']);
 
 try {
     // Get all customers with user info
@@ -55,7 +55,11 @@ try {
                     p.name AS name,
                     p.type_of_product AS category,
                     od.quantity AS qty,
-                    o.order_status AS status
+                    od.unit_price AS price,
+                    o.order_status AS status,
+                    o.payment_status, o.delivery_method, o.delivery_date, o.delivery_fee,
+                    o.discount_percent, o.total_amount, o.amount_paid, o.is_rush,
+                    o.date_requested, o.date_accepted, o.date_finished
                 FROM orders o
                 JOIN order_details od ON od.order_id = o.order_id
                 JOIN products p ON p.product_id = od.product_id

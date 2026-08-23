@@ -1,10 +1,8 @@
 <?php
-session_start();
-header('Content-Type: application/json');
-require_once __DIR__ . '/../../database/connection.php';
+require_once __DIR__ . '/../../database/api_bootstrap.php';
 
 $method = $_SERVER['REQUEST_METHOD'];
-$userId = $_SESSION['user_id'] ?? null;
+$userId = current_user_id();
 
 try {
 
@@ -35,8 +33,9 @@ try {
             exit;
         }
 
-        // Check ownership: only the customer who placed the order can access
-        if (!$userId || (int)$order['customer_user_id'] !== (int)$userId) {
+        // Check ownership, while allowing authorized management review.
+        $isManagement = in_array(current_role(), ['admin','owner'], true);
+        if (!$userId || (!$isManagement && (int)$order['customer_user_id'] !== (int)$userId)) {
             echo json_encode(['success' => false, 'error' => 'unauthorized']);
             exit;
         }
@@ -94,26 +93,27 @@ try {
 
     // ── POST: actions ───────────────────────────────────────
     if ($method === 'POST') {
-        $body = json_decode(file_get_contents('php://input'), true);
+        $contentType = strtolower($_SERVER['CONTENT_TYPE'] ?? '');
+        $body = str_contains($contentType, 'multipart/form-data') ? $_POST : json_body();
         $action = $body['action'] ?? '';
+        $orderId = trim($body['order_id'] ?? '');
+        if (!$orderId) api_error('Order ID required.');
+        $accessOrder = require_order_access($pdo, $orderId);
 
         // Submit initial payment (Step 3)
         if ($action === 'submit_payment') {
-            $orderId = $body['order_id'] ?? '';
             $paymentMethod = $body['payment_method'] ?? '';
             $paymentType = $body['payment_type'] ?? '';
             $referenceNumber = trim($body['reference_number'] ?? '');
+            $proofPath = isset($_FILES['proof']) ? store_image_upload($_FILES['proof'], 'payments') : null;
 
             if (!$orderId || !$paymentMethod || !$paymentType) {
                 echo json_encode(['success' => false, 'error' => 'Order ID, payment method, and payment type are required.']);
                 exit;
             }
 
-            $stmt = $pdo->prepare("
-                UPDATE orders SET payment_method = ?, payment_type = ?, reference_number = ?, payment_status = 'Partial'
-                WHERE order_id = ?
-            ");
-            $stmt->execute([$paymentMethod, $paymentType, $referenceNumber, $orderId]);
+            if (current_role() !== 'customer') api_error('Only the customer can submit payment.', 403);
+            if (!in_array($paymentMethod, ['GCash','Bank'], true) || !in_array($paymentType, ['Full Payment','50% Down Payment'], true)) api_error('Invalid payment selection.', 422);
 
             // Calculate amount paid based on payment type
             $stmt = $pdo->prepare("SELECT product_total, amount_deducted, rush_fee FROM orders WHERE order_id = ?");
@@ -124,8 +124,11 @@ try {
             $amountPaid = $paymentType === 'Full Payment' ? $newTotal : round($newTotal * 0.5, 2);
             $remaining = $newTotal - $amountPaid;
 
-            $stmt = $pdo->prepare("UPDATE orders SET amount_paid = ?, remaining_balance = ? WHERE order_id = ?");
-            $stmt->execute([$amountPaid, $remaining, $orderId]);
+            $stmt = $pdo->prepare("INSERT INTO payments (order_id,submitted_by,amount,payment_method,payment_type,reference_number,proof_path,status) VALUES (?,?,?,?,?,?,?,'Submitted')");
+            $stmt->execute([$orderId,$userId,$amountPaid,$paymentMethod,$paymentType,$referenceNumber ?: null,$proofPath]);
+            $stmt = $pdo->prepare("UPDATE orders SET payment_method=?, payment_type=?, reference_number=?, payment_screenshot=? WHERE order_id=?");
+            $stmt->execute([$paymentMethod,$paymentType,$referenceNumber ?: null,$proofPath,$orderId]);
+            audit_event($pdo, 'payment.submitted', $orderId, ['amount'=>$amountPaid]);
 
             echo json_encode(['success' => true, 'message' => 'Payment submitted.']);
             exit;
@@ -133,24 +136,22 @@ try {
 
         // Submit final payment (Step 5)
         if ($action === 'submit_final_payment') {
-            $orderId = $body['order_id'] ?? '';
             $referenceNumber = trim($body['reference_number'] ?? '');
+            $proofPath = isset($_FILES['proof']) ? store_image_upload($_FILES['proof'], 'payments') : null;
 
             if (!$orderId) {
                 echo json_encode(['success' => false, 'error' => 'Order ID required.']);
                 exit;
             }
 
-            // Mark as fully paid
-            $stmt = $pdo->prepare("
-                UPDATE orders SET payment_status = 'Paid', remaining_balance = 0, reference_number = ?
-                WHERE order_id = ?
-            ");
-            $stmt->execute([$referenceNumber, $orderId]);
-
-            // Update amount_paid to total_amount
-            $stmt = $pdo->prepare("UPDATE orders SET amount_paid = total_amount WHERE order_id = ?");
-            $stmt->execute([$orderId]);
+            if (current_role() !== 'customer') api_error('Only the customer can submit payment.', 403);
+            $amount = max(0, (float)$accessOrder['remaining_balance']);
+            if ($amount <= 0) api_error('This order has no remaining balance.', 409);
+            $method = $accessOrder['payment_method'] ?: 'GCash';
+            $stmt = $pdo->prepare("INSERT INTO payments (order_id,submitted_by,amount,payment_method,payment_type,reference_number,proof_path,status) VALUES (?,?,?,?,'Final Payment',?,?,'Submitted')");
+            $stmt->execute([$orderId,$userId,$amount,$method,$referenceNumber ?: null,$proofPath]);
+            $pdo->prepare("UPDATE orders SET reference_number=?,payment_screenshot=? WHERE order_id=?")->execute([$referenceNumber ?: null,$proofPath,$orderId]);
+            audit_event($pdo, 'payment.final_submitted', $orderId, ['amount'=>$amount]);
 
             echo json_encode(['success' => true, 'message' => 'Final payment submitted.']);
             exit;
@@ -158,7 +159,6 @@ try {
 
         // Send message
         if ($action === 'send_message') {
-            $orderId = $body['order_id'] ?? '';
             $stepNumber = (int)($body['step_number'] ?? 0);
             $message = trim($body['message'] ?? '');
 
@@ -204,7 +204,11 @@ try {
 
             $senderRole = $_SESSION['role'] ?? 'customer';
             if ($senderRole === 'customer') {
-                $recipientId = $orderInfo['accepted_by'] ?: 1; // fallback to user 1 (owner)
+                $recipientId = $orderInfo['accepted_by'];
+                if (!$recipientId) {
+                    $recipientId = $pdo->query("SELECT user_id FROM users WHERE role='owner' AND is_active=1 ORDER BY user_id LIMIT 1")->fetchColumn();
+                }
+                if (!$recipientId) api_error('No active owner is available to receive this message.', 409);
             } else {
                 // Get customer's user_id
                 $stmt = $pdo->prepare("SELECT user_id FROM customers WHERE customer_id = ?");
@@ -224,6 +228,19 @@ try {
             exit;
         }
 
+        if ($action === 'respond_quotation') {
+            if (current_role() !== 'customer') api_error('Only the customer can respond to a quotation.', 403);
+            $decision = strtolower(trim($body['decision'] ?? ''));
+            if (!in_array($decision, ['accept','reject'], true)) api_error('Invalid quotation response.', 422);
+            $status = $decision === 'accept' ? 'Accepted' : 'Rejected';
+            $stmt = $pdo->prepare("UPDATE orders SET quotation_status=?, quotation_responded_at=NOW() WHERE order_id=? AND quotation_status IN ('Sent','Revised')");
+            $stmt->execute([$status,$orderId]);
+            if ($stmt->rowCount() !== 1) api_error('There is no quotation awaiting a response.', 409);
+            audit_event($pdo, 'quotation.'.strtolower($status), $orderId);
+            echo json_encode(['success'=>true,'message'=>'Quotation '.$status.'.']);
+            exit;
+        }
+
         echo json_encode(['success' => false, 'error' => 'Invalid action.']);
         exit;
     }
@@ -232,6 +249,8 @@ try {
     echo json_encode(['success' => false, 'error' => 'Method not allowed.']);
 
 } catch (Exception $e) {
+    if (isset($pdo) && $pdo->inTransaction()) $pdo->rollBack();
+    error_log($e->__toString());
     http_response_code(500);
-    echo json_encode(['success' => false, 'error' => $e->getMessage()]);
+    echo json_encode(['success' => false, 'error' => 'Unable to process the order workflow request.']);
 }

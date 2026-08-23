@@ -1,5 +1,6 @@
 // ── Global customer data (loaded from API) ──────────────────
 let customers = [];
+const escapeHtml = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
 // ── Load customers from database ────────────────────────────
 async function loadCustomers() {
@@ -25,9 +26,9 @@ function renderRows(list){
 
   wrap.innerHTML = list.map((c, i) => `
     <div class="row">
-      <div class="name-cell"><span class="checkbox"></span> ${c.name}</div>
-      <div class="contact">${c.contact}</div>
-      <div class="address">${c.address}</div>
+      <div class="name-cell"><span class="checkbox"></span> ${escapeHtml(c.name)}</div>
+      <div class="contact">${escapeHtml(c.contact)}</div>
+      <div class="address">${escapeHtml(c.address)}</div>
       <div class="icon-cell" data-index="${i}" role="button" title="View order records">📋</div>
     </div>
   `).join('');
@@ -89,8 +90,8 @@ function openOrderModal(customer){
       <div class="order-item">
         <div class="item-thumb" style="background: linear-gradient(135deg, #2b2f68, #6b6fd6);"></div>
         <div>
-          <a href="#" class="item-name">${o.name}</a>
-          <div class="item-category">${o.category}</div>
+          <a href="#" class="item-name">${escapeHtml(o.name)}</a>
+          <div class="item-category">${escapeHtml(o.category)}</div>
         </div>
         <div class="item-qty">${o.qty}</div>
         <div class="status-wrap">
@@ -124,42 +125,30 @@ function showSummaryView(){
 
 /* Derive full order-summary details from the order record. */
 function buildOrderDetails(order){
-  const priceMap = {
-    "Tumbler (360ml)": 45,
-    "Ceramic Mug (11oz)": 60,
-    "Tarpaulin (3x5ft)": 250,
-    "T-Shirt (Sublimation)": 220,
-    "Sticker Sheet (A4)": 30,
-    "Business Cards (100pcs)": 180,
-    "Photo Print (4x6)": 8
-  };
-
-  const price = priceMap[order.name] || 100;
-  const discount = 10;
+  const price = Number(order.price || 0);
+  const discount = Number(order.discount_percent || 0);
   const totalPrice = price * order.qty * (1 - discount / 100);
-  const deliveryFee = 50;
-  const totalPaid = totalPrice + deliveryFee;
+  const deliveryFee = Number(order.delivery_fee || 0);
+  const totalPaid = Number(order.amount_paid || 0);
 
   const statusMap = {
-    completed: { payment: "FULLY PAID", delivery: "DELIVERED", orderType: "STANDARD", orderStatus: "COMPLETED" },
-    pending:   { payment: "PARTIALLY PAID", delivery: "PROCESSING", orderType: "RUSH", orderStatus: "CURRENT" },
-    cancelled: { payment: "REFUNDED", delivery: "CANCELLED", orderType: "STANDARD", orderStatus: "CANCELLED" }
+    completed: { payment: order.payment_status, delivery: "DELIVERED", orderType: order.is_rush == 1 ? "RUSH" : "STANDARD", orderStatus: "COMPLETED" },
+    pending:   { payment: order.payment_status, delivery: order.delivery_method || "PROCESSING", orderType: order.is_rush == 1 ? "RUSH" : "STANDARD", orderStatus: "CURRENT" },
+    cancelled: { payment: order.payment_status, delivery: "CANCELLED", orderType: order.is_rush == 1 ? "RUSH" : "STANDARD", orderStatus: "CANCELLED" }
   };
   const meta = statusMap[order.status.toLowerCase()] || statusMap.completed;
 
+  const formatDate = value => value ? new Date(value).toLocaleString('en-PH') : '-';
   const timeline = [
-    { label: "ORDER DETAILS",   date: "MAY 25, 2026 | 3:37 PM" },
-    { label: "VERIFICATION",    date: "MAY 25, 2026 | 5:30 PM" },
-    { label: "PAYMENT METHOD",  date: "MAY 25, 2026 | 7:00 PM" },
-    { label: "PROCESSING",      date: "MAY 25, 2026 | 10:00 PM" },
-    { label: "FINAL PAYMENT",   date: "MAY 25, 2026 | 11:00 PM" },
-    { label: "OUT FOR DELIVERY",date: "MAY 26, 2026 | 12:00 PM" },
-    { label: "ORDER COMPLETE",  date: "MAY 26, 2026 | 2:00 PM" }
+    { label: "ORDER DETAILS", date: formatDate(order.date_requested) },
+    { label: "VERIFICATION", date: formatDate(order.date_accepted) },
+    { label: "EXPECTED DELIVERY", date: formatDate(order.delivery_date) },
+    { label: "ORDER COMPLETE", date: formatDate(order.date_finished) }
   ];
 
   return {
     price, discount, totalPrice, deliveryFee, totalPaid,
-    deliveryDate: "MAY 26, 2026<br>12:00 PM",
+    deliveryDate: formatDate(order.delivery_date),
     paymentStatus: meta.payment,
     deliveryStatus: meta.delivery,
     orderType: meta.orderType,
@@ -186,7 +175,7 @@ function openOrderSummary(customer, orderIndex){
   document.getElementById('summaryItemName').textContent = order.name;
   document.getElementById('summaryItemCategory').textContent = order.category;
   document.getElementById('summaryQty').textContent = order.qty;
-  document.getElementById('summaryDeliveryDate').innerHTML = details.deliveryDate;
+  document.getElementById('summaryDeliveryDate').textContent = details.deliveryDate;
 
   document.getElementById('summaryThumb').style.background = "linear-gradient(135deg, #2b2f68, #6b6fd6)";
 

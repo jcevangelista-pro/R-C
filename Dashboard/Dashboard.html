@@ -245,6 +245,7 @@
   </div><!-- /.main -->
 
   <script>
+  const escapeHtml = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   // ── HELPERS ──────────────────────────────────────────────
   function fmt(n) {
     return Number(n).toLocaleString('en-PH');
@@ -266,7 +267,7 @@
       'Cancelled'           : 'badge-cancelled',
     };
     const cls = map[status] || 'badge-default';
-    return `<span class="badge ${cls}">${status}</span>`;
+    return `<span class="badge ${cls}">${escapeHtml(status)}</span>`;
   }
 
   // ── CHART DEFAULTS ────────────────────────────────────────
@@ -314,11 +315,11 @@
       } else {
         tbody.innerHTML = data.recent_orders.map(o => `
           <tr>
-            <td>${o.order_id}</td>
-            <td>${o.customer_name || '—'}</td>
-            <td>${o.product_name  || '—'}</td>
+            <td>${escapeHtml(o.order_id)}</td>
+            <td>${escapeHtml(o.customer_name || '-')}</td>
+            <td>${escapeHtml(o.product_name  || '-')}</td>
             <td>${statusBadge(o.order_status)}</td>
-            <td>${o.date_requested}</td>
+            <td>${escapeHtml(o.date_requested)}</td>
           </tr>
         `).join('');
       }
