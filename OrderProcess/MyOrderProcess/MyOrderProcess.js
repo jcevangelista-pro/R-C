@@ -200,7 +200,7 @@ async function loadOrderProcess() {
                 if (allRows[1]) {
                     const vals = allRows[1].querySelectorAll('.stat-value');
                     if (vals[0]) vals[0].textContent = 'P' + remaining.toFixed(2);
-                    if (vals[1]) vals[1].textContent = 'P' + (remaining + deliveryFee).toFixed(2);
+                    if (vals[1]) vals[1].textContent = 'P' + remaining.toFixed(2);
                 }
             }
         }

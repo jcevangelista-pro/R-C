@@ -204,7 +204,7 @@ function renderReviewSteps() {
             currentStepNum = parseInt(reviewSteps[i].step_number);
             break;
         }
-        if (reviewSteps[i].status === 'Pending' && (i === 0 || reviewSteps[i-1].status === 'Completed')) {
+        if (reviewSteps[i].status === 'Pending' && (i === 0 || ['Completed', 'Skipped'].includes(reviewSteps[i-1].status))) {
             currentStepNum = parseInt(reviewSteps[i].step_number);
             break;
         }
@@ -270,7 +270,7 @@ function renderStepDetail(stepNum) {
 
         // Show advance button only for the current active step
         if (stepData.status === 'In Progress' || stepData.status === 'Pending') {
-            const prevCompleted = reviewSteps.filter(s => parseInt(s.step_number) < stepNum).every(s => s.status === 'Completed');
+            const prevCompleted = reviewSteps.filter(s => parseInt(s.step_number) < stepNum).every(s => ['Completed', 'Skipped'].includes(s.status));
             if (prevCompleted && stepData.status !== 'Completed') {
                 actionRow.style.display = 'flex';
             } else {
@@ -341,18 +341,28 @@ function renderStepDetail(stepNum) {
 document.getElementById('reviewAdvanceBtn').addEventListener('click', async function() {
     if (!reviewOrderId || !reviewViewingStep) return;
     if (reviewViewingStep === 2 && !(await saveVerificationAndQuotation())) return;
+    let deliveryFee = null;
+    if (reviewViewingStep === 4) {
+        deliveryFee = parseFloat(document.getElementById('s4DeliveryFeeInput').value);
+        if (!Number.isFinite(deliveryFee) || deliveryFee < 0) {
+            alert('Enter a valid delivery fee.');
+            return;
+        }
+    }
     if (!(await saveCurrentStepEvidence())) return;
     if (!confirm(`Approve Step ${reviewViewingStep} and advance to the next step?`)) return;
 
     const res = await fetch(ORDER_API, {
         method: 'POST',
         headers: {'Content-Type':'application/json'},
-        body: JSON.stringify({ action: 'advance_step', order_id: reviewOrderId, step_number: reviewViewingStep })
+        body: JSON.stringify({ action: 'advance_step', order_id: reviewOrderId, step_number: reviewViewingStep, delivery_fee: deliveryFee })
     });
     const data = await res.json();
     if (data.success) {
         // Reload steps
-        reviewViewingStep = Math.min(reviewViewingStep + 1, 8);
+        reviewViewingStep = reviewViewingStep === 4 && reviewOrderData?.payment_type === 'Full Payment'
+            ? 6
+            : Math.min(reviewViewingStep + 1, 8);
         openOrderReviewModal(reviewOrderId);
         loadOrders(); // Refresh the main tables
     } else {
@@ -497,7 +507,7 @@ function renderStep4Details() {
     const o = reviewOrderData;
     const productTotal = parseFloat(o.product_total) - parseFloat(o.amount_deducted || 0);
     document.getElementById('s4ProductTotal').textContent = 'P' + productTotal.toFixed(2);
-    document.getElementById('s4DeliveryFee').textContent = 'P' + parseFloat(o.delivery_fee || 0).toFixed(2);
+    document.getElementById('s4DeliveryFeeInput').value = parseFloat(o.delivery_fee || 0).toFixed(2);
 }
 
 // ── Step 5: Final Payment ───────────────────────────────────
@@ -507,7 +517,7 @@ function renderStep5Details() {
     const productTotal = parseFloat(o.product_total) - parseFloat(o.amount_deducted || 0);
     const deliveryFee = parseFloat(o.delivery_fee || 0);
     const remaining = parseFloat(o.remaining_balance || 0);
-    const amountToPay = remaining + deliveryFee;
+    const amountToPay = remaining;
 
     document.getElementById('s5PaymentMethod').textContent = o.payment_method || '—';
     document.getElementById('s5ProductBalance').textContent = 'P' + remaining.toFixed(2);

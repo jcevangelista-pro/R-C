@@ -281,14 +281,16 @@ try {
 
             require_order_access($pdo, $orderId, true);
             $pdo->beginTransaction();
-            $lock = $pdo->prepare("SELECT o.order_status, o.inventory_deducted_at, op.status FROM orders o JOIN order_process op ON op.order_id=o.order_id JOIN process_steps ps ON ps.process_step_id=op.process_step_id WHERE o.order_id=? AND ps.step_number=? FOR UPDATE");
+            $lock = $pdo->prepare("SELECT o.order_status, o.inventory_deducted_at, o.payment_type, op.status FROM orders o JOIN order_process op ON op.order_id=o.order_id JOIN process_steps ps ON ps.process_step_id=op.process_step_id WHERE o.order_id=? AND ps.step_number=? FOR UPDATE");
             $lock->execute([$orderId, $stepNumber]);
             $state = $lock->fetch();
             if (!$state || $state['order_status'] !== 'In Progress' || $state['status'] !== 'In Progress') {
                 $pdo->rollBack(); api_error('This is not the current active order step.', 409);
             }
 
-            if (in_array($stepNumber, [3, 5], true)) {
+            $skipFinalPayment = $stepNumber === 5 && $state['payment_type'] === 'Full Payment';
+
+            if (in_array($stepNumber, [3, 5], true) && !$skipFinalPayment) {
                 $paymentType = $stepNumber === 3 ? ['Full Payment','50% Down Payment'] : ['Final Payment'];
                 $marks = implode(',', array_fill(0, count($paymentType), '?'));
                 $params = array_merge([$userId], $paymentType, [$orderId]);
@@ -310,13 +312,20 @@ try {
             $stmt = $pdo->prepare("
                 UPDATE order_process op
                 JOIN process_steps ps ON ps.process_step_id = op.process_step_id
-                SET op.status = 'Completed', op.completed_by = ?, op.completed_at = NOW()
+                SET op.status = ?, op.completed_by = ?, op.completed_at = NOW()
                 WHERE op.order_id = ? AND ps.step_number = ?
             ");
-            $stmt->execute([$userId, $orderId, $stepNumber]);
+            $stmt->execute([$skipFinalPayment ? 'Skipped' : 'Completed', $userId, $orderId, $stepNumber]);
 
             // ── STEP 4: Deduct inventory materials ─────────────
             if ($stepNumber === 4) {
+                $deliveryFee = filter_var($body['delivery_fee'] ?? null, FILTER_VALIDATE_FLOAT);
+                if ($deliveryFee === false || $deliveryFee < 0 || $deliveryFee > 99999999.99) {
+                    $pdo->rollBack(); api_error('A valid delivery fee is required.', 422);
+                }
+                $pdo->prepare("UPDATE orders SET delivery_fee=? WHERE order_id=?")->execute([round($deliveryFee, 2), $orderId]);
+                calculate_order_totals($pdo, $orderId);
+
                 if ($state['inventory_deducted_at']) { $pdo->rollBack(); api_error('Inventory was already deducted for this order.', 409); }
                 $missing = $pdo->prepare("SELECT p.name FROM order_details od JOIN products p ON p.product_id=od.product_id LEFT JOIN product_materials pm ON pm.product_id=p.product_id WHERE od.order_id=? GROUP BY p.product_id,p.name HAVING COUNT(pm.product_material_id)=0");
                 $missing->execute([$orderId]);
@@ -353,6 +362,15 @@ try {
             } else {
                 // Mark next step as In Progress
                 $nextStep = $stepNumber + 1;
+                if ($stepNumber === 4 && $state['payment_type'] === 'Full Payment') {
+                    $pdo->prepare("
+                        UPDATE order_process op
+                        JOIN process_steps ps ON ps.process_step_id = op.process_step_id
+                        SET op.status = 'Skipped', op.completed_by = ?, op.completed_at = NOW()
+                        WHERE op.order_id = ? AND ps.step_number = 5
+                    ")->execute([$userId, $orderId]);
+                    $nextStep = 6;
+                }
                 $stmt = $pdo->prepare("
                     UPDATE order_process op
                     JOIN process_steps ps ON ps.process_step_id = op.process_step_id
