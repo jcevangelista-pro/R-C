@@ -8,6 +8,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="notifications.css">
+    <link rel="stylesheet" href="../CustomerNav.css">
 </head>
 <body>
 
@@ -76,8 +77,9 @@ async function loadNotifications() {
             const timeAgo = formatTime(n.created_at);
             const readClass = n.is_read ? 'read' : 'unread';
             const orderId = n.order_id || '';
+            const targetUrl = n.target_url || '';
             return `
-            <div class="notif-item ${readClass}" data-id="${n.notification_id}" data-order="${orderId}">
+            <div class="notif-item ${readClass}" data-id="${n.notification_id}" data-order="${escapeHtml(orderId)}" data-target="${escapeHtml(targetUrl)}">
                 <div class="notif-dot"></div>
                 <div class="notif-content">
                     <div class="notif-title">${escapeHtml(n.title)}</div>
@@ -95,6 +97,7 @@ async function loadNotifications() {
             item.addEventListener('click', async function() {
                 const id = this.dataset.id;
                 const orderId = this.dataset.order;
+                const targetUrl = this.dataset.target;
 
                 // Mark as read
                 if (this.classList.contains('unread')) {
@@ -108,8 +111,8 @@ async function loadNotifications() {
                 }
 
                 // Navigate to order process if order_id exists
-                if (orderId) {
-                    window.location.href = '../OrderProcess/MyOrderProcess/MyOrderProcess.html?order=' + orderId;
+                if (orderId && targetUrl) {
+                    window.location.href = targetUrl;
                 }
             });
         });

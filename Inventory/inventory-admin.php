@@ -26,7 +26,9 @@
     <a class="nav-item" href="../Order/order-admin.html"><span>Orders</span> <span class="nav-icon"><img src="../imgs/Shopping Cart.png" alt=""></span></a>
     <a class="nav-item" href="../CUSTOMER/CustomerLand.html"><span>Customer</span> <span class="nav-icon"><img src="../imgs/User Male.png" alt=""></span></a>
     <a class="nav-item" href="../Products/AdminProduct.html"><span>Products</span> <span class="nav-icon"><img src="../imgs/Product.png" alt=""></span></a>
+    <?php if ($loggedInRole === 'Owner'): ?>
     <a class="nav-item" href="../UserSystem/UserSystem.html"><span>Users</span> <span class="nav-icon"><img src="../imgs/user.png" alt=""></span></a>
+    <?php endif; ?>
   </div>
 
   <div class="main">

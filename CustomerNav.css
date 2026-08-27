@@ -1,0 +1,58 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+
+/* Shared navigation standard for all customer-facing pages. */
+.Navbar {
+    box-sizing: border-box;
+    min-height: 69px;
+    padding: 10px 20px;
+    font-family: 'Poppins', Arial, sans-serif;
+}
+
+.Navbar #BName {
+    margin-right: auto;
+    padding: 10px 12px;
+    font-family: 'Poppins', Arial, sans-serif;
+    font-size: 32px !important;
+    font-weight: 700;
+    line-height: 1.2;
+    white-space: nowrap;
+}
+
+.Navbar ul { align-items: center; gap: 15px; }
+
+.Navbar ul li,
+.Navbar ul li a { font-family: 'Poppins', Arial, sans-serif; }
+
+.Navbar ul li a {
+    box-sizing: border-box;
+    padding: 10px 12px;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.2;
+}
+
+.Navbar .Img {
+    display: block;
+    width: 24px;
+    height: 24px;
+    max-width: 24px;
+    object-fit: contain;
+}
+
+.Navbar .user-dropdown a { font-size: 13px; line-height: 1.35; }
+
+@media (max-width: 768px) {
+    .Navbar { min-height: 56px; padding: 8px 12px; }
+    .Navbar #BName { padding: 8px 6px; font-size: 16px !important; }
+    .Navbar ul { gap: 6px; }
+    .Navbar ul li a { padding: 8px 6px; font-size: 12px; }
+    .Navbar .Img { width: 22px; height: 22px; max-width: 22px; }
+}
+
+@media (max-width: 480px) {
+    .Navbar { min-height: 52px; padding: 7px 8px; }
+    .Navbar #BName { font-size: 14px !important; }
+    .Navbar ul { gap: 4px; }
+    .Navbar ul li a { padding: 7px 5px; font-size: 11px; }
+    .Navbar .Img { width: 20px; height: 20px; max-width: 20px; }
+}

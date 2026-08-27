@@ -14,10 +14,12 @@ try {
             SELECT n.notification_id, n.title, n.message, n.is_read, n.created_at,
                    CONCAT(sender.first_name, ' ', sender.last_name) AS sender_name,
                    sender.role AS sender_role,
-                   op.order_id
+                   op.order_id,
+                   ps.step_number
             FROM notifications n
             JOIN users sender ON sender.user_id = n.sent_by
             LEFT JOIN order_process op ON op.process_id = n.process_id
+            LEFT JOIN process_steps ps ON ps.process_step_id = op.process_step_id
             WHERE n.user_id = ?
             ORDER BY n.created_at DESC
             LIMIT 50
@@ -29,6 +31,17 @@ try {
         foreach ($notifications as &$n) {
             $n['is_read'] = (int)$n['is_read'];
             if (!$n['is_read']) $unreadCount++;
+            $n['target_url'] = null;
+            if (!empty($n['order_id'])) {
+                $encodedOrder = rawurlencode((string)$n['order_id']);
+                if (in_array(current_role(), ['admin', 'owner'], true)) {
+                    $n['target_url'] = '../Order/order-admin.html?order=' . $encodedOrder;
+                    if (!empty($n['step_number'])) $n['target_url'] .= '&step=' . (int)$n['step_number'];
+                } else {
+                    $n['target_url'] = '../OrderProcess/MyOrderProcess/MyOrderProcess.html?order=' . $encodedOrder;
+                    if (!empty($n['step_number'])) $n['target_url'] .= '&step=' . (int)$n['step_number'];
+                }
+            }
         }
         unset($n);
 

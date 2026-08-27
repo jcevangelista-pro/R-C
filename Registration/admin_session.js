@@ -6,6 +6,14 @@
 // ============================================================
 
 (function() {
+    const userManagementLinks = Array.from(document.querySelectorAll('a[href*="UserSystem"]'));
+    const ownerPageGate = document.getElementById('ownerPageGate');
+
+    // Keep owner-only navigation hidden until the session role is known.
+    userManagementLinks.forEach(link => {
+        link.style.display = 'none';
+    });
+
     // Check session
     fetch('../Registration/check_session.php')
         .then(r => r.json())
@@ -19,6 +27,24 @@
                 window.location.href = '../LandingPage/LandingPage.html';
                 return;
             }
+
+            const role = String(data.role || '').toLowerCase();
+
+            // User management is owner-only. Admins cannot expose it through
+            // navigation or by manually opening the page URL.
+            if (role !== 'owner') {
+                userManagementLinks.forEach(link => link.remove());
+                if (ownerPageGate) {
+                    window.location.replace('../Dashboard/Dashboard.html');
+                    return;
+                }
+            } else {
+                userManagementLinks.forEach(link => {
+                    link.style.display = '';
+                });
+                if (ownerPageGate) ownerPageGate.remove();
+            }
+
             // Update owner-tag text with role
             const ownerTag = document.querySelector('.owner-tag');
             if (ownerTag && data.role) {
@@ -26,7 +52,12 @@
                 if (span) span.textContent = data.role.charAt(0).toUpperCase() + data.role.slice(1);
             }
         })
-        .catch(() => {});
+        .catch(() => {
+            // Do not reveal owner-only controls if the session cannot be verified.
+            if (ownerPageGate) {
+                window.location.replace('../Registration/LogInPage.html');
+            }
+        });
 
     // Back-button protection
     window.addEventListener('pageshow', function(e) {

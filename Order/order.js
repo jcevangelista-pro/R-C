@@ -20,9 +20,11 @@ async function loadOrders() {
         renderPendingTable(data.pending_rush, 'pendingRushBody');
         renderHistoryTable(data.history);
         renderProcessTable(data.in_progress);
+        return true;
     } catch (err) {
         console.error('Error loading orders:', err);
         alert('Error loading order data: ' + err.message);
+        return false;
     }
 }
 
@@ -617,4 +619,12 @@ async function sendAdminMessage() {
 }
 
 // ── Init ────────────────────────────────────────────────────
-loadOrders();
+(async function initializeOrdersPage() {
+    const loaded = await loadOrders();
+    if (!loaded) return;
+    const linkParams = new URLSearchParams(window.location.search);
+    const linkedOrderId = linkParams.get('order');
+    const linkedStep = Number.parseInt(linkParams.get('step'), 10);
+    if (Number.isInteger(linkedStep) && linkedStep >= 1 && linkedStep <= 8) reviewViewingStep = linkedStep;
+    if (linkedOrderId) openOrderReviewModal(linkedOrderId);
+})();

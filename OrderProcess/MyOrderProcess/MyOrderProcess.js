@@ -3,6 +3,7 @@ let currentOrderId = null;
 let currentUserId = null;
 let orderMessages = [];
 let orderSteps = [];
+let requestedStepNumber = null;
 function htmlEscape(value) { return String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -33,6 +34,13 @@ document.addEventListener('DOMContentLoaded', function () {
     // Get order ID from URL
     const params = new URLSearchParams(window.location.search);
     currentOrderId = params.get('order');
+    const requestedStep = Number.parseInt(params.get('step'), 10);
+    requestedStepNumber = Number.isInteger(requestedStep) && requestedStep >= 1 && requestedStep <= 8 ? requestedStep : null;
+
+    if (!currentOrderId) {
+        window.location.replace('../../MyOrders/Myorder.html');
+        return;
+    }
 
     // On load: show only step1, set only first tab active
     function init() {
@@ -114,7 +122,10 @@ document.addEventListener('DOMContentLoaded', function () {
         });
 
         // Show the current active step on load
-        const activeIndex = currentActiveStep - 1;
+        const visibleStep = requestedStepNumber && requestedStepNumber <= maxAccessible
+            ? requestedStepNumber
+            : currentActiveStep;
+        const activeIndex = visibleStep - 1;
         tabs.forEach(function(t) { t.classList.remove('active'); });
         panes.forEach(function(p) { p.classList.remove('active'); });
         if (tabs[activeIndex]) tabs[activeIndex].classList.add('active');
@@ -181,6 +192,7 @@ async function loadOrderProcess() {
             // Update ALL .stat-value elements inside PaymentCard with the correct values
             const paymentCard = document.getElementById('PaymentCard');
             if (paymentCard) {
+                paymentCard.dataset.fullAmount = String(newTotal);
                 const statValues = paymentCard.querySelectorAll('.od-inline-row .stat-value');
                 if (statValues[0]) statValues[0].textContent = 'P' + newTotal.toFixed(2);
                 if (statValues[1]) statValues[1].textContent = 'P' + newTotal.toFixed(2);
@@ -380,6 +392,21 @@ document.addEventListener('DOMContentLoaded', function() {
             const parent = this.closest('.option-row') || this.parentElement;
             parent.querySelectorAll('.box').forEach(function(b) { b.classList.remove('active'); });
             this.querySelector('.box').classList.add('active');
+
+            // Recalculate the initial amount when Full Payment or 50% is selected.
+            const paymentCard = this.closest('#PaymentCard');
+            if (paymentCard) {
+                const paymentGroups = paymentCard.querySelectorAll('.MoP-PT-Row > div');
+                const paymentTypeGroup = paymentGroups[1];
+                if (paymentTypeGroup && paymentTypeGroup.contains(this)) {
+                    const fullAmount = Number(paymentCard.dataset.fullAmount || 0);
+                    const amountToPay = this.textContent.includes('50%')
+                        ? Math.round((fullAmount * 0.5 + Number.EPSILON) * 100) / 100
+                        : fullAmount;
+                    const amountElement = paymentCard.querySelector('#step3AmountToPay');
+                    if (amountElement) amountElement.textContent = 'P' + amountToPay.toFixed(2);
+                }
+            }
         });
     });
 });
