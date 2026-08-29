@@ -215,7 +215,15 @@
         </div>
         <div style="flex:1;">
           <div class="label">UNIT</div>
-          <input type="text" id="addUnit" placeholder="Pcs" style="width:100%;height:40px;border:1px solid #e5e7eb;border-radius:6px;padding:0 12px;font-size:14px;margin-top:4px;">
+          <select id="addUnit" style="width:100%;height:40px;border:1px solid #e5e7eb;border-radius:6px;padding:0 10px;font-size:14px;margin-top:4px;background:#fff;">
+            <option value="" disabled selected>Select unit</option>
+            <option value="Pcs">Pcs</option>
+            <option value="dozen">dozen</option>
+            <option value="pack">pack</option>
+            <option value="box">box</option>
+            <option value="carton">carton</option>
+            <option value="set">set</option>
+          </select>
         </div>
       </div>
       <div class="section" style="margin-top:12px;display:flex;gap:12px;">

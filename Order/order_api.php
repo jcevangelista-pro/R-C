@@ -22,8 +22,12 @@ try {
             SELECT o.order_id, 
                    CONCAT(u.first_name, ' ', u.last_name) AS customer_name,
                    (SELECT p.name FROM order_details od JOIN products p ON p.product_id = od.product_id WHERE od.order_id = o.order_id LIMIT 1) AS product_name,
+                   (SELECT COALESCE(SUM(od.quantity), 0) FROM order_details od WHERE od.order_id = o.order_id) AS total_quantity,
                    o.total_amount,
-                   o.is_rush
+                   o.is_rush,
+                   o.order_status,
+                   DATE_FORMAT(o.date_requested, '%b %d, %Y') AS date_requested_fmt,
+                   DATE_FORMAT(o.date_requested, '%h:%i %p') AS time_requested
             FROM orders o
             JOIN customers c ON o.customer_id = c.customer_id
             JOIN users u ON c.user_id = u.user_id
@@ -36,8 +40,12 @@ try {
             SELECT o.order_id, 
                    CONCAT(u.first_name, ' ', u.last_name) AS customer_name,
                    (SELECT p.name FROM order_details od JOIN products p ON p.product_id = od.product_id WHERE od.order_id = o.order_id LIMIT 1) AS product_name,
+                   (SELECT COALESCE(SUM(od.quantity), 0) FROM order_details od WHERE od.order_id = o.order_id) AS total_quantity,
                    o.total_amount,
-                   o.is_rush
+                   o.is_rush,
+                   o.order_status,
+                   DATE_FORMAT(o.date_requested, '%b %d, %Y') AS date_requested_fmt,
+                   DATE_FORMAT(o.date_requested, '%h:%i %p') AS time_requested
             FROM orders o
             JOIN customers c ON o.customer_id = c.customer_id
             JOIN users u ON c.user_id = u.user_id
@@ -51,6 +59,7 @@ try {
                    DATE_FORMAT(o.date_requested, '%Y-%m-%d') AS date_requested,
                    CONCAT(u.first_name, ' ', u.last_name) AS customer_name,
                    (SELECT p.name FROM order_details od JOIN products p ON p.product_id = od.product_id WHERE od.order_id = o.order_id LIMIT 1) AS product_name,
+                   (SELECT COALESCE(SUM(od.quantity), 0) FROM order_details od WHERE od.order_id = o.order_id) AS total_quantity,
                    o.total_amount,
                    o.order_status,
                    CONCAT(a.first_name, ' ', a.last_name) AS accepted_by_name,

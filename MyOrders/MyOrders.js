@@ -17,13 +17,20 @@ function renderOrderRows() {
     const wrap = document.getElementById('orderRows');
     if (!wrap) return;
 
+    const ongoingOrderCount = new Set(
+        orders
+            .filter(order => order.order_status === 'Pending' || order.order_status === 'In Progress')
+            .map(order => order.order_id)
+    ).size;
+
     // Update header count (total orders)
     document.getElementById('cartTitle').textContent = `My Orders (${orders.length})`;
 
     // Update order badge
     const orderBadge = document.getElementById('orderBadge');
     if (orderBadge) {
-        orderBadge.textContent = orders.length;
+        orderBadge.textContent = ongoingOrderCount;
+        orderBadge.hidden = ongoingOrderCount === 0;
     }
 
     // Show the current filter tab's orders

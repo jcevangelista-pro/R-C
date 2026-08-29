@@ -21,6 +21,7 @@
             border-radius: 50%;
             display: block;
         }
+        .nav-badge[hidden] { display: none; }
         .Navbar ul li a.ActiveLink {
             position: relative;
             font-weight: bold;
@@ -147,6 +148,7 @@
         billingBadge.className = 'nav-badge';
         billingBadge.id = 'navBillingBadge';
         billingBadge.textContent = '0';
+        billingBadge.hidden = true;
         billingLink.appendChild(billingBadge);
     }
 
@@ -168,8 +170,13 @@
         .then(function(data) {
             var badge = document.getElementById('navBillingBadge');
             if (badge) {
-                var count = (data.success && data.orders) ? data.orders.length : 0;
+                var count = (data.success && data.orders)
+                    ? data.orders.filter(function(order) {
+                        return order.order_status === 'Pending' || order.order_status === 'In Progress';
+                    }).length
+                    : 0;
                 badge.textContent = count;
+                badge.hidden = count === 0;
             }
         })
         .catch(function() {});
