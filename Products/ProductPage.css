@@ -265,6 +265,30 @@ body {
     transform: translateY(0);
 }
 
+/* Keep every Add to Cart product image in the same responsive flex box. */
+.modal-card .PIContainer {
+    display: flex;
+    align-items: flex-start;
+}
+
+.modal-card .ProductContainer {
+    flex: 0 1 380px;
+    width: 42%;
+    min-height: 0;
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+}
+
+.modal-card .ProductImage {
+    display: block;
+    flex: 0 0 auto;
+    width: 100%;
+    height: 100%;
+    max-width: none;
+    max-height: none;
+    object-fit: contain;
+}
+
 /* ── QUANTITY STEPPER ────────────────────────────────────── */
 .Quantity { margin-bottom: 20px; }
 
@@ -461,8 +485,11 @@ body {
     }
 
     .modal-card .ProductContainer {
-        width: 100%;
-        min-height: 25vh;
+        flex: 0 0 auto;
+        width: min(100%, 360px);
+        min-height: 0;
+        align-self: center;
+        aspect-ratio: 1 / 1;
     }
 
     .stepper {
@@ -554,5 +581,5 @@ body {
   .ButtonDA { font-size: 1.2rem; }
   .modal-card { width: 96vw; max-height: 88vh; padding-bottom: 16px; }
   .modal-card .PIContainer { flex-direction: column; padding: 0 10px 10px; }
-  .modal-card .ProductContainer { width: 100%; min-height: 35vw; }
+  .modal-card .ProductContainer { flex: 0 0 auto; width: min(100%, 320px); min-height: 0; align-self: center; aspect-ratio: 1 / 1; }
 }

@@ -444,6 +444,15 @@
     gap: 12px;
     margin-top: 16px;
   }
+
+  .photo-upload-status {
+    margin: 6px 0 10px;
+    font: 600 13px/1.3 'Segoe UI', Arial, sans-serif;
+    text-align: center;
+  }
+
+  .photo-upload-status.uploaded { color: #15803d; }
+  .photo-upload-status.not-uploaded { color: #dc2626; }
 </style>
 </head>
 <body>
@@ -509,6 +518,7 @@
           <button id="MAddProduct" type="button">+</button>
           <input type="file" id="addImageInput" accept="image/*" style="display:none;">
           <img id="addImagePreview" style="display:none;width:100%;height:140px;object-fit:cover;border-radius:10px;margin-bottom:10px;">
+          <p id="addImageStatus" class="photo-upload-status not-uploaded" role="status" aria-live="polite">Photo not uploaded</p>
         </div>
 
         <div class="ProductDetails">
@@ -560,6 +570,7 @@
             <img src="" alt="" class="ProductPicture" id="updateImagePreview">
             <button type="button" id="changeImageBtn" style="margin-top:8px;border:none;background:#ec4899;color:#fff;padding:6px 12px;border-radius:6px;font-size:12px;cursor:pointer;">Change Image</button>
             <input type="file" id="updateImageInput" accept="image/*" style="display:none;">
+            <p id="updateImageStatus" class="photo-upload-status not-uploaded" role="status" aria-live="polite">Photo not uploaded</p>
           </div>
 
           <div>
@@ -680,6 +691,13 @@ const ProductAdding = document.getElementById('ProductAdding');
 const MAddProduct = document.getElementById('MAddProduct');
 const addImageInput = document.getElementById('addImageInput');
 const addImagePreview = document.getElementById('addImagePreview');
+const addImageStatus = document.getElementById('addImageStatus');
+
+function setPhotoStatus(element, uploaded) {
+  element.textContent = uploaded ? 'Photo uploaded' : 'Photo not uploaded';
+  element.classList.toggle('uploaded', uploaded);
+  element.classList.toggle('not-uploaded', !uploaded);
+}
 
 addButton.addEventListener('click', () => {
   document.getElementById('PDInput1').value = '';
@@ -689,6 +707,7 @@ addButton.addEventListener('click', () => {
   addImagePreview.style.display = 'none';
   MAddProduct.style.display = '';
   addImageInput.value = '';
+  setPhotoStatus(addImageStatus, false);
   ModalContainer.classList.add('show');
 });
 
@@ -704,6 +723,7 @@ addImageInput.addEventListener('change', function() {
       addImagePreview.src = e.target.result;
       addImagePreview.style.display = 'block';
       MAddProduct.style.display = 'none';
+      setPhotoStatus(addImageStatus, true);
     };
     reader.readAsDataURL(this.files[0]);
   }
@@ -738,8 +758,14 @@ ProductAdding.addEventListener('click', async () => {
       if (created) openUpdateModal(created);
       alert('Product created. Configure at least one inventory material before using it in production.');
     }
-    else { alert(data.error); }
-  } catch (err) { alert('Error adding product.'); }
+    else {
+      if (addImageInput.files[0]) setPhotoStatus(addImageStatus, false);
+      alert(data.error);
+    }
+  } catch (err) {
+    if (addImageInput.files[0]) setPhotoStatus(addImageStatus, false);
+    alert('Error adding product.');
+  }
 });
 
 // ── UPDATE PRODUCT ──────────────────────────────────────────
@@ -750,6 +776,7 @@ const ProductArchive = document.getElementById('ProductArchive');
 const updateImageInput = document.getElementById('updateImageInput');
 const updateImagePreview = document.getElementById('updateImagePreview');
 const changeImageBtn = document.getElementById('changeImageBtn');
+const updateImageStatus = document.getElementById('updateImageStatus');
 
 function openUpdateModal(product) {
   document.getElementById('updateProductId').value = product.id;
@@ -762,6 +789,7 @@ function openUpdateModal(product) {
   if (!product.image_path) updateImagePreview.style.display = 'none';
   else updateImagePreview.style.display = '';
   updateImageInput.value = '';
+  setPhotoStatus(updateImageStatus, Boolean(product.image_path));
   renderBomRows(product.bom || []);
   ProductContent.classList.add('show');
 }
@@ -801,7 +829,11 @@ changeImageBtn.addEventListener('click', () => { updateImageInput.click(); });
 updateImageInput.addEventListener('change', function() {
   if (this.files && this.files[0]) {
     const reader = new FileReader();
-    reader.onload = function(e) { updateImagePreview.src = e.target.result; };
+    reader.onload = function(e) {
+      updateImagePreview.src = e.target.result;
+      updateImagePreview.style.display = '';
+      setPhotoStatus(updateImageStatus, true);
+    };
     reader.readAsDataURL(this.files[0]);
   }
 });
@@ -842,8 +874,14 @@ ProductUpdate.addEventListener('click', async () => {
       if (!bomResult.success) { alert(bomResult.error); return; }
       ProductContent.classList.remove('show'); loadProducts();
     }
-    else { alert(data.error); }
-  } catch (err) { alert('Error updating product.'); }
+    else {
+      if (updateImageInput.files[0]) setPhotoStatus(updateImageStatus, false);
+      alert(data.error);
+    }
+  } catch (err) {
+    if (updateImageInput.files[0]) setPhotoStatus(updateImageStatus, false);
+    alert('Error updating product.');
+  }
 });
 
 // Archive
