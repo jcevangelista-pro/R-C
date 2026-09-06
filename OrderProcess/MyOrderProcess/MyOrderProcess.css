@@ -608,6 +608,8 @@ body .Navbar a#BName {
 
 .GCQr {
     height: 25vh;
+    width: min(100%, 220px);
+    object-fit: contain;
 }
 
 .gcash-info {

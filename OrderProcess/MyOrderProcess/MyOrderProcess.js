@@ -397,7 +397,30 @@ document.addEventListener('DOMContentLoaded', function() {
             const paymentCard = this.closest('#PaymentCard');
             if (paymentCard) {
                 const paymentGroups = paymentCard.querySelectorAll('.MoP-PT-Row > div');
+                const paymentMethodGroup = paymentGroups[0];
                 const paymentTypeGroup = paymentGroups[1];
+
+                if (paymentMethodGroup && paymentMethodGroup.contains(this)) {
+                    const method = this.dataset.paymentMethod;
+                    const qrImage = document.getElementById('initialPaymentQr');
+                    const logo = document.getElementById('initialPaymentLogo');
+                    const accountName = document.getElementById('initialPaymentAccountName');
+                    const accountNumber = document.getElementById('initialPaymentAccountNumber');
+                    const isGCash = method === 'GCash';
+
+                    if (qrImage) {
+                        qrImage.src = isGCash
+                            ? '../OrderProcessImgs/GcashQR.jfif'
+                            : '../OrderProcessImgs/QR_code_for_mobile_English_Wikipedia 1.png';
+                        qrImage.alt = isGCash ? 'GCash payment QR code' : 'Bank payment QR code';
+                    }
+                    if (logo) {
+                        logo.style.display = isGCash ? '' : 'none';
+                    }
+                    if (accountName) accountName.textContent = isGCash ? 'SERVICES R.' : 'BANK';
+                    if (accountNumber) accountNumber.textContent = isGCash ? '099******21' : 'Scan the bank QR to pay';
+                }
+
                 if (paymentTypeGroup && paymentTypeGroup.contains(this)) {
                     const fullAmount = Number(paymentCard.dataset.fullAmount || 0);
                     const amountToPay = this.textContent.includes('50%')
