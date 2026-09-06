@@ -137,6 +137,7 @@ try {
         // Submit final payment (Step 5)
         if ($action === 'submit_final_payment') {
             $referenceNumber = trim($body['reference_number'] ?? '');
+            $paymentMethod = $body['payment_method'] ?? '';
             $proofPath = isset($_FILES['proof']) ? store_image_upload($_FILES['proof'], 'payments') : null;
 
             if (!$orderId) {
@@ -145,12 +146,12 @@ try {
             }
 
             if (current_role() !== 'customer') api_error('Only the customer can submit payment.', 403);
+            if (!in_array($paymentMethod, ['GCash','Bank'], true)) api_error('Select a valid payment method.', 422);
             $amount = max(0, (float)$accessOrder['remaining_balance']);
             if ($amount <= 0) api_error('This order has no remaining balance.', 409);
-            $method = $accessOrder['payment_method'] ?: 'GCash';
             $stmt = $pdo->prepare("INSERT INTO payments (order_id,submitted_by,amount,payment_method,payment_type,reference_number,proof_path,status) VALUES (?,?,?,?,'Final Payment',?,?,'Submitted')");
-            $stmt->execute([$orderId,$userId,$amount,$method,$referenceNumber ?: null,$proofPath]);
-            $pdo->prepare("UPDATE orders SET reference_number=?,payment_screenshot=? WHERE order_id=?")->execute([$referenceNumber ?: null,$proofPath,$orderId]);
+            $stmt->execute([$orderId,$userId,$amount,$paymentMethod,$referenceNumber ?: null,$proofPath]);
+            $pdo->prepare("UPDATE orders SET payment_method=?,reference_number=?,payment_screenshot=? WHERE order_id=?")->execute([$paymentMethod,$referenceNumber ?: null,$proofPath,$orderId]);
             audit_event($pdo, 'payment.final_submitted', $orderId, ['amount'=>$amount]);
 
             echo json_encode(['success' => true, 'message' => 'Final payment submitted.']);

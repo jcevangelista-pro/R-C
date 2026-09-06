@@ -179,6 +179,50 @@ async function loadOrderProcess() {
         orderMessages = data.messages || [];
         orderSteps = data.steps || [];
 
+        // Show the Step 4 delivery-fee evidence in the Final Payment card.
+        const deliveryFeeEvidence = orderSteps.find(step => Number(step.step_number) === 4 && step.image);
+        const deliveryFeeLabel = Array.from(document.querySelectorAll('#FinalPaymentCard .field > .stat-label'))
+            .find(label => label.textContent.trim() === 'DELIVERY FEE IMAGE:');
+        const deliveryFeeBox = deliveryFeeLabel ? deliveryFeeLabel.parentElement.querySelector('.photo-upload') : null;
+        if (deliveryFeeBox) {
+            const evidenceImage = deliveryFeeBox.querySelector('img');
+            const evidencePlaceholder = deliveryFeeBox.querySelector('span');
+            deliveryFeeBox.classList.add('delivery-fee-image-link');
+            deliveryFeeBox.removeAttribute('for');
+            if (deliveryFeeEvidence && evidenceImage) {
+                const evidenceUrl = '../../OrderProcess/evidence.php?kind=process&step=4&order_id=' + encodeURIComponent(currentOrderId);
+                evidenceImage.src = evidenceUrl;
+                evidenceImage.alt = 'Delivery fee evidence';
+                evidenceImage.style.display = 'block';
+                if (evidencePlaceholder) evidencePlaceholder.style.display = 'none';
+                deliveryFeeBox.tabIndex = 0;
+                deliveryFeeBox.setAttribute('role', 'link');
+                deliveryFeeBox.setAttribute('aria-label', 'View delivery fee image');
+                const openEvidence = () => window.open(evidenceUrl, '_blank', 'noopener');
+                deliveryFeeBox.onclick = openEvidence;
+                deliveryFeeBox.onkeydown = event => {
+                    if (event.key === 'Enter' || event.key === ' ') {
+                        event.preventDefault();
+                        openEvidence();
+                    }
+                };
+            } else {
+                if (evidenceImage) {
+                    evidenceImage.removeAttribute('src');
+                    evidenceImage.style.display = 'none';
+                }
+                if (evidencePlaceholder) {
+                    evidencePlaceholder.textContent = 'No image uploaded';
+                    evidencePlaceholder.style.display = '';
+                }
+                deliveryFeeBox.removeAttribute('tabindex');
+                deliveryFeeBox.removeAttribute('role');
+                deliveryFeeBox.removeAttribute('aria-label');
+                deliveryFeeBox.onclick = null;
+                deliveryFeeBox.onkeydown = null;
+            }
+        }
+
         // Populate payment card fields with real order data
         if (data.order) {
             const order = data.order;
@@ -361,6 +405,12 @@ document.addEventListener('DOMContentLoaded', function() {
             e.preventDefault();
             if (!currentOrderId) { alert('No order loaded.'); return; }
 
+            const finalMethodBoxes = document.querySelectorAll('#FinalPaymentCard .MoP-PT-Row > div:first-child .checkbox-option .box');
+            let paymentMethod = '';
+            if (finalMethodBoxes[0] && finalMethodBoxes[0].classList.contains('active')) paymentMethod = 'GCash';
+            if (finalMethodBoxes[1] && finalMethodBoxes[1].classList.contains('active')) paymentMethod = 'Bank';
+            if (!paymentMethod) { alert('Please select a payment method (GCash or Bank).'); return; }
+
             // Get reference number from final payment card
             const refInput = document.querySelector('#FinalPaymentCard input[placeholder="XXXX-XXX-XXXXXX"]');
             const referenceNumber = refInput ? refInput.value.trim() : '';
@@ -369,6 +419,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 const form = new FormData();
                 form.append('action','submit_final_payment');
                 form.append('order_id',currentOrderId);
+                form.append('payment_method',paymentMethod);
                 form.append('reference_number',referenceNumber);
                 const proof = document.querySelector('#FinalPaymentCard input[type="file"]');
                 if (proof && proof.files[0]) form.append('proof', proof.files[0]);
@@ -428,6 +479,28 @@ document.addEventListener('DOMContentLoaded', function() {
                         : fullAmount;
                     const amountElement = paymentCard.querySelector('#step3AmountToPay');
                     if (amountElement) amountElement.textContent = 'P' + amountToPay.toFixed(2);
+                }
+            }
+
+            const finalPaymentCard = this.closest('#FinalPaymentCard');
+            if (finalPaymentCard) {
+                const finalGroups = finalPaymentCard.querySelectorAll('.MoP-PT-Row > div');
+                const finalMethodGroup = finalGroups[0];
+                if (finalMethodGroup && finalMethodGroup.contains(this)) {
+                    const isGCash = this.dataset.paymentMethod === 'GCash';
+                    const qrImage = document.getElementById('finalPaymentQr');
+                    const logo = document.getElementById('finalPaymentLogo');
+                    const accountName = document.getElementById('finalPaymentAccountName');
+                    const accountNumber = document.getElementById('finalPaymentAccountNumber');
+                    if (qrImage) {
+                        qrImage.src = isGCash
+                            ? '../OrderProcessImgs/GcashQR.jfif'
+                            : '../OrderProcessImgs/QR_code_for_mobile_English_Wikipedia 1.png';
+                        qrImage.alt = isGCash ? 'GCash payment QR code' : 'Bank payment QR code';
+                    }
+                    if (logo) logo.style.display = isGCash ? '' : 'none';
+                    if (accountName) accountName.textContent = isGCash ? 'SERVICES R.' : 'BANK';
+                    if (accountNumber) accountNumber.textContent = isGCash ? '099******21' : 'Scan the bank QR to pay';
                 }
             }
         });

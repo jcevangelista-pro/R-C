@@ -401,10 +401,10 @@
                                                     <div>
                                                         <span class="stat-label">MODE OF PAYMENT:</span>
                                                         <div class="option-row">
-                                                            <label class="checkbox-option">
+                                                            <label class="checkbox-option" data-payment-method="GCash">
                                                                 <span class="box" id="boxUpload"></span> GCash
                                                             </label>
-                                                            <label class="checkbox-option">
+                                                            <label class="checkbox-option" data-payment-method="Bank">
                                                                 <span class="box" id="boxRequest"></span> Bank
                                                             </label>
                                                         </div>
@@ -469,11 +469,11 @@
                                                 <!-- RIGHT COLUMN -->
                                                 <div class="status-history">
                                                     <div class="field">
-                                                        <img src="../OrderProcessImgs\GCash_logo.svg 1.png" alt="" class="GCLogo">
-                                                        <img src="../OrderProcessImgs\QR_code_for_mobile_English_Wikipedia 1.png" alt="" class="GCQr">
+                                                        <img src="../OrderProcessImgs/GCash_logo.svg 1.png" alt="GCash" class="GCLogo" id="finalPaymentLogo">
+                                                        <img src="../OrderProcessImgs/GcashQR.jfif" alt="GCash payment QR code" class="GCQr" id="finalPaymentQr">
                                                         <div class="gcash-info">
-                                                            <span class="stat-label">SERVICES R.</span>
-                                                            <span class="stat-label">099******21</span>
+                                                            <span class="stat-label" id="finalPaymentAccountName">SERVICES R.</span>
+                                                            <span class="stat-label" id="finalPaymentAccountNumber">099******21</span>
                                                         </div>
                                                         <button class="done-btn" id="orderDoneBtn">SUBMIT</button>
                                                     </div>
