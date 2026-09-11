@@ -20,6 +20,7 @@ CREATE TABLE users (
     email           VARCHAR(255) NOT NULL UNIQUE,
     username        VARCHAR(50) NOT NULL UNIQUE,
     password_hash   VARCHAR(255) NOT NULL,
+    profile_image_path VARCHAR(255) NULL,
     role            ENUM('customer', 'admin', 'owner') NOT NULL DEFAULT 'customer',
     is_active       BOOLEAN NOT NULL DEFAULT TRUE,
     last_login      DATETIME NULL,

@@ -25,6 +25,9 @@ async function loadProfile() {
         // Update badge
         const badge = document.querySelector('.MemberBadge');
         if (badge) badge.textContent = p.role ? p.role.charAt(0).toUpperCase() + p.role.slice(1) : 'Customer';
+        if (p.profile_photo_url) {
+            document.getElementById('profilePicture').src = p.profile_photo_url;
+        }
 
     } catch (err) {
         console.error('Failed to load profile:', err);
@@ -155,14 +158,41 @@ document.getElementById('passwordForm').addEventListener('submit', async functio
    PROFILE PHOTO
 ========================== */
 
-document.getElementById('photoInput').addEventListener('change', function(event) {
+document.getElementById('photoInput').addEventListener('change', async function(event) {
     const file = event.target.files[0];
     if (!file) return;
-    const reader = new FileReader();
-    reader.onload = function(e) {
-        document.getElementById('profilePicture').src = e.target.result;
-    };
-    reader.readAsDataURL(file);
+    if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type) || file.size > 5 * 1024 * 1024) {
+        alert('Select a valid JPG, PNG, or WebP image up to 5 MB.');
+        event.target.value = '';
+        return;
+    }
+
+    const picture = document.getElementById('profilePicture');
+    const changeButton = document.querySelector('.ChangePhoto');
+    const previousSource = picture.src;
+    const previewUrl = URL.createObjectURL(file);
+    picture.src = previewUrl;
+    changeButton.disabled = true;
+    changeButton.textContent = 'Uploading...';
+
+    try {
+        const formData = new FormData();
+        formData.append('action', 'upload_photo');
+        formData.append('photo', file);
+        const response = await fetch(PROFILE_API, {method: 'POST', body: formData});
+        const data = await response.json();
+        if (!response.ok || !data.success) throw new Error(data.error || 'Unable to upload profile photo.');
+        picture.src = data.photo_url;
+        alert('Profile photo updated successfully!');
+    } catch (error) {
+        picture.src = previousSource;
+        alert(error.message || 'Unable to upload profile photo.');
+    } finally {
+        URL.revokeObjectURL(previewUrl);
+        changeButton.disabled = false;
+        changeButton.textContent = 'Change Photo';
+        event.target.value = '';
+    }
 });
 
 /* =========================

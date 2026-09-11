@@ -12,6 +12,7 @@ try {
     if ($method === 'GET') {
         $stmt = $pdo->prepare("
             SELECT u.user_id, u.first_name, u.middle_name, u.last_name, u.email, u.username, u.role,
+                   u.profile_image_path,
                    c.phone_num, c.address
             FROM users u
             LEFT JOIN customers c ON c.user_id = u.user_id
@@ -25,14 +26,40 @@ try {
             exit;
         }
 
+        $user['profile_photo_url'] = $user['profile_image_path'] ? 'profile_photo.php?v=' . rawurlencode((string)time()) : null;
+        unset($user['profile_image_path']);
         echo json_encode(['success' => true, 'profile' => $user]);
         exit;
     }
 
     // ── POST: update profile ────────────────────────────────
     if ($method === 'POST') {
-        $body = json_body();
+        $contentType = strtolower($_SERVER['CONTENT_TYPE'] ?? '');
+        $body = str_contains($contentType, 'multipart/form-data') ? $_POST : json_body();
         $action = $body['action'] ?? '';
+
+        if ($action === 'upload_photo') {
+            if (!isset($_FILES['photo'])) api_error('Select a profile photo.', 422);
+            $photoPath = store_image_upload($_FILES['photo'], 'profiles');
+
+            $stmt = $pdo->prepare("SELECT profile_image_path FROM users WHERE user_id=?");
+            $stmt->execute([$userId]);
+            $oldPath = $stmt->fetchColumn();
+            $pdo->prepare("UPDATE users SET profile_image_path=? WHERE user_id=?")->execute([$photoPath, $userId]);
+
+            // Remove the replaced private image only after the DB update succeeds.
+            if ($oldPath && $oldPath !== $photoPath) {
+                $storageRoot = realpath(dirname(__DIR__) . '/OrderProcess/private_uploads');
+                $oldFile = realpath(dirname(__DIR__) . '/' . ltrim((string)$oldPath, '/'));
+                if ($storageRoot && $oldFile && str_starts_with($oldFile, $storageRoot . DIRECTORY_SEPARATOR) && is_file($oldFile)) {
+                    @unlink($oldFile);
+                }
+            }
+
+            audit_event($pdo, 'profile.photo_updated', null);
+            echo json_encode(['success'=>true, 'message'=>'Profile photo updated.', 'photo_url'=>'profile_photo.php?v=' . time()]);
+            exit;
+        }
 
         // Update basic info
         if ($action === 'update_info') {
