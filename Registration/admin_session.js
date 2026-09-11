@@ -69,6 +69,31 @@
         const ownerTag = document.querySelector('.owner-tag');
         if (!ownerTag) return;
 
+        // Shared management notification entry. Cancellation alerts inserted by
+        // the order workflow appear here for both Admin and Owner accounts.
+        const topbarActions = document.createElement('div');
+        topbarActions.className = 'admin-topbar-actions';
+        ownerTag.parentNode.insertBefore(topbarActions, ownerTag);
+        topbarActions.appendChild(ownerTag);
+        const notificationLink = document.createElement('a');
+        notificationLink.className = 'admin-notification-link';
+        notificationLink.href = '../Notifications/notifications.html';
+        notificationLink.setAttribute('aria-label', 'View notifications');
+        notificationLink.innerHTML = '<img src="../OrderProcess/OrderProcessImgs/Alarm.png" alt=""><span class="admin-notification-badge" hidden></span>';
+        topbarActions.insertBefore(notificationLink, ownerTag);
+
+        fetch('../Registration/notification_count.php')
+            .then(response => response.json())
+            .then(result => {
+                const count = Number(result.count || 0);
+                const badge = notificationLink.querySelector('.admin-notification-badge');
+                if (count > 0) {
+                    badge.textContent = count > 99 ? '99+' : String(count);
+                    badge.hidden = false;
+                }
+            })
+            .catch(() => {});
+
         // Make it clickable
         ownerTag.style.position = 'relative';
         ownerTag.style.cursor = 'pointer';
@@ -105,6 +130,42 @@
                 text-decoration: none !important;
             }
             .admin-logout-link:hover { background: #fff0f3; }
+            .admin-topbar-actions {
+                display: flex;
+                align-items: center;
+                gap: 14px;
+                margin-left: auto;
+            }
+            .admin-notification-link {
+                position: relative;
+                display: grid;
+                place-items: center;
+                width: 38px;
+                height: 38px;
+                flex: 0 0 38px;
+                border-radius: 50%;
+                background: #fff0f6;
+            }
+            .admin-notification-link img { width: 21px; height: 21px; object-fit: contain; }
+            .admin-notification-badge {
+                position: absolute;
+                top: -5px;
+                right: -6px;
+                min-width: 18px;
+                height: 18px;
+                padding: 0 4px;
+                border: 2px solid #fff;
+                border-radius: 10px;
+                color: #fff;
+                background: #dc2626;
+                font: 700 10px/14px Poppins, sans-serif;
+                text-align: center;
+            }
+            .admin-notification-badge[hidden] { display: none; }
+            @media (max-width: 600px) {
+                .admin-topbar-actions { gap: 8px; }
+                .admin-notification-link { width: 34px; height: 34px; flex-basis: 34px; }
+            }
         `;
         document.head.appendChild(style);
 

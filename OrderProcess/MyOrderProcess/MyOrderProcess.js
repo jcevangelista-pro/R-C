@@ -4,6 +4,7 @@ let currentUserId = null;
 let orderMessages = [];
 let orderSteps = [];
 let requestedStepNumber = null;
+let cancellableStep = null;
 function htmlEscape(value) { return String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -145,6 +146,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
+    initializeCancellationModal();
     init();
 
     // Load order data from DB
@@ -178,6 +180,8 @@ async function loadOrderProcess() {
 
         orderMessages = data.messages || [];
         orderSteps = data.steps || [];
+        cancellableStep = data.can_cancel ? Number(data.cancel_step) : null;
+        updateCancellationButtons();
 
         // Show the Step 4 delivery-fee evidence in the Final Payment card.
         const deliveryFeeEvidence = orderSteps.find(step => Number(step.step_number) === 4 && step.image);
@@ -506,3 +510,69 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 });
+
+function updateCancellationButtons() {
+    document.querySelectorAll('[data-cancel-step]').forEach(button => {
+        button.hidden = Number(button.dataset.cancelStep) !== cancellableStep;
+    });
+}
+
+function initializeCancellationModal() {
+    const overlay = document.getElementById('cancelOrderOverlay');
+    if (!overlay) return;
+
+    const confirmButton = overlay.querySelector('.cancel-modal-confirm');
+    const closeButtons = overlay.querySelectorAll('.cancel-modal-close, .cancel-modal-keep');
+    const error = document.getElementById('cancelOrderError');
+
+    const closeModal = () => {
+        if (confirmButton.disabled) return;
+        overlay.hidden = true;
+        document.body.classList.remove('cancel-modal-open');
+        if (error) {
+            error.hidden = true;
+            error.textContent = '';
+        }
+    };
+
+    document.querySelectorAll('[data-cancel-step]').forEach(button => {
+        button.addEventListener('click', () => {
+            if (Number(button.dataset.cancelStep) !== cancellableStep) return;
+            overlay.hidden = false;
+            document.body.classList.add('cancel-modal-open');
+            confirmButton.focus();
+        });
+    });
+
+    closeButtons.forEach(button => button.addEventListener('click', closeModal));
+    overlay.addEventListener('click', event => {
+        if (event.target === overlay) closeModal();
+    });
+    document.addEventListener('keydown', event => {
+        if (event.key === 'Escape' && !overlay.hidden) closeModal();
+    });
+
+    confirmButton.addEventListener('click', async () => {
+        confirmButton.disabled = true;
+        confirmButton.textContent = 'Cancelling...';
+        if (error) error.hidden = true;
+
+        try {
+            const response = await fetch(ORDER_PROCESS_API, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({action: 'cancel_order', order_id: currentOrderId})
+            });
+            const data = await response.json();
+            if (!response.ok || !data.success) throw new Error(data.error || 'Unable to cancel this order.');
+            window.location.replace('../../MyOrders/Myorder.html?tab=cancelled');
+        } catch (requestError) {
+            if (error) {
+                error.textContent = requestError.message || 'Unable to cancel this order. Please try again.';
+                error.hidden = false;
+            }
+            confirmButton.disabled = false;
+            confirmButton.textContent = 'Confirm Cancellation';
+        }
+    });
+}

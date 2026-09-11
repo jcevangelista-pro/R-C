@@ -42,10 +42,13 @@
                         <input type="text" id="username" placeholder="@JaydeeDamodred" minlength="8" required class="Input"> <br>
 
                         <label for="password" class="Label">Password</label> <br>
-                        <input type="password" id="password" placeholder="1234Damodred_!" minlength="8" maxlength="30" required class="Input"> <br>
+                        <div class="password-field">
+                            <input type="password" id="password" placeholder="1234Damodred_!" minlength="8" maxlength="30" required class="Input">
+                            <button type="button" class="password-toggle" aria-label="Show password" aria-pressed="false"><img src="../imgs/hidden.png" alt=""></button>
+                        </div> <br>
 
                         <div class="FPass">
-                            <a href="">Forgot Password</a>
+                            <a href="ForgotPassword.html">Forgot Password</a>
                         </div> <br>
 
                         <div id="loginError" style="color:#ef4444;font-size:0.85rem;text-align:center;display:none;margin-bottom:10px;"></div>
@@ -68,6 +71,7 @@
         </div>
     </div>
     
+    <script src="password_toggle.js"></script>
     <script>
     const loginForm = document.getElementById('loginForm');
     const loginError = document.getElementById('loginError');

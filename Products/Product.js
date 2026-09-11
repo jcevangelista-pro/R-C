@@ -7,6 +7,29 @@ const productPrice = params.get('price');
 const productImg = params.get('img');
 const productId = params.get('id');
 
+// Display one-time feedback after the successful add-to-cart reload.
+try {
+    const addedProductName = sessionStorage.getItem('cartAddFeedback');
+    if (addedProductName) {
+        sessionStorage.removeItem('cartAddFeedback');
+        const feedback = document.createElement('div');
+        feedback.className = 'cart-add-feedback';
+        feedback.setAttribute('role', 'status');
+        feedback.setAttribute('aria-live', 'polite');
+        feedback.innerHTML = '<span class="cart-add-feedback-icon" aria-hidden="true">&#10003;</span>'
+            + '<span><strong>Product added to cart</strong><small></small></span>';
+        feedback.querySelector('small').textContent = addedProductName;
+        document.body.appendChild(feedback);
+        requestAnimationFrame(() => feedback.classList.add('show'));
+        setTimeout(() => {
+            feedback.classList.remove('show');
+            setTimeout(() => feedback.remove(), 250);
+        }, 3000);
+    }
+} catch (ignored) {
+    // Cart addition still works if browser storage is unavailable.
+}
+
 // Determine the correct image path
 function resolveImgPath(img) {
     if (!img) return '';
@@ -73,6 +96,8 @@ if (addToCartBtn) {
             return;
         }
 
+        addToCartBtn.disabled = true;
+        addToCartBtn.textContent = 'Adding...';
         try {
             const res = await fetch('../CART/cart_api.php', {
                 method: 'POST',
@@ -86,13 +111,22 @@ if (addToCartBtn) {
             const data = await res.json();
 
             if (data.success) {
-                addToCartBtn.textContent = 'Added to Cart ✓';
-                setTimeout(() => { addToCartBtn.textContent = 'Add to Cart'; }, 2000);
+                // Close the modal and reload so the shared cart badge fetches
+                // the newly persisted database count.
+                ModalContainer.classList.remove('show');
+                try {
+                    sessionStorage.setItem('cartAddFeedback', productName || 'The selected product');
+                } catch (ignored) {}
+                window.location.reload();
             } else {
                 alert(data.error || 'Failed to add to cart.');
+                addToCartBtn.disabled = false;
+                addToCartBtn.textContent = 'Add to Cart';
             }
         } catch (err) {
             alert('Error adding to cart. Please make sure you are logged in.');
+            addToCartBtn.disabled = false;
+            addToCartBtn.textContent = 'Add to Cart';
         }
     });
 }

@@ -64,6 +64,25 @@ try {
         $stmt->execute([$orderId]);
         $steps = $stmt->fetchAll();
 
+        // Cancellation is available only to the customer in Step 1 (Pending)
+        // or while Step 2 is the active workflow step.
+        $activeStep = null;
+        foreach ($steps as $step) {
+            if ($step['status'] === 'In Progress') {
+                $activeStep = (int)$step['step_number'];
+                break;
+            }
+        }
+        $cancelStep = $order['order_status'] === 'Pending' ? 1
+            : ($order['order_status'] === 'In Progress' && $activeStep === 2 ? 2 : null);
+        $stmt = $pdo->prepare("SELECT COUNT(*) FROM payments WHERE order_id=? AND status IN ('Submitted','Verified')");
+        $stmt->execute([$orderId]);
+        $hasPayment = (int)$stmt->fetchColumn() > 0;
+        $canCancel = current_role() === 'customer'
+            && $cancelStep !== null
+            && empty($order['inventory_deducted_at'])
+            && !$hasPayment;
+
         // Get messages/notifications for this order
         $stmt = $pdo->prepare("
             SELECT n.*, 
@@ -86,7 +105,9 @@ try {
             'order' => $order,
             'items' => $items,
             'steps' => $steps,
-            'messages' => $messages
+            'messages' => $messages,
+            'can_cancel' => $canCancel,
+            'cancel_step' => $canCancel ? $cancelStep : null
         ]);
         exit;
     }
@@ -99,6 +120,59 @@ try {
         $orderId = trim($body['order_id'] ?? '');
         if (!$orderId) api_error('Order ID required.');
         $accessOrder = require_order_access($pdo, $orderId);
+
+        if ($action === 'cancel_order') {
+            if (current_role() !== 'customer') api_error('Only the customer can cancel this order.', 403);
+
+            $pdo->beginTransaction();
+            $stmt = $pdo->prepare("SELECT order_status, inventory_deducted_at FROM orders WHERE order_id=? FOR UPDATE");
+            $stmt->execute([$orderId]);
+            $lockedOrder = $stmt->fetch();
+            if (!$lockedOrder) api_error('Order not found.', 404);
+
+            $stmt = $pdo->prepare("
+                SELECT ps.step_number, op.process_id
+                FROM order_process op
+                JOIN process_steps ps ON ps.process_step_id=op.process_step_id
+                WHERE op.order_id=? AND op.status='In Progress'
+                ORDER BY ps.step_number
+                LIMIT 1
+            ");
+            $stmt->execute([$orderId]);
+            $activeProcess = $stmt->fetch();
+            $activeStep = $activeProcess ? (int)$activeProcess['step_number'] : null;
+            $cancelStep = $lockedOrder['order_status'] === 'Pending' ? 1
+                : ($lockedOrder['order_status'] === 'In Progress' && $activeStep === 2 ? 2 : null);
+
+            $stmt = $pdo->prepare("SELECT COUNT(*) FROM payments WHERE order_id=? AND status IN ('Submitted','Verified')");
+            $stmt->execute([$orderId]);
+            $hasPayment = (int)$stmt->fetchColumn() > 0;
+
+            if ($cancelStep === null || !empty($lockedOrder['inventory_deducted_at']) || $hasPayment) {
+                $pdo->rollBack();
+                api_error('This order can no longer be cancelled. Cancellation is available only in Step 1 or Step 2 before payment processing.', 409);
+            }
+
+            $stmt = $pdo->prepare("UPDATE orders SET order_status='Cancelled', date_finished=NOW() WHERE order_id=? AND order_status=?");
+            $stmt->execute([$orderId, $lockedOrder['order_status']]);
+            if ($stmt->rowCount() !== 1) {
+                $pdo->rollBack();
+                api_error('The order status changed before cancellation could be completed.', 409);
+            }
+
+            $processId = $activeProcess ? (int)$activeProcess['process_id'] : null;
+            $message = "Customer cancelled order {$orderId} during Step {$cancelStep}.";
+            $recipients = $pdo->query("SELECT user_id FROM users WHERE role IN ('admin','owner') AND is_active=1")->fetchAll(PDO::FETCH_COLUMN);
+            $notify = $pdo->prepare("INSERT INTO notifications (process_id,user_id,sent_by,title,message) VALUES (?,?,?,?,?)");
+            foreach ($recipients as $recipientId) {
+                $notify->execute([$processId, $recipientId, $userId, 'Order Cancelled', $message]);
+            }
+
+            audit_event($pdo, 'order.cancelled_by_customer', $orderId, ['step'=>$cancelStep]);
+            $pdo->commit();
+            echo json_encode(['success'=>true, 'message'=>'Order cancelled successfully.']);
+            exit;
+        }
 
         // Submit initial payment (Step 3)
         if ($action === 'submit_payment') {

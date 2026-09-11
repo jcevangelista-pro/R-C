@@ -162,6 +162,9 @@
                                         </div>
                                     </div>
                                 </div>
+                                <div class="cancel-order-row">
+                                    <button type="button" class="cancel-order-btn" data-cancel-step="1" hidden>Cancel Order</button>
+                                </div>
                             </div>
                             <!-- ===== STEP 2 ===== -->
                             <div class="tab-pane" role="tabpanel" id="step2">
@@ -191,6 +194,10 @@
                                             </div>
                                         </div>
                                     </div>
+                                </div>
+
+                                <div class="cancel-order-row">
+                                    <button type="button" class="cancel-order-btn" data-cancel-step="2" hidden>Cancel Order</button>
                                 </div>
 
                                 <!-- CHAT BOX (Step 2) -->
@@ -910,10 +917,25 @@
                                         </div>
                                     </div>
                                 </div>
-                            </div>  
-                        </form>
-                    </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
             </section>
+
+            <div class="cancel-confirm-overlay" id="cancelOrderOverlay" hidden>
+                <div class="cancel-confirm-modal" role="dialog" aria-modal="true" aria-labelledby="cancelOrderTitle" aria-describedby="cancelOrderText">
+                    <button type="button" class="cancel-modal-close" aria-label="Close cancellation dialog">&times;</button>
+                    <div class="cancel-modal-icon" aria-hidden="true">!</div>
+                    <h2 id="cancelOrderTitle">Cancel this order?</h2>
+                    <p id="cancelOrderText">This action cannot be undone. Admin and Owner will be notified of the cancellation.</p>
+                    <p class="cancel-modal-error" id="cancelOrderError" role="alert" hidden></p>
+                    <div class="cancel-modal-actions">
+                        <button type="button" class="cancel-modal-keep">Keep Order</button>
+                        <button type="button" class="cancel-modal-confirm">Confirm Cancellation</button>
+                    </div>
+                </div>
+            </div>
         </div>
         </div>
  

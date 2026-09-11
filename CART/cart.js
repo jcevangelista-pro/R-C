@@ -38,13 +38,25 @@ function updateCartBadge(){
   const badge = document.getElementById('cartBadge');
   if (badge) badge.textContent = cartItems.length;
 }
+
+function renderProductThumbnail(containerId, item) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+  container.replaceChildren();
+  if (!item || !item.image) return;
+  const image = document.createElement('img');
+  image.className = 'cart-product-image';
+  image.src = '../Products/' + item.image;
+  image.alt = item.name || 'Product image';
+  container.appendChild(image);
+}
  
 /* ================= RENDER CART ROWS ================= */
 function renderCartRows(){
   const wrap = document.getElementById('cartRows');
   wrap.innerHTML = cartItems.map((item, idx) => {
     const imgHtml = item.image
-      ? `<img src="../Products/${item.image}" style="width:6vw;height:6vw;object-fit:cover;border-radius:8px;">`
+      ? `<img src="../Products/${item.image}" alt="Product image" class="cart-product-image">`
       : `<div style="width:6vw;height:6vw;background:#e5e7eb;border-radius:8px;"></div>`;
 
     return `
@@ -221,6 +233,7 @@ const designNote = document.getElementById('designNote');
  
 function renderOrderModal(){
   const item = cartItems[activeItemIndex];
+  renderProductThumbnail('odThumb', item);
  
   document.getElementById('odName').textContent = item.name;
   document.getElementById('odCategory').textContent = item.category;
@@ -279,20 +292,29 @@ orderRemoveBtn.addEventListener('click', async () => {
   const item = cartItems[activeItemIndex];
   if (!confirm(`Are you sure you want to remove "${item.name}" from your cart?`)) return;
 
-  // Remove from database
-  if (item.cart_id) {
-    await fetch('cart_api.php', {
+  try {
+    if (!item.cart_id) throw new Error('This cart item could not be identified.');
+    orderRemoveBtn.disabled = true;
+    const response = await fetch('cart_api.php', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({ action: 'remove', cart_id: item.cart_id })
     });
-  }
+    const data = await response.json();
+    if (!response.ok || !data.success) throw new Error(data.error || 'Failed to remove the product.');
 
-  // Remove from local array
-  cartItems.splice(activeItemIndex, 1);
-  selectedIndexes.clear();
-  closeOrderModal();
-  renderCartRows();
+    closeOrderModal();
+    try {
+      sessionStorage.setItem('cartActionFeedback', JSON.stringify({
+        message: 'Product removed from cart',
+        detail: item.name
+      }));
+    } catch (ignored) {}
+    window.location.reload();
+  } catch (error) {
+    alert(error.message || 'Failed to remove the product.');
+    orderRemoveBtn.disabled = false;
+  }
 });
  
 orderModal.addEventListener('click', (e) => {
@@ -365,6 +387,7 @@ function renderSummaryModal(){
   const idx = checkoutIndexes[summaryPointer];
   const item = cartItems[idx];
   if (!item) return;
+  renderProductThumbnail('sumThumb', item);
  
   document.getElementById('sumDeliveryVia').textContent =
     deliveryInfo.method === 'pickup' ? 'Pickup' : 'Delivery (via Lalamove)';
@@ -465,6 +488,8 @@ summaryCheckoutBtn.addEventListener('click', async () => {
     return item && item.description ? `${item.name}: ${item.description}` : '';
   }).filter(Boolean).join('\n');
 
+  summaryCheckoutBtn.disabled = true;
+  summaryCheckoutBtn.textContent = 'PLACING ORDER...';
   try {
     const res = await fetch('cart_api.php', {
       method: 'POST',
@@ -482,20 +507,23 @@ summaryCheckoutBtn.addEventListener('click', async () => {
     const data = await res.json();
 
     if (data.success) {
-      alert('Order placed successfully! Order ID: ' + data.order_id);
-
-      // Remove checked-out items from local array
-      const sortedIndexes = [...checkoutIndexes].sort((a, b) => b - a);
-      sortedIndexes.forEach(idx => { cartItems.splice(idx, 1); });
-
-      selectedIndexes.clear();
       closeSummaryModal();
-      renderCartRows();
+      try {
+        sessionStorage.setItem('cartActionFeedback', JSON.stringify({
+          message: 'Order placed successfully',
+          detail: 'Order ID: ' + data.order_id
+        }));
+      } catch (ignored) {}
+      window.location.reload();
     } else {
       alert(data.error || 'Failed to place order.');
+      summaryCheckoutBtn.disabled = false;
+      summaryCheckoutBtn.textContent = 'CHECK OUT';
     }
   } catch (err) {
     alert('Error placing order. Please try again.');
+    summaryCheckoutBtn.disabled = false;
+    summaryCheckoutBtn.textContent = 'CHECK OUT';
   }
 });
  
@@ -518,3 +546,28 @@ summaryCheckoutBtn.addEventListener('click', async () => {
 
 
 
+function showCartFeedback(message, detail = '') {
+  const feedback = document.createElement('div');
+  feedback.className = 'cart-action-feedback';
+  feedback.setAttribute('role', 'status');
+  feedback.setAttribute('aria-live', 'polite');
+  feedback.innerHTML = '<span class="cart-action-feedback-icon" aria-hidden="true">&#10003;</span><span><strong></strong><small></small></span>';
+  feedback.querySelector('strong').textContent = message;
+  feedback.querySelector('small').textContent = detail;
+  feedback.querySelector('small').hidden = !detail;
+  document.body.appendChild(feedback);
+  requestAnimationFrame(() => feedback.classList.add('show'));
+  setTimeout(() => {
+    feedback.classList.remove('show');
+    setTimeout(() => feedback.remove(), 250);
+  }, 3000);
+}
+
+try {
+  const savedFeedback = sessionStorage.getItem('cartActionFeedback');
+  if (savedFeedback) {
+    sessionStorage.removeItem('cartActionFeedback');
+    const feedback = JSON.parse(savedFeedback);
+    showCartFeedback(feedback.message, feedback.detail || '');
+  }
+} catch (ignored) {}

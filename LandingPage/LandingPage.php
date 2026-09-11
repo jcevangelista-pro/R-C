@@ -1,4 +1,3 @@
-<?php require_once __DIR__ . '/../Registration/session_guard.php'; ?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -85,16 +84,6 @@
             window.location.reload();
         }
     });
-
-    // Session check
-    fetch('../Registration/check_session.php')
-        .then(res => res.json())
-        .then(data => {
-            if (!data.logged_in) {
-                window.location.href = '../Registration/LogInPage.html';
-            }
-        })
-        .catch(() => {});
 
     // User dropdown toggle
     const navUser = document.getElementById('NavUser');

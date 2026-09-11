@@ -55,8 +55,11 @@
                         <input type="text" id="username" placeholder="@JaydeeDamodred" minlength="8" required class="Input">
 
                         <label for="password" class="Label">Password</label>
-                        <input type="password" id="password" placeholder="1234Damodred_!" minlength="8" maxlength="30" required class="Input" pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^A-Za-z0-9]).{8,}$"
-                        title="Password must be at least 8 characters long and contain an uppercase letter, a lowercase letter, a number, and a special character.">
+                        <div class="password-field">
+                            <input type="password" id="password" placeholder="1234Damodred_!" minlength="8" maxlength="30" required class="Input" pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^A-Za-z0-9]).{8,}$"
+                            title="Password must be at least 8 characters long and contain an uppercase letter, a lowercase letter, a number, and a special character.">
+                            <button type="button" class="password-toggle" aria-label="Show password" aria-pressed="false"><img src="../imgs/hidden.png" alt=""></button>
+                        </div>
 
                         <div class="TermsPolicy">
                             <input type="checkbox" id="TermsandPolicy" required>
@@ -83,6 +86,7 @@
         </div>
     </div>
     
+    <script src="password_toggle.js"></script>
     <script>
     const signupForm = document.getElementById('signupForm');
     const signupError = document.getElementById('signupError');

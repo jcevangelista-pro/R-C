@@ -3,6 +3,79 @@
 // Include on all customer-facing pages
 // ============================================================
 (function() {
+    var sessionState = { checked: false, loggedIn: false };
+
+    function showGuestPrompt() {
+        var existing = document.getElementById('guestAccessPrompt');
+        if (existing) {
+            existing.hidden = false;
+            existing.querySelector('.guest-access-signup').focus();
+            return;
+        }
+        var overlay = document.createElement('div');
+        overlay.id = 'guestAccessPrompt';
+        overlay.className = 'guest-access-overlay';
+        overlay.innerHTML = `
+            <div class="guest-access-dialog" role="dialog" aria-modal="true" aria-labelledby="guestAccessTitle">
+                <button type="button" class="guest-access-close" aria-label="Close">&times;</button>
+                <div class="guest-access-icon" aria-hidden="true">!</div>
+                <h2 id="guestAccessTitle">Account required</h2>
+                <p>You must sign up first to add or order products and access your profile, notifications, cart, or orders.</p>
+                <div class="guest-access-actions">
+                    <a class="guest-access-login" href="../Registration/LogInPage.html">Log In</a>
+                    <a class="guest-access-signup" href="../Registration/SignUpPage.html">Sign Up</a>
+                </div>
+            </div>`;
+        document.body.appendChild(overlay);
+        var close = function() { overlay.hidden = true; };
+        overlay.querySelector('.guest-access-close').addEventListener('click', close);
+        overlay.addEventListener('click', function(event) { if (event.target === overlay) close(); });
+        overlay.querySelector('.guest-access-signup').focus();
+    }
+
+    function syncGuestNavigation() {
+        var dropdown = document.getElementById('userDropdown') || document.querySelector('.UserDropdown');
+        if (dropdown) {
+            dropdown.innerHTML = '<a href="../Registration/LogInPage.html">Log In</a><a href="../Registration/SignUpPage.html">Sign Up</a>';
+        }
+        document.querySelectorAll('.nav-badge').forEach(function(badge) { badge.hidden = true; });
+    }
+
+    function isProtectedTarget(target) {
+        var link = target.closest('a');
+        var href = link ? (link.getAttribute('href') || '').toLowerCase() : '';
+        var protectedLink = /(?:profile\/profilepage|notifications\/notifications|cart\/cart|myorders\/myorder)\.html/.test(href);
+        var purchaseControl = target.closest('#OpenModal, .AddToCartBtn, .btn-add-cart');
+        return protectedLink || Boolean(purchaseControl);
+    }
+
+    document.addEventListener('click', function(event) {
+        if (!sessionState.checked || sessionState.loggedIn || !isProtectedTarget(event.target)) return;
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        showGuestPrompt();
+    }, true);
+
+    fetch('../Registration/check_session.php')
+        .then(function(response) { return response.json(); })
+        .then(function(data) {
+            sessionState.checked = true;
+            sessionState.loggedIn = Boolean(data.logged_in);
+            if (!sessionState.loggedIn) {
+                syncGuestNavigation();
+                setTimeout(syncGuestNavigation, 250);
+                var path = window.location.pathname.toLowerCase();
+                if (/(?:\/profile\/profilepage|\/notifications\/notifications|\/cart\/cart|\/myorders\/myorder)\.html$/.test(path)) {
+                    showGuestPrompt();
+                }
+            }
+        })
+        .catch(function() {
+            sessionState.checked = true;
+            sessionState.loggedIn = false;
+            syncGuestNavigation();
+        });
+
     // Inject styles
     const style = document.createElement('style');
     style.textContent = `
@@ -37,6 +110,34 @@
             border-radius: 2px;
         }
         .mobile-nav-divider { border-top: 1px solid #f3f4f6; margin: 4px 0; }
+        .guest-access-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background: rgba(15, 23, 42, .58);
+        }
+        .guest-access-overlay[hidden] { display: none; }
+        .guest-access-dialog {
+            position: relative;
+            width: min(430px, 100%);
+            padding: 30px;
+            border-radius: 16px;
+            background: #fff;
+            box-shadow: 0 20px 60px rgba(15, 23, 42, .3);
+            text-align: center;
+        }
+        .guest-access-dialog h2 { margin: 0 0 8px; color: #1e3263; font: 800 22px Poppins, sans-serif; }
+        .guest-access-dialog p { margin: 0; color: #64748b; font: 500 14px/1.55 Poppins, sans-serif; }
+        .guest-access-close { position: absolute; top: 9px; right: 14px; border: 0; color: #64748b; background: transparent; font-size: 28px; cursor: pointer; }
+        .guest-access-icon { display: grid; place-items: center; width: 48px; height: 48px; margin: 0 auto 14px; border-radius: 50%; color: #b45309; background: #fef3c7; font: 800 24px Poppins, sans-serif; }
+        .guest-access-actions { display: flex; justify-content: center; gap: 10px; margin-top: 24px; }
+        .guest-access-actions a { min-width: 120px; padding: 10px 18px; border-radius: 9px; font: 700 13px Poppins, sans-serif; text-decoration: none; }
+        .guest-access-login { border: 1px solid #cbd5e1; color: #334155; background: #fff; }
+        .guest-access-signup { border: 1px solid #ec4899; color: #fff; background: #ec4899; }
 
         @media (max-width: 768px) {
             .Navbar { padding: 8px 12px !important; overflow: visible !important; }
@@ -54,6 +155,9 @@
             .Navbar a { padding: 5px 5px !important; font-size: 11px !important; }
             .Img { width: 18px !important; height: 18px !important; }
             .mobile-hide-text { display: none !important; }
+            .guest-access-dialog { padding: 28px 18px 20px; }
+            .guest-access-actions { flex-direction: column-reverse; }
+            .guest-access-actions a { width: 100%; }
         }
     `;
     document.head.appendChild(style);

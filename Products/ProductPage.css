@@ -543,6 +543,43 @@ body {
     background: #ffe4f0;
 }
 
+.cart-add-feedback {
+    position: fixed;
+    top: 88px;
+    right: 22px;
+    z-index: 3000;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: min(360px, calc(100vw - 32px));
+    padding: 14px 18px;
+    border: 1px solid #bbf7d0;
+    border-radius: 12px;
+    color: #14532d;
+    background: #f0fdf4;
+    box-shadow: 0 12px 30px rgba(15, 23, 42, .16);
+    opacity: 0;
+    transform: translateY(-12px);
+    transition: opacity .2s ease, transform .2s ease;
+}
+
+.cart-add-feedback.show { opacity: 1; transform: translateY(0); }
+.cart-add-feedback-icon {
+    display: grid;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    flex: 0 0 32px;
+    border-radius: 50%;
+    color: #fff;
+    background: #16a34a;
+    font-weight: 800;
+}
+.cart-add-feedback strong,
+.cart-add-feedback small { display: block; }
+.cart-add-feedback strong { font-size: 14px; }
+.cart-add-feedback small { margin-top: 2px; color: #3f6212; font-size: 12px; }
+
 
 /* ── ACTIVE LINK ─────────────────────────────────────────── */
 .Navbar ul li a.ActiveLink {
@@ -582,4 +619,5 @@ body {
   .modal-card { width: 96vw; max-height: 88vh; padding-bottom: 16px; }
   .modal-card .PIContainer { flex-direction: column; padding: 0 10px 10px; }
   .modal-card .ProductContainer { flex: 0 0 auto; width: min(100%, 320px); min-height: 0; align-self: center; aspect-ratio: 1 / 1; }
+  .cart-add-feedback { top: 72px; right: 16px; left: 16px; width: auto; }
 }

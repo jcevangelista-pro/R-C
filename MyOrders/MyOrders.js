@@ -42,7 +42,8 @@ function renderOrderRows() {
 const ongoingBtn = document.getElementById('OngoingToggleLabel');
 const completedBtn = document.getElementById('CompletedToggleLabel');
 const cancelledBtn = document.getElementById('CancelledToggleLabel');
-let currentFilter = 'ongoing';
+const requestedFilter = new URLSearchParams(window.location.search).get('tab');
+let currentFilter = ['ongoing', 'completed', 'cancelled'].includes(requestedFilter) ? requestedFilter : 'ongoing';
 
 function setActiveTab(type) {
     currentFilter = type;
@@ -74,8 +75,8 @@ function renderFilteredOrders(type) {
 
     wrap.innerHTML = filtered.map((order, idx) => {
         const imgHtml = order.image
-            ? `<img src="../Products/${order.image}" style="width:60px;height:60px;object-fit:cover;border-radius:8px;">`
-            : `<div style="width:60px;height:60px;background:#e5e7eb;border-radius:8px;"></div>`;
+            ? `<img src="../Products/${escapeHtml(order.image)}" alt="${escapeHtml(order.name)}" class="my-order-product-image">`
+            : '';
 
         const statusClass = order.order_status === 'Completed' ? 'status-completed'
             : order.order_status === 'Cancelled' ? 'status-cancelled'
@@ -110,6 +111,10 @@ function renderFilteredOrders(type) {
 if (ongoingBtn) ongoingBtn.addEventListener('click', () => setActiveTab('ongoing'));
 if (completedBtn) completedBtn.addEventListener('click', () => setActiveTab('completed'));
 if (cancelledBtn) cancelledBtn.addEventListener('click', () => setActiveTab('cancelled'));
+
+// Preserve the normal default, while allowing workflow actions such as a
+// successful cancellation to return the customer directly to the right list.
+setActiveTab(currentFilter);
 
 /* ================= INITIALIZE ================= */
 // renderOrderRows is called by MyOrdersData.js after data loads
