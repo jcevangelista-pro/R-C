@@ -312,9 +312,30 @@ body {
 }
 
 .qty {
+    width: 72px;
+    min-width: 0;
+    padding: 2px 4px;
+    border: 0;
+    border-bottom: 2px solid #d6d3ea;
+    outline: none;
+    background: transparent;
+    text-align: center;
+    font-family: inherit;
     font-size: 1.6rem;
     font-weight: 700;
     color: #1E3163;
+    appearance: textfield;
+    -moz-appearance: textfield;
+}
+
+.qty::-webkit-inner-spin-button,
+.qty::-webkit-outer-spin-button {
+    margin: 0;
+    -webkit-appearance: none;
+}
+
+.qty:focus {
+    border-bottom-color: #F868AA;
 }
 
 .ButtonDA {

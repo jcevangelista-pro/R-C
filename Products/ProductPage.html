@@ -16,7 +16,6 @@
     <nav class="Navbar">
         <a href="../LandingPage/LandingPage.html" id="BName">R&C PRINTING SERVICES</a>
         <ul>
-            <li><a href=""><img src="../imgs/search.png" alt="" class="Img"></a></li>
             <!-- <li><a href=""><img src="../imgs/typing.png" alt="" class="Img"></a></li> -->
             <li><a href=""><img src="../OrderProcess/OrderProcessImgs/Alarm.png" alt="" class="Img"></a></li>
             <li><a href="../CART/cart.html"><img src="../imgs/trolley.png" alt="" class="Img"></a></li>
@@ -88,7 +87,7 @@
                         <div class="label">QUANTITY</div>
                         <div class="stepper">
                             <button class="ButtonDA" id="modalMinusBtn">-</button>
-                            <div class="qty" id="modalQtyDisplay">1</div>
+                            <input type="number" class="qty" id="modalQtyDisplay" value="1" min="1" step="1" inputmode="numeric" aria-label="Product quantity">
                             <button class="ButtonDA" id="modalPlusBtn">+</button>
                         </div>
                     </div>

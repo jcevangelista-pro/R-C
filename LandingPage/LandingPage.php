@@ -19,7 +19,6 @@
     <nav class="Navbar">
             <a href="LandingPage.php" id="BName">R&C PRINTING SERVICES</a>
         <ul>
-            <li><a href=""><img src="../imgs/search.png" alt="" class="Img"></a></li>
             <!-- <li><a href=""><img src="../imgs/typing.png" alt="" class="Img"></a></li> -->
             <li><a href=""><img src="../OrderProcess/OrderProcessImgs/Alarm.png" alt="" class="Img"></a></li>
             <li><a href="../CART/cart.html"><img src="../imgs/trolley.png" alt="" class="Img"></a></li>
@@ -129,9 +128,15 @@
                     ? `<img src="../Products/${p.image_path}" alt="" class="Picture">`
                     : `<div class="no-product-image"></div>`;
                 const price = 'P' + parseFloat(p.price).toFixed(2);
-                const encodedName = encodeURIComponent(p.name);
-                const encodedType = encodeURIComponent(p.type_of_product || '');
-                const href = `../Products/ProductPage.html?id=${p.id}&name=${encodedName}&type=${encodedType}&price=${price}&img=${p.image_path || ''}`;
+                const productQuery = new URLSearchParams({
+                    id: p.id,
+                    name: p.name,
+                    type: p.type_of_product || '',
+                    price: price,
+                    img: p.image_path || '',
+                    return: 'home'
+                });
+                const href = '../Products/ProductPage.html?' + productQuery.toString();
 
                 return `
                 <a class="CardProducts" href="${href}">

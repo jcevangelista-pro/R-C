@@ -69,21 +69,37 @@ const qtyDisplay = document.getElementById('modalQtyDisplay');
 const minusBtn = document.getElementById('modalMinusBtn');
 const plusBtn = document.getElementById('modalPlusBtn');
 
-if (qtyDisplay) qtyDisplay.textContent = modalQty;
+function normalizeModalQuantity() {
+    const parsed = Number.parseInt(qtyDisplay.value, 10);
+    modalQty = Number.isInteger(parsed) && parsed >= 1 ? parsed : 1;
+    qtyDisplay.value = modalQty;
+}
+
+if (qtyDisplay) {
+    qtyDisplay.value = modalQty;
+    qtyDisplay.addEventListener('input', () => {
+        const parsed = Number.parseInt(qtyDisplay.value, 10);
+        if (Number.isInteger(parsed) && parsed >= 1) modalQty = parsed;
+    });
+    qtyDisplay.addEventListener('change', normalizeModalQuantity);
+    qtyDisplay.addEventListener('blur', normalizeModalQuantity);
+}
 
 if (minusBtn) {
     minusBtn.addEventListener('click', () => {
+        normalizeModalQuantity();
         if (modalQty > 1) {
             modalQty--;
-            qtyDisplay.textContent = modalQty;
+            qtyDisplay.value = modalQty;
         }
     });
 }
 
 if (plusBtn) {
     plusBtn.addEventListener('click', () => {
+        normalizeModalQuantity();
         modalQty++;
-        qtyDisplay.textContent = modalQty;
+        qtyDisplay.value = modalQty;
     });
 }
 
@@ -96,6 +112,7 @@ if (addToCartBtn) {
             return;
         }
 
+        normalizeModalQuantity();
         addToCartBtn.disabled = true;
         addToCartBtn.textContent = 'Adding...';
         try {
@@ -134,7 +151,9 @@ if (addToCartBtn) {
 // ── Back button → navigate to LandingPage ───────────────────
 const BackButton = document.getElementById('BackButton');
 BackButton.addEventListener('click', () => {
-    window.location.href = '../LandingPage/LandingPage.html';
+    window.location.href = params.get('return') === 'home'
+        ? '../LandingPage/LandingPage.php'
+        : 'Prodbrowse.html';
 });
 
 // ── Modal open/close ────────────────────────────────────────

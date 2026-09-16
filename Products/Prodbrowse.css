@@ -332,11 +332,17 @@ h1, h2, h3 {
   display: flex;
   flex-direction: column;
   transition: transform 0.25s ease, box-shadow 0.25s ease;
+  cursor: pointer;
 }
 
 .ProductCard:hover {
   transform: translateY(-6px);
   box-shadow: 0 16px 34px rgba(107, 33, 168, 0.28);
+}
+
+.ProductCard:focus-visible {
+  outline: 3px solid var(--pink);
+  outline-offset: 3px;
 }
 
 .ProductImageWrap {

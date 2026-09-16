@@ -203,7 +203,7 @@ const escapeHtml = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'
         : `<div class="ProductImagePlaceholder"></div>`;
 
       return `
-      <div class="ProductCard" data-id="${p.id}">
+      <div class="ProductCard" data-id="${p.id}" role="link" tabindex="0" aria-label="View ${escapeHtml(p.name)}">
         <div class="ProductImageWrap">
           <span class="CategoryTag">${escapeHtml(p.type)}</span>
           ${imgHtml}
@@ -216,8 +216,36 @@ const escapeHtml = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'
       </div>`;
     }).join('');
 
+    function openProductPage(id) {
+      const product = PRODUCTS.find(item => item.id === id);
+      if (!product) return;
+      const query = new URLSearchParams({
+        id: product.id.replace(/^p/, ''),
+        name: product.name,
+        type: product.category,
+        price: 'P' + product.price.toFixed(2),
+        img: product.image || '',
+        return: 'products'
+      });
+      window.location.href = 'ProductPage.html?' + query.toString();
+    }
+
+    grid.querySelectorAll('.ProductCard').forEach(card => {
+      card.addEventListener('click', event => {
+        if (!event.target.closest('.AddToCartBtn')) openProductPage(card.dataset.id);
+      });
+      card.addEventListener('keydown', event => {
+        if (event.target.closest('.AddToCartBtn')) return;
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          openProductPage(card.dataset.id);
+        }
+      });
+    });
+
     grid.querySelectorAll('.AddToCartBtn').forEach(btn => {
-      btn.addEventListener('click', () => {
+      btn.addEventListener('click', event => {
+        event.stopPropagation();
         addToCart(btn.dataset.id);
         btn.textContent = 'Added ✓';
         setTimeout(() => (btn.textContent = 'Add to Cart'), 900);
