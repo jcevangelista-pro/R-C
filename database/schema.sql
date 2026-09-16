@@ -445,10 +445,10 @@ INSERT INTO process_steps (step_number, step_name, description) VALUES
 -- ============================================================
 
 INSERT INTO users (first_name, middle_name, last_name, email, username, password_hash, role)
-VALUES ('Moiraine', 'Damodred', 'Sanche', 'moiraine_owner@example.com', '@MoiraineOwner', '$2b$12$placeholder_hash_owner', 'owner');
+VALUES ('R&C', NULL, 'Owner', 'owner@rcprinting.local', '@RNCOwner', '$2y$10$eOifeCXCjAd8kRxkJ3QhIu0FNju7v.S3mv/HSfiRCtEY.y6XT1CrK', 'owner');
 
 INSERT INTO users (first_name, middle_name, last_name, email, username, password_hash, role)
-VALUES ('Moiraine', 'Damodred', 'Sanche', 'moiraine_admin@example.com', '@MoiraineAdmin', '$2b$12$placeholder_hash_admin', 'admin');
+VALUES ('R&C', NULL, 'Admin', 'admin@rcprinting.local', '@RNCAdmin', '$2y$10$aGVGs7gBMZ6PkkHkVATTwOodd5ASvsLJW6LtLBWBna/BECllyokj2', 'admin');
 
 INSERT INTO users (first_name, middle_name, last_name, email, username, password_hash, role)
 VALUES ('Jane', NULL, 'Doe', 'jane.doe@example.com', '@JaneDoe123', '$2b$12$placeholder_hash_customer', 'customer');
