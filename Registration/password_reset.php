@@ -1,6 +1,7 @@
 <?php
 declare(strict_types=1);
 require_once __DIR__ . '/../database/api_bootstrap.php';
+require_once __DIR__ . '/../config/mail.php';
 
 if (($_SERVER['REQUEST_METHOD'] ?? '') !== 'POST') api_error('Method not allowed.', 405);
 $body = json_body();
@@ -29,15 +30,10 @@ if ($action === 'request') {
             ->execute([$user['user_id'], $tokenHash]);
         $pdo->commit();
 
-        $host = (string)($_SERVER['HTTP_HOST'] ?? 'localhost');
-        if (!preg_match('/^[A-Za-z0-9.-]+(?::\d+)?$/', $host)) $host = 'localhost';
-        $scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
-        $directory = rtrim(str_replace('\\', '/', dirname((string)($_SERVER['SCRIPT_NAME'] ?? '/Registration/password_reset.php'))), '/');
-        $resetUrl = $scheme . '://' . $host . $directory . '/ResetPassword.html?token=' . rawurlencode($token);
+        $resetUrl = app_url('Registration/ResetPassword.html?token=' . rawurlencode($token));
         $subject = 'Reset your R&C Printing Services password';
         $message = "Hello {$user['first_name']},\n\nUse this link to reset your password:\n{$resetUrl}\n\nThis link expires in one hour and can be used only once. If you did not request this, ignore this email.";
-        $headers = "From: R&C Printing Services <no-reply@localhost>\r\nContent-Type: text/plain; charset=UTF-8";
-        if (!mail((string)$user['email'], $subject, $message, $headers)) {
+        if (!send_application_mail((string)$user['email'], $subject, $message)) {
             $pdo->prepare("UPDATE password_reset_tokens SET used_at=NOW() WHERE selector_hash=?")->execute([$tokenHash]);
             error_log('Password reset email delivery failed for user ' . $user['user_id']);
         }

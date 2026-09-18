@@ -1,5 +1,4 @@
-USE rnc;
-
+-- Run while connected to the intended application database.
 ALTER TABLE inventory MODIFY stock DECIMAL(12,2) NOT NULL DEFAULT 0.00;
 ALTER TABLE inventory MODIFY reorder_level DECIMAL(12,2) NOT NULL DEFAULT 10.00;
 ALTER TABLE inventory_history MODIFY stock_before DECIMAL(12,2) NOT NULL;
@@ -47,4 +46,3 @@ CREATE TABLE audit_logs (
     FOREIGN KEY (order_id) REFERENCES orders(order_id) ON DELETE SET NULL,
     INDEX idx_audit_order_date (order_id, created_at)
 );
-

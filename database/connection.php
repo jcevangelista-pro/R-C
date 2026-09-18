@@ -1,17 +1,25 @@
 <?php
-// ============================================================
-// Database Connection - rnc
-// Laragon MySQL (localhost)
-// ============================================================
+declare(strict_types=1);
+require_once __DIR__ . '/../config/app.php';
 
-$host = 'localhost';
-$dbname = 'rnc';
-$username = 'root';
-$password = '';
+// Local defaults preserve Laragon compatibility. Production must provide all
+// DB_* values through the server environment or the uncommitted .env file.
+$host = (string)env_value('DB_HOST', 'localhost');
+$port = (int)env_value('DB_PORT', '3306');
+$dbname = (string)env_value('DB_NAME', 'rnc');
+$username = (string)env_value('DB_USER', 'root');
+$password = (string)env_value('DB_PASSWORD', '');
+
+if (is_production() && ($dbname === '' || $username === 'root' || $password === '')) {
+    error_log('Production database configuration is incomplete or unsafe.');
+    http_response_code(500);
+    echo json_encode(['error' => 'Server configuration error.']);
+    exit;
+}
 
 try {
     $pdo = new PDO(
-        "mysql:host=$host;dbname=$dbname;charset=utf8mb4",
+        "mysql:host=$host;port=$port;dbname=$dbname;charset=utf8mb4",
         $username,
         $password,
         [
@@ -21,7 +29,8 @@ try {
         ]
     );
 } catch (PDOException $e) {
+    error_log($e->__toString());
     http_response_code(500);
-    echo json_encode(['error' => 'Database connection failed: ' . $e->getMessage()]);
+    echo json_encode(['error' => is_production() ? 'Database service unavailable.' : 'Database connection failed: ' . $e->getMessage()]);
     exit;
 }

@@ -1,0 +1,20 @@
+Options -Indexes
+DirectoryIndex index.php
+ServerSignature Off
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteRule ^(?:config|database|deployment|Misc|vendor|\.git)(?:/|$) - [F,L,NC]
+</IfModule>
+
+<FilesMatch "(^\.env|\.(?:sql|log|ini|md|txt)$|^(?:composer\.(?:json|lock)))">
+    Require all denied
+</FilesMatch>
+
+<IfModule mod_headers.c>
+    Header always set X-Content-Type-Options "nosniff"
+    Header always set X-Frame-Options "DENY"
+    Header always set Referrer-Policy "same-origin"
+    Header always set Permissions-Policy "camera=(), microphone=(), geolocation=()"
+</IfModule>
+

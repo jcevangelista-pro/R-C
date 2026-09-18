@@ -1,11 +1,8 @@
 -- ============================================================
 -- R&C PRINTING SERVICES — Database Schema
 -- Covers: FR-01 through FR-43
--- Database: rnc
+-- Import this file while connected to the intended application database.
 -- ============================================================
-
-CREATE DATABASE IF NOT EXISTS rnc;
-USE rnc;
 
 -- ============================================================
 -- 1. USERS (FR-01)
@@ -440,24 +437,5 @@ INSERT INTO process_steps (step_number, step_name, description) VALUES
     (7, 'Order Received Confirmation', 'Customer confirms the order has been received'),
     (8, 'Order Completed', 'Order is officially marked as completed');
 
--- ============================================================
--- SEED: Sample accounts
--- ============================================================
-
-INSERT INTO users (first_name, middle_name, last_name, email, username, password_hash, role)
-VALUES ('R&C', NULL, 'Owner', 'owner@rcprinting.local', '@RNCOwner', '$2y$10$eOifeCXCjAd8kRxkJ3QhIu0FNju7v.S3mv/HSfiRCtEY.y6XT1CrK', 'owner');
-
-INSERT INTO users (first_name, middle_name, last_name, email, username, password_hash, role)
-VALUES ('R&C', NULL, 'Admin', 'admin@rcprinting.local', '@RNCAdmin', '$2y$10$aGVGs7gBMZ6PkkHkVATTwOodd5ASvsLJW6LtLBWBna/BECllyokj2', 'admin');
-
-INSERT INTO users (first_name, middle_name, last_name, email, username, password_hash, role)
-VALUES ('Jane', NULL, 'Doe', 'jane.doe@example.com', '@JaneDoe123', '$2b$12$placeholder_hash_customer', 'customer');
-
-INSERT INTO customers (user_id, phone_num, address)
-VALUES (3, '09XX-XXX-XXXX', 'Block 12 Lot 8, Phase 3, Barangay Banay-Banay, Cabuyao City, Laguna, 4025');
-
-INSERT INTO products (name, material_used, type_of_product, price, front_page_visible, created_by)
-VALUES ('Tumbler (360ml)', 'Sublimation', 'Mug & Tumbler', 45.00, TRUE, 1);
-
-INSERT INTO inventory (item_name, category, stock, unit_of_measure, reorder_level, unit_cost, created_by)
-VALUES ('White Mug', 'MUGS', 50, 'Pcs', 10, 25.00, 1);
+-- Development accounts and demonstration data are intentionally kept out of
+-- the production schema. Local teams may import seeds/development_accounts.sql.

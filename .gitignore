@@ -1,0 +1,12 @@
+/.env
+/vendor/
+/.composer-tmp/
+/.composer-tmp/
+/*.log
+/OrderProcess/private_uploads/payments/*
+/OrderProcess/private_uploads/process-evidence/*
+/OrderProcess/private_uploads/profiles/*
+!/OrderProcess/private_uploads/**/.gitkeep
+/Products/uploads/*
+!/Products/uploads/.htaccess
+!/Products/uploads/.gitkeep

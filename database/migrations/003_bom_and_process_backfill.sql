@@ -1,5 +1,4 @@
-USE rnc;
-
+-- Run while connected to the intended application database.
 -- Legacy catalog products had no bill of materials. Give each unmapped product a
 -- traceable zero-stock base item so every product uses the same safe deduction
 -- workflow without claiming inventory that does not exist.

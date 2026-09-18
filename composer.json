@@ -1,0 +1,16 @@
+{
+  "name": "rnc/printing-services",
+  "description": "R&C Printing Services order and inventory system",
+  "type": "project",
+  "license": "proprietary",
+  "require": {
+    "php": ">=8.1",
+    "ext-fileinfo": "*",
+    "ext-pdo": "*",
+    "phpmailer/phpmailer": "^6.9 || ^7.0"
+  },
+  "config": {
+    "optimize-autoloader": true,
+    "sort-packages": true
+  }
+}
