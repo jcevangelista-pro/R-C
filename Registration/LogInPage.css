@@ -229,6 +229,39 @@ body {
     color: #fc8686;
 }
 
+/* ================= FORM FEEDBACK ================= */
+
+.form-feedback {
+    display: none;
+    align-self: stretch;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    margin: 0 0 12px;
+    padding: 10px 12px;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    font-family: Arial, sans-serif;
+    font-size: 0.85rem;
+    line-height: 1.4;
+    text-align: left;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+}
+
+.form-feedback--error {
+    color: #b42318;
+    background-color: #fff1f0;
+    border-color: #fda29b;
+}
+
+.form-feedback--success {
+    color: #166534;
+    background-color: #f0fdf4;
+    border-color: #86efac;
+}
+
 /* ================= BUTTONS ================= */
 
 .Buttons {
@@ -349,6 +382,13 @@ body {
 
     .Greetings p {
         font-size: 1.4rem;
+    }
+
+    .form-feedback {
+        margin-bottom: 10px;
+        padding: 9px 10px;
+        font-size: 0.8rem;
+        line-height: 1.35;
     }
 
     #BBack,

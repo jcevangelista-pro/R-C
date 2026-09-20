@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
     <title>R&C Printing Services</title>
-    <link rel="stylesheet" href="LogInPage.css">
+    <link rel="stylesheet" href="LogInPage.css?v=2">
     <link rel="stylesheet" href="../CustomerNav.css">
 </head>
 <body>
@@ -50,8 +50,8 @@
                             <a href="ForgotPassword.html">Forgot Password</a>
                         </div> <br>
 
-                        <div id="loginError" style="color:#ef4444;font-size:0.85rem;text-align:center;display:none;margin-bottom:10px;"></div>
-                        <div id="loginSuccess" style="color:#22c55e;font-size:0.85rem;text-align:center;display:none;margin-bottom:10px;"></div>
+                        <div id="loginError" class="form-feedback form-feedback--error" role="alert" aria-live="assertive"></div>
+                        <div id="loginSuccess" class="form-feedback form-feedback--success" role="status" aria-live="polite"></div>
 
                         <div class="Buttons">
                             <button type="button" id="BBack"><img src="back.png" alt="" id="BackImg">BACK</button>

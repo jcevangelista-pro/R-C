@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
     <title>R&C Printing Services</title>
-    <link rel="stylesheet" href="LogInPage.css">
+    <link rel="stylesheet" href="LogInPage.css?v=2">
     <link rel="stylesheet" href="SignUpPage.css">
     <link rel="stylesheet" href="../CustomerNav.css">
 </head>
@@ -65,8 +65,8 @@
                             <label for="TermsandPolicy" class="Label">By creating this account, I agree to the <a href="">Terms and Privacy Policy.</a> </label>
                         </div> <br>
 
-                        <div id="signupError" style="color:#ef4444;font-size:0.85rem;text-align:center;display:none;margin-bottom:10px;"></div>
-                        <div id="signupSuccess" style="color:#22c55e;font-size:0.85rem;text-align:center;display:none;margin-bottom:10px;"></div>
+                        <div id="signupError" class="form-feedback form-feedback--error" role="alert" aria-live="assertive"></div>
+                        <div id="signupSuccess" class="form-feedback form-feedback--success" role="status" aria-live="polite"></div>
 
                         <div class="Buttons">
                             <button type="button" id="BBack"><img src="back.png" alt="" id="BackImg">BACK</button>
