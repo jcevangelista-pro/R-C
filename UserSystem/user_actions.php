@@ -34,9 +34,9 @@ try {
         }
         if (!preg_match('/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/', $password)) api_error('Password must contain uppercase, lowercase, number, and special character.', 422);
 
-        if (!in_array($role, ['admin', 'owner'])) {
+        if ($role !== 'admin') {
             http_response_code(400);
-            echo json_encode(['success' => false, 'error' => 'Role must be admin or owner.']);
+            echo json_encode(['success' => false, 'error' => 'Only admin accounts can be created.']);
             exit;
         }
 
@@ -61,22 +61,15 @@ try {
         exit;
     }
 
-    // ── PUT: update username / password / role ──────────────
+    // ── PUT: update username / password ────────────────────
     if ($method === 'PUT') {
         $id       = (int)($body['id'] ?? 0);
         $username = trim($body['username'] ?? '');
         $password = trim($body['password'] ?? '');
-        $role     = strtolower(trim($body['role'] ?? ''));
 
-        if (!$id || !$username || !$role) {
+        if (!$id || !$username) {
             http_response_code(400);
-            echo json_encode(['success' => false, 'error' => 'ID, username and role are required.']);
-            exit;
-        }
-
-        if (!in_array($role, ['admin', 'owner'])) {
-            http_response_code(400);
-            echo json_encode(['success' => false, 'error' => 'Role must be admin or owner.']);
+            echo json_encode(['success' => false, 'error' => 'ID and username are required.']);
             exit;
         }
 
@@ -92,14 +85,14 @@ try {
         if ($password) {
             if (!preg_match('/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/', $password)) api_error('Password must contain uppercase, lowercase, number, and special character.', 422);
             $hash = password_hash($password, PASSWORD_BCRYPT);
-            $stmt = $pdo->prepare("UPDATE users SET username = ?, password_hash = ?, role = ? WHERE user_id = ?");
-            $stmt->execute([$username, $hash, $role, $id]);
+            $stmt = $pdo->prepare("UPDATE users SET username = ?, password_hash = ? WHERE user_id = ?");
+            $stmt->execute([$username, $hash, $id]);
         } else {
-            $stmt = $pdo->prepare("UPDATE users SET username = ?, role = ? WHERE user_id = ?");
-            $stmt->execute([$username, $role, $id]);
+            $stmt = $pdo->prepare("UPDATE users SET username = ? WHERE user_id = ?");
+            $stmt->execute([$username, $id]);
         }
 
-        audit_event($pdo, 'user.updated', null, ['target_user_id'=>$id,'role'=>$role,'password_changed'=>(bool)$password]);
+        audit_event($pdo, 'user.updated', null, ['target_user_id'=>$id,'password_changed'=>(bool)$password]);
 
         echo json_encode(['success' => true, 'message' => 'Account updated.']);
         exit;
@@ -118,8 +111,7 @@ try {
         $stmt = $pdo->prepare("SELECT role FROM users WHERE user_id=?");
         $stmt->execute([$id]);
         if ($stmt->fetchColumn() === 'owner') {
-            $owners = (int)$pdo->query("SELECT COUNT(*) FROM users WHERE role='owner' AND is_active=1")->fetchColumn();
-            if ($owners <= 1) api_error('The last active owner cannot be deactivated.', 409);
+            api_error('Owner accounts cannot be deactivated.', 409);
         }
         $stmt = $pdo->prepare("UPDATE users SET is_active = 0 WHERE user_id = ?");
         $stmt->execute([$id]);

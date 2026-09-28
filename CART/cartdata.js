@@ -15,9 +15,12 @@ async function loadCartFromDB() {
             price: item.price,
             qty: item.quantity,
             image: item.image_path || null,
+            needsSize: item.uses_shirt === true,
+            sizePrices: item.size_prices || null, // e.g. {S:120, M:130, L:140}
             designSelection: 'upload',
             orderType: 'normal',
             description: '',
+            size: null,
             photo: null
         }));
 

@@ -125,6 +125,35 @@
         <div><div class="label">ITEM NAME:</div><div class="value" id="modalItemName">—</div></div>
         <div><div class="label">CURRENT STOCK</div><div class="value" id="modalCurrentStock">0</div></div>
       </div>
+      <div class="section" style="margin-top:4px;">
+        <div class="label">ITEM NAME</div>
+        <input type="text" id="modalItemNameInput" style="width:100%;height:40px;border:1px solid #e5e7eb;border-radius:6px;padding:0 12px;font-size:14px;margin-top:4px;">
+      </div>
+      <div class="section" style="margin-top:4px;">
+        <div class="label">CATEGORY</div>
+        <select id="modalCategory" style="width:100%;height:40px;border:1px solid #e5e7eb;border-radius:6px;padding:0 10px;font-size:14px;margin-top:4px;" onchange="toggleModalSize(this.value, 'modalSizeRow')">
+          <option value="MUGS">MUGS</option>
+          <option value="SHIRTS">SHIRTS</option>
+          <option value="PAPER">PAPER</option>
+          <option value="SUPPLY">SUPPLY</option>
+          <option value="PEN">PEN</option>
+          <option value="FANS">FANS</option>
+          <option value="OTHER">OTHER</option>
+        </select>
+      </div>
+      <div class="section" id="modalSizeRow" style="margin-top:4px;display:none;">
+        <div class="label">SIZE</div>
+        <select id="modalSize" style="width:100%;height:40px;border:1px solid #e5e7eb;border-radius:6px;padding:0 10px;font-size:14px;margin-top:4px;">
+          <option value="">— No size —</option>
+          <option value="XS">XS</option>
+          <option value="S">S</option>
+          <option value="M">M</option>
+          <option value="L">L</option>
+          <option value="XL">XL</option>
+          <option value="2XL">2XL</option>
+          <option value="3XL">3XL</option>
+        </select>
+      </div>
       <div class="section">
         <div class="label">ADD / DEDUCT STOCK</div>
         <div class="radio-row">
@@ -198,7 +227,7 @@
       </div>
       <div class="section" style="margin-top:12px;">
         <div class="label">CATEGORY</div>
-        <select id="addCategory" style="width:100%;height:40px;border:1px solid #e5e7eb;border-radius:6px;padding:0 10px;font-size:14px;margin-top:4px;">
+        <select id="addCategory" style="width:100%;height:40px;border:1px solid #e5e7eb;border-radius:6px;padding:0 10px;font-size:14px;margin-top:4px;" onchange="toggleModalSize(this.value, 'addSizeRow')">
           <option value="MUGS">MUGS</option>
           <option value="SHIRTS">SHIRTS</option>
           <option value="PAPER">PAPER</option>
@@ -206,6 +235,19 @@
           <option value="PEN">PEN</option>
           <option value="FANS">FANS</option>
           <option value="OTHER">OTHER</option>
+        </select>
+      </div>
+      <div class="section" id="addSizeRow" style="margin-top:4px;display:none;">
+        <div class="label">SIZE</div>
+        <select id="addSize" style="width:100%;height:40px;border:1px solid #e5e7eb;border-radius:6px;padding:0 10px;font-size:14px;margin-top:4px;">
+          <option value="">— No size —</option>
+          <option value="XS">XS</option>
+          <option value="S">S</option>
+          <option value="M">M</option>
+          <option value="L">L</option>
+          <option value="XL">XL</option>
+          <option value="2XL">2XL</option>
+          <option value="3XL">3XL</option>
         </select>
       </div>
       <div class="section" style="margin-top:12px;display:flex;gap:12px;">
@@ -256,6 +298,11 @@ let stockMode = 'add';
 let stockQuantity = 10;
 let stockCurrentStock = 0;
 
+// ── Show/hide size row based on category ────────────────────
+function toggleModalSize(category, rowId) {
+  document.getElementById(rowId).style.display = category === 'SHIRTS' ? '' : 'none';
+}
+
 // ── Load data ───────────────────────────────────────────────
 async function loadInventory() {
   try {
@@ -297,7 +344,7 @@ function renderInventory(items) {
       <td><span class="status-badge ${statusBadgeClass(i.status)}">${i.status}</span></td>
       <td>
         <div class="action-icons">
-          <button class="icon-btn" onclick="openModal(${i.id}, '${esc(i.item_name)}', ${i.stock})">&#9998;</button>
+          <button class="icon-btn" onclick="openModal(${i.id}, '${esc(i.item_name)}', ${i.stock}, '${esc(i.category)}', '${esc(i.size||'')}')">&#9998;</button>
           <button class="icon-btn" onclick="openArchiveModal(${i.id}, '${esc(i.item_name)}')">&#128451;</button>
         </div>
       </td>
@@ -344,14 +391,18 @@ document.getElementById('searchInput').addEventListener('input', function() {
 });
 
 // ── Update Modal ────────────────────────────────────────────
-function openModal(id, itemName, currentStock) {
+function openModal(id, itemName, currentStock, currentCategory, currentSize) {
   activeItemId = id;
   document.getElementById('modalItemName').textContent = itemName;
+  document.getElementById('modalItemNameInput').value = itemName;
   document.getElementById('modalCurrentStock').textContent = currentStock;
   stockCurrentStock = currentStock;
   stockQuantity = 10;
   document.getElementById('modalQty').textContent = stockQuantity;
   document.getElementById('modalRemarks').value = '';
+  document.getElementById('modalCategory').value = currentCategory || 'OTHER';
+  toggleModalSize(currentCategory || 'OTHER', 'modalSizeRow');
+  document.getElementById('modalSize').value = currentSize || '';
   selectStockMode('add');
   document.getElementById('updateOverlay').classList.add('show');
 }
@@ -378,6 +429,19 @@ function closeModal() { document.getElementById('updateOverlay').classList.remov
 
 async function submitUpdate() {
   if (stockQuantity <= 0) return;
+  const category = document.getElementById('modalCategory').value;
+  const size = category === 'SHIRTS' ? (document.getElementById('modalSize').value || null) : null;
+  const itemName = document.getElementById('modalItemNameInput').value.trim();
+
+  if (!itemName) { alert('Item name is required.'); return; }
+
+  // Update name + category + size
+  await fetch(API, {
+    method: 'POST', headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({ action: 'update_item', id: activeItemId, item_name: itemName, category, size })
+  });
+
+  // Update stock
   const res = await fetch(API, {
     method: 'POST', headers: {'Content-Type':'application/json'},
     body: JSON.stringify({ action:'update_stock', id: activeItemId, mode: stockMode, quantity: stockQuantity, remarks: document.getElementById('modalRemarks').value.trim() })
@@ -439,6 +503,8 @@ window.addEventListener('pageshow', function(e) { if (e.persisted) window.locati
 function openAddMaterialModal() {
   document.getElementById('addItemName').value = '';
   document.getElementById('addCategory').value = 'MUGS';
+  toggleModalSize('MUGS', 'addSizeRow');
+  document.getElementById('addSize').value = '';
   document.getElementById('addStock').value = '';
   document.getElementById('addUnit').value = '';
   document.getElementById('addReorderLevel').value = '';
@@ -451,6 +517,7 @@ function closeAddMaterialModal() { document.getElementById('addMaterialOverlay')
 async function submitAddMaterial() {
   const itemName = document.getElementById('addItemName').value.trim();
   const category = document.getElementById('addCategory').value;
+  const size = category === 'SHIRTS' ? (document.getElementById('addSize').value || null) : null;
   const stock = parseInt(document.getElementById('addStock').value) || 0;
   const unit = document.getElementById('addUnit').value.trim();
   const reorderLevel = parseInt(document.getElementById('addReorderLevel').value) || 10;
@@ -461,7 +528,7 @@ async function submitAddMaterial() {
 
   const res = await fetch(API, {
     method: 'POST', headers: {'Content-Type':'application/json'},
-    body: JSON.stringify({ action:'add_material', item_name: itemName, category, stock, unit, reorder_level: reorderLevel, unit_cost: unitCost, description })
+    body: JSON.stringify({ action:'add_material', item_name: itemName, category, size, stock, unit, reorder_level: reorderLevel, unit_cost: unitCost, description })
   });
   const data = await res.json();
   if (data.success) { closeAddMaterialModal(); loadInventory(); } else { alert(data.error); }

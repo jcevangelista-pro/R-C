@@ -400,6 +400,20 @@ body{
   color: var(--navy);
   background:#e9e8f0;
 }
+
+.od-size-select {
+  border: none;
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: inherit;
+  color: var(--navy);
+  background: #e9e8f0;
+  cursor: pointer;
+  width: 100%;
+  max-width: 200px;
+}
  
 .field textarea{
   resize:none;

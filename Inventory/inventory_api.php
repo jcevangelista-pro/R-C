@@ -12,12 +12,12 @@ try {
 
         if ($type === 'archived') {
             $stmt = $pdo->query("
-                SELECT inventory_id AS id, item_name, category, stock, unit_of_measure AS unit, reorder_level, unit_cost, is_active, updated_at
+                SELECT inventory_id AS id, item_name, category, size, stock, unit_of_measure AS unit, reorder_level, unit_cost, is_active, updated_at
                 FROM inventory WHERE is_active = 0 ORDER BY updated_at DESC
             ");
         } else {
             $stmt = $pdo->query("
-                SELECT inventory_id AS id, item_name, category, stock, unit_of_measure AS unit, reorder_level, unit_cost, is_active
+                SELECT inventory_id AS id, item_name, category, size, stock, unit_of_measure AS unit, reorder_level, unit_cost, is_active
                 FROM inventory WHERE is_active = 1 ORDER BY item_name
             ");
         }
@@ -106,9 +106,30 @@ try {
             exit;
         }
 
+        if ($action === 'update_item') {
+            $id = (int)($body['id'] ?? 0);
+            $itemName = trim($body['item_name'] ?? '');
+            $category = strtoupper(trim($body['category'] ?? ''));
+            $size = isset($body['size']) && $body['size'] !== '' ? $body['size'] : null;
+            if (!$id) { echo json_encode(['success' => false, 'error' => 'Invalid item.']); exit; }
+            if (!$itemName) { echo json_encode(['success' => false, 'error' => 'Item name is required.']); exit; }
+            $validCategories = ['MUGS','SHIRTS','PAPER','SUPPLY','PEN','FANS','OTHER'];
+            if (!in_array($category, $validCategories)) $category = 'OTHER';
+            $validSizes = ['XS','S','M','L','XL','2XL','3XL'];
+            // Only SHIRTS items can have a size; clear it for other categories
+            if ($category !== 'SHIRTS') $size = null;
+            if ($size !== null && !in_array($size, $validSizes)) $size = null;
+            $stmt = $pdo->prepare("UPDATE inventory SET item_name = ?, category = ?, size = ? WHERE inventory_id = ? AND is_active = 1");
+            $stmt->execute([$itemName, $category, $size, $id]);
+            audit_event($pdo, 'inventory.item_updated', null, ['inventory_id' => $id, 'item_name' => $itemName, 'category' => $category, 'size' => $size]);
+            echo json_encode(['success' => true, 'message' => 'Item updated.']);
+            exit;
+        }
+
         if ($action === 'add_material') {
             $itemName = trim($body['item_name'] ?? '');
             $category = $body['category'] ?? 'OTHER';
+            $size = isset($body['size']) && $body['size'] !== '' ? $body['size'] : null;
             $stock = round((float)($body['stock'] ?? 0), 2);
             $unit = trim($body['unit'] ?? '');
             $reorderLevel = round((float)($body['reorder_level'] ?? 10), 2);
@@ -123,12 +144,15 @@ try {
 
             $validCategories = ['MUGS','SHIRTS','PAPER','SUPPLY','PEN','FANS','OTHER'];
             if (!in_array($category, $validCategories)) $category = 'OTHER';
+            $validSizes = ['XS','S','M','L','XL','2XL','3XL'];
+            if ($category !== 'SHIRTS') $size = null;
+            if ($size !== null && !in_array($size, $validSizes)) $size = null;
 
             $stmt = $pdo->prepare("
-                INSERT INTO inventory (item_name, description, category, unit_of_measure, stock, reorder_level, unit_cost, created_by)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                INSERT INTO inventory (item_name, description, category, size, unit_of_measure, stock, reorder_level, unit_cost, created_by)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
             ");
-            $stmt->execute([$itemName, $description ?: null, $category, $unit, $stock, $reorderLevel, $unitCost, $userId]);
+            $stmt->execute([$itemName, $description ?: null, $category, $size, $unit, $stock, $reorderLevel, $unitCost, $userId]);
 
             echo json_encode(['success' => true, 'message' => 'Material added.', 'id' => (int)$pdo->lastInsertId()]);
             exit;

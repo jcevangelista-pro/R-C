@@ -31,7 +31,14 @@ try {
 
         $stmt = $pdo->prepare("
             SELECT c.cart_id, c.product_id, c.quantity,
-                   p.name, p.type_of_product AS category, p.price, p.image_path
+                   p.name, p.type_of_product AS category, p.price, p.image_path,
+                   EXISTS (
+                       SELECT 1
+                       FROM product_materials pm
+                       JOIN inventory i ON i.inventory_id = pm.inventory_id
+                       WHERE pm.product_id = p.product_id
+                         AND i.category = 'SHIRTS'
+                   ) AS uses_shirt
             FROM cart c
             JOIN products p ON p.product_id = c.product_id
             WHERE c.customer_id = ?
@@ -43,6 +50,31 @@ try {
         foreach ($items as &$item) {
             $item['quantity'] = (int)$item['quantity'];
             $item['price'] = (float)$item['price'];
+            $item['uses_shirt'] = (bool)$item['uses_shirt'];
+
+            // Build size→price map for shirt products
+            // Each BOM row for this product that has a sized SHIRTS inventory item
+            // contributes one entry: size => unit_cost
+            if ($item['uses_shirt']) {
+                $szStmt = $pdo->prepare("
+                    SELECT i.size, i.unit_cost
+                    FROM product_materials pm
+                    JOIN inventory i ON i.inventory_id = pm.inventory_id
+                    WHERE pm.product_id = ?
+                      AND i.category = 'SHIRTS'
+                      AND i.size IS NOT NULL
+                      AND i.is_active = 1
+                    ORDER BY FIELD(i.size, 'XS','S','M','L','XL','2XL','3XL')
+                ");
+                $szStmt->execute([$item['product_id']]);
+                $sizePrices = [];
+                foreach ($szStmt->fetchAll() as $row) {
+                    $sizePrices[$row['size']] = (float)$row['unit_cost'];
+                }
+                $item['size_prices'] = $sizePrices; // e.g. {"S":120,"M":130,"L":140}
+            } else {
+                $item['size_prices'] = null;
+            }
         }
         unset($item);
 

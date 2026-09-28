@@ -265,6 +265,23 @@ function renderOrderModal(){
     photoPreview.style.display = 'none';
     photoIcon.style.display = '';
   }
+
+  // Show size dropdown only for products that use a SHIRTS inventory material
+  const isTshirt = item.needsSize === true;
+  const sizeRow = document.getElementById('sizeRow');
+  const sizeSelect = document.getElementById('odSizeSelect');
+  sizeRow.style.display = isTshirt ? '' : 'none';
+  if (isTshirt) {
+    sizeSelect.value = item.size || '';
+    // Show available sizes only (disable options with no price mapping)
+    Array.from(sizeSelect.options).forEach(opt => {
+      if (opt.value === '') return; // keep the placeholder
+      opt.disabled = item.sizePrices && !(opt.value in item.sizePrices);
+      opt.textContent = (item.sizePrices && opt.value in item.sizePrices)
+        ? `${opt.value} — ${money(item.sizePrices[opt.value])}`
+        : opt.value;
+    });
+  }
 }
  
 function openOrderModal(idx){
@@ -282,6 +299,11 @@ function closeOrderModal(){
 orderBackBtn.addEventListener('click', closeOrderModal);
 orderDoneBtn.addEventListener('click', () => {
   cartItems[activeItemIndex].description = document.getElementById('odDescription').value;
+  // Save size if this product uses a SHIRTS inventory material
+  const isTshirt = cartItems[activeItemIndex].needsSize === true;
+  if (isTshirt) {
+    cartItems[activeItemIndex].size = document.getElementById('odSizeSelect').value;
+  }
   closeOrderModal();
   renderCartRows();
 });
@@ -360,6 +382,27 @@ document.getElementById('odQtyInput').addEventListener('input', (e) => {
     }).catch(() => {});
   }
 });
+
+// ── Size change → update price live ──────────────────────
+document.getElementById('odSizeSelect').addEventListener('change', (e) => {
+  const item = cartItems[activeItemIndex];
+  const selectedSize = e.target.value;
+  item.size = selectedSize || null;
+
+  // Update item price from the size→cost map
+  if (selectedSize && item.sizePrices && selectedSize in item.sizePrices) {
+    item.price = item.sizePrices[selectedSize];
+  }
+
+  // Refresh all price displays in the modal without full re-render
+  // (full re-render would reset the dropdown options unnecessarily)
+  document.getElementById('odPrice').textContent = money(item.price);
+  document.getElementById('odTotalPrice').textContent = money(itemTotal(item));
+  document.getElementById('odTotalFooter').textContent = money(itemTotal(item));
+
+  // Also refresh the cart row total
+  renderCartRows();
+});
  
 document.getElementById('orderPhotoInput').addEventListener('change', (e) => {
   const file = e.target.files[0];
@@ -428,7 +471,16 @@ function renderSummaryModal(){
   document.getElementById('sumDescription').textContent = item.description && item.description.trim()
     ? item.description
     : "No description provided.";
- 
+
+  // Show size in summary only for products that use a SHIRTS inventory material
+  const isTshirt = (item.needsSize === true);
+  const sumSizeRow = document.getElementById('sumSizeRow');
+  const sumSize = document.getElementById('sumSize');
+  sumSizeRow.style.display = isTshirt ? '' : 'none';
+  if (isTshirt) {
+    sumSize.textContent = item.size || 'Not selected';
+  }
+
   const overallTotal = checkoutIndexes.reduce((sum, i) => sum + itemTotal(cartItems[i]), 0);
   const itemLabel = checkoutIndexes.length === 1 ? "ITEM" : "ITEMS";
   document.getElementById('sumTotalFooter').textContent =
@@ -485,7 +537,11 @@ summaryCheckoutBtn.addEventListener('click', async () => {
   const customizationTypes = [...new Set(checkoutIndexes.map(idx => cartItems[idx] && cartItems[idx].designSelection).filter(Boolean))];
   const customizationNotes = checkoutIndexes.map(idx => {
     const item = cartItems[idx];
-    return item && item.description ? `${item.name}: ${item.description}` : '';
+    const parts = [];
+    if (item && item.description) parts.push(`${item.name}: ${item.description}`);
+    const isTshirt = item.needsSize === true;
+    if (isTshirt && item.size) parts.push(`${item.name} Size: ${item.size}`);
+    return parts.join(' | ');
   }).filter(Boolean).join('\n');
 
   summaryCheckoutBtn.disabled = true;

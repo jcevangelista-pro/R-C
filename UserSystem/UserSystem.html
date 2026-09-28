@@ -101,14 +101,6 @@
           </div>
           <span></span>
         </div>
-        <div class="modal-row">
-          <span class="modal-label">Role</span>
-          <span></span>
-          <select class="modal-select" id="updateRole">
-            <option value="admin">ADMIN</option>
-            <option value="owner">OWNER</option>
-          </select>
-        </div>
       </div>
       <div class="modal-footer">
         <button class="btn-cancel-modal" onclick="closeUpdateModal()">Cancel</button>
@@ -147,7 +139,6 @@
           <div class="create-field-label">Role:</div>
           <select id="createRole">
             <option value="admin">&#9660; admin</option>
-            <option value="owner">&#9660; owner</option>
           </select>
         </div>
       </div>
@@ -217,7 +208,10 @@
         <td class="col-actions">
           <div class="action-btns">
             <button class="btn-change" onclick="openUpdateModal(${u.id}, '${escJs(u.username)}', '${escJs(u.role)}')">Change</button>
-            <button class="btn-delete" onclick="openDeleteModal(${u.id}, '${escJs(u.username)}')" ${u.is_active == 0 ? 'disabled' : ''}>${u.is_active == 0 ? 'Inactive' : 'Deactivate'}</button>
+            ${u.role === 'owner'
+              ? ''
+              : `<button class="btn-delete" onclick="openDeleteModal(${u.id}, '${escJs(u.username)}')" ${u.is_active == 0 ? 'disabled' : ''}>${u.is_active == 0 ? 'Inactive' : 'Deactivate'}</button>`
+            }
           </div>
         </td>
       </tr>
@@ -239,7 +233,6 @@
     document.getElementById('updateId').value        = id;
     document.getElementById('updateUsername').value  = username;
     document.getElementById('updatePassword').value  = '';
-    document.getElementById('updateRole').value      = role;
     document.getElementById('updatePassword').type   = 'password';
     document.getElementById('updateOverlay').classList.add('show');
   }
@@ -252,7 +245,6 @@
     const id       = parseInt(document.getElementById('updateId').value);
     const username = document.getElementById('updateUsername').value.trim();
     const password = document.getElementById('updatePassword').value.trim();
-    const role     = document.getElementById('updateRole').value;
 
     if (!username) { showToast('Username is required.', 'error'); return; }
 
@@ -260,7 +252,7 @@
       const res  = await fetch(API, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id, username, password, role })
+        body: JSON.stringify({ id, username, password })
       });
       const data = await res.json();
       if (!data.success) throw new Error(data.error);

@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>R&C Printing Services - My Cart</title>
  
-<link rel="stylesheet" href="Cart.css">
+<link rel="stylesheet" href="cart.css">
 <link rel="stylesheet" href="../CustomerNav.css">
  
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -152,6 +152,14 @@
                 <div class="field">
                     <label>ORDER DESCRIPTION</label>
                     <div class="description-view" id="sumDescription">No description provided.</div>
+                </div>
+            </div>
+
+            <!-- Size summary — shown only for T-Shirt products -->
+            <div class="field-row two" id="sumSizeRow" style="display:none;">
+                <div class="field">
+                    <label>SIZE</label>
+                    <p class="stat-value" id="sumSize" style="font-size:14px;">—</p>
                 </div>
             </div>
  
@@ -332,6 +340,22 @@
                             <p class="stat-value" id="odTotalPrice">P90.00</p>
                         </div>
                     </div>
+                    <!-- Size row — visible only for T-Shirt products -->
+                    <div class="od-inline-row" id="sizeRow" style="display:none;">
+                        <div class="od-stat">
+                            <span class="stat-label">SIZE</span>
+                            <select id="odSizeSelect" class="od-size-select">
+                                <option value="">-- Select Size --</option>
+                                <option value="XS">XS</option>
+                                <option value="S">S</option>
+                                <option value="M">M</option>
+                                <option value="L">L</option>
+                                <option value="XL">XL</option>
+                                <option value="2XL">2XL</option>
+                                <option value="3XL">3XL</option>
+                            </select>
+                        </div>
+                    </div>
                 </div>
             </div>
  
@@ -390,7 +414,7 @@
  
 </main>
  
-<script src="cartData.js"></script>
+<script src="cartdata.js"></script>
 <script src="cart.js"></script>
 <script>
 // User dropdown toggle + logout
