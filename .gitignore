@@ -10,3 +10,8 @@
 /Products/uploads/*
 !/Products/uploads/.htaccess
 !/Products/uploads/.gitkeep
+
+# Claude Code settings (personal configuration)
+.claude/settings.json
+.claude/memory/
+.claude/scheduled_tasks.json
