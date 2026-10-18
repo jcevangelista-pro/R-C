@@ -86,9 +86,13 @@ function openOrderModal(customer){
   if (orders.length === 0){
     itemsWrap.innerHTML = `<p style="padding:20px 0; font-size:13px; color:#8b8b9a;">No order records yet.</p>`;
   } else {
-    itemsWrap.innerHTML = orders.map((o, idx) => `
+    itemsWrap.innerHTML = orders.map((o, idx) => {
+      const thumb = o.image
+        ? `<img class="item-thumb order-thumb-img" src="../Products/${escapeHtml(o.image)}" alt="${escapeHtml(o.name)}">`
+        : `<div class="item-thumb" style="background: linear-gradient(135deg, #2b2f68, #6b6fd6);"></div>`;
+      return `
       <div class="order-item">
-        <div class="item-thumb" style="background: linear-gradient(135deg, #2b2f68, #6b6fd6);"></div>
+        ${thumb}
         <div>
           <a href="#" class="item-name">${escapeHtml(o.name)}</a>
           <div class="item-category">${escapeHtml(o.category)}</div>
@@ -99,7 +103,18 @@ function openOrderModal(customer){
           <button class="see-details" data-order-index="${idx}">SEE DETAILS</button>
         </div>
       </div>
-    `).join('');
+    `;
+    }).join('');
+
+    // Fall back to the gradient placeholder if a product image fails to load.
+    itemsWrap.querySelectorAll('.order-thumb-img').forEach(img => {
+      img.addEventListener('error', function() {
+        const fallback = document.createElement('div');
+        fallback.className = 'item-thumb';
+        fallback.style.background = 'linear-gradient(135deg, #2b2f68, #6b6fd6)';
+        this.replaceWith(fallback);
+      });
+    });
 
     itemsWrap.querySelectorAll('.see-details').forEach(btn => {
       btn.addEventListener('click', () => {

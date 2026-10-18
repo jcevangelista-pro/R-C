@@ -54,6 +54,7 @@ try {
                     od.order_detail_id,
                     p.name AS name,
                     p.type_of_product AS category,
+                    p.image_path AS image,
                     od.quantity AS qty,
                     od.unit_price AS price,
                     o.order_status AS status,
