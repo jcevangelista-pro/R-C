@@ -43,6 +43,96 @@
     .admin-notif-page .notif-list {
       max-height: calc(100vh - 220px);
     }
+
+    /* ── Notification message modal ──────────────────────── */
+    .notif-modal-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 2000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      background: rgba(27, 31, 75, 0.55);
+    }
+    .notif-modal-overlay[hidden] { display: none; }
+    .notif-modal {
+      position: relative;
+      width: min(560px, 100%);
+      max-height: calc(100vh - 60px);
+      overflow-y: auto;
+      background: #fff;
+      border-radius: 16px;
+      padding: 28px 28px 22px;
+      box-shadow: 0 20px 60px rgba(27, 31, 75, 0.3);
+    }
+    .notif-modal-close {
+      position: absolute;
+      top: 12px;
+      right: 16px;
+      border: 0;
+      background: transparent;
+      color: #9ca3af;
+      font-size: 26px;
+      line-height: 1;
+      cursor: pointer;
+    }
+    .notif-modal-close:hover { color: #ec4899; }
+    .notif-modal-title {
+      margin: 0 28px 10px 0;
+      font-size: 1.3rem;
+      font-weight: 800;
+      color: #1E3163;
+      word-break: break-word;
+    }
+    .notif-modal-meta {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      color: #9ca3af;
+      padding-bottom: 14px;
+      margin-bottom: 14px;
+      border-bottom: 1px solid #f3f4f6;
+    }
+    .notif-modal-message {
+      font-size: 14px;
+      line-height: 1.6;
+      color: #374151;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+    .notif-modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 22px;
+    }
+    .notif-modal-btn {
+      min-width: 110px;
+      padding: 10px 18px;
+      border-radius: 9px;
+      border: 1px solid transparent;
+      font-size: 13px;
+      font-weight: 700;
+      text-align: center;
+      text-decoration: none;
+      cursor: pointer;
+    }
+    .notif-modal-btn.secondary {
+      border-color: #e5e7eb;
+      background: #fff;
+      color: #374151;
+    }
+    .notif-modal-btn.secondary:hover { background: #f3f4f6; }
+    .notif-modal-btn.primary {
+      background: #ec4899;
+      color: #fff;
+    }
+    .notif-modal-btn.primary:hover { background: #db2777; }
+    .notif-modal-btn[hidden] { display: none; }
   </style>
 </head>
 <body>
@@ -108,10 +198,65 @@
 
   </div>
 
+  <!-- ── NOTIFICATION MESSAGE MODAL ──────────────────────── -->
+  <div class="notif-modal-overlay" id="notifModalOverlay" hidden>
+    <div class="notif-modal" role="dialog" aria-modal="true" aria-labelledby="notifModalTitle">
+      <button type="button" class="notif-modal-close" id="notifModalClose" aria-label="Close">&times;</button>
+      <h2 class="notif-modal-title" id="notifModalTitle">Notification</h2>
+      <div class="notif-modal-meta">
+        <span id="notifModalSender">From: —</span>
+        <span id="notifModalTime"></span>
+      </div>
+      <div class="notif-modal-message" id="notifModalMessage"></div>
+      <div class="notif-modal-actions">
+        <button type="button" class="notif-modal-btn secondary" id="notifModalCloseBtn">Close</button>
+        <a href="#" class="notif-modal-btn primary" id="notifModalViewOrder" hidden>View Order</a>
+      </div>
+    </div>
+  </div>
+
   <!-- Admin session guard + topbar actions (role display, logout, bell) -->
   <script src="../Registration/admin_session.js"></script>
   <script>
   const escapeHtml = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+  // Keep the loaded notifications so the modal can show full details by id.
+  let notificationsById = {};
+
+  // ── Modal controls ──────────────────────────────────────
+  const notifModalOverlay = document.getElementById('notifModalOverlay');
+  const notifModalViewOrder = document.getElementById('notifModalViewOrder');
+
+  function openNotifModal(n) {
+      document.getElementById('notifModalTitle').textContent = n.title || 'Notification';
+      document.getElementById('notifModalSender').textContent =
+          'From: ' + (n.sender_name || '—') + (n.sender_role ? ' (' + n.sender_role + ')' : '');
+      document.getElementById('notifModalTime').textContent = formatTime(n.created_at);
+      document.getElementById('notifModalMessage').textContent = n.message || '';
+
+      if (n.order_id && n.target_url) {
+          notifModalViewOrder.href = n.target_url;
+          notifModalViewOrder.hidden = false;
+      } else {
+          notifModalViewOrder.removeAttribute('href');
+          notifModalViewOrder.hidden = true;
+      }
+
+      notifModalOverlay.hidden = false;
+  }
+
+  function closeNotifModal() {
+      notifModalOverlay.hidden = true;
+  }
+
+  document.getElementById('notifModalClose').addEventListener('click', closeNotifModal);
+  document.getElementById('notifModalCloseBtn').addEventListener('click', closeNotifModal);
+  notifModalOverlay.addEventListener('click', function(e) {
+      if (e.target === notifModalOverlay) closeNotifModal();
+  });
+  document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape' && !notifModalOverlay.hidden) closeNotifModal();
+  });
 
   async function loadNotifications() {
       try {
@@ -125,6 +270,9 @@
               list.innerHTML = '<p class="notif-empty">No notifications yet.</p>';
               return;
           }
+
+          notificationsById = {};
+          data.notifications.forEach(n => { notificationsById[n.notification_id] = n; });
 
           list.innerHTML = data.notifications.map(n => {
               const timeAgo = formatTime(n.created_at);
@@ -148,8 +296,6 @@
           list.querySelectorAll('.notif-item').forEach(item => {
               item.addEventListener('click', async function() {
                   const id = this.dataset.id;
-                  const orderId = this.dataset.order;
-                  const targetUrl = this.dataset.target;
 
                   if (this.classList.contains('unread')) {
                       await fetch('notifications_api.php', {
@@ -161,9 +307,9 @@
                       this.classList.add('read');
                   }
 
-                  if (orderId && targetUrl) {
-                      window.location.href = targetUrl;
-                  }
+                  // Show the full notification message in the modal.
+                  const notif = notificationsById[id];
+                  if (notif) openNotifModal(notif);
               });
           });
 
