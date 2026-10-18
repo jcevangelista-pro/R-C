@@ -5,6 +5,26 @@
 (function() {
     var sessionState = { checked: false, loggedIn: false };
 
+    // Resolve the project root from this script's own URL so the paths below
+    // work no matter how deep the including page sits (e.g. /CART/cart.html or
+    // /OrderProcess/MyOrderProcess/MyOrderProcess.html). This script always
+    // lives at "<root>/CART/cart_badge.js", so stripping that suffix yields the
+    // absolute root prefix. Falls back to "../" for legacy one-level pages.
+    function resolveSiteRoot() {
+        var script = document.currentScript;
+        var src = script && script.src ? script.src : '';
+        if (src) {
+            var marker = src.toLowerCase().indexOf('/cart/cart_badge.js');
+            if (marker !== -1) {
+                // Keep everything up to and including the trailing slash.
+                return src.slice(0, marker + 1);
+            }
+        }
+        return '../';
+    }
+    var SITE_ROOT = resolveSiteRoot();
+    function rootUrl(path) { return SITE_ROOT + String(path).replace(/^\/+/, ''); }
+
     function showGuestPrompt() {
         var existing = document.getElementById('guestAccessPrompt');
         if (existing) {
@@ -22,8 +42,8 @@
                 <h2 id="guestAccessTitle">Account required</h2>
                 <p>You must sign up first to add or order products and access your profile, notifications, cart, or orders.</p>
                 <div class="guest-access-actions">
-                    <a class="guest-access-login" href="../Registration/LogInPage.html">Log In</a>
-                    <a class="guest-access-signup" href="../Registration/SignUpPage.html">Sign Up</a>
+                    <a class="guest-access-login" href="${rootUrl('Registration/LogInPage.html')}">Log In</a>
+                    <a class="guest-access-signup" href="${rootUrl('Registration/SignUpPage.html')}">Sign Up</a>
                 </div>
             </div>`;
         document.body.appendChild(overlay);
@@ -36,7 +56,7 @@
     function syncGuestNavigation() {
         var dropdown = document.getElementById('userDropdown') || document.querySelector('.UserDropdown');
         if (dropdown) {
-            dropdown.innerHTML = '<a href="../Registration/LogInPage.html">Log In</a><a href="../Registration/SignUpPage.html">Sign Up</a>';
+            dropdown.innerHTML = '<a href="' + rootUrl('Registration/LogInPage.html') + '">Log In</a><a href="' + rootUrl('Registration/SignUpPage.html') + '">Sign Up</a>';
         }
         document.querySelectorAll('.nav-badge').forEach(function(badge) { badge.hidden = true; });
     }
@@ -56,7 +76,7 @@
         showGuestPrompt();
     }, true);
 
-    fetch('../Registration/check_session.php')
+    fetch(rootUrl('Registration/check_session.php'))
         .then(function(response) { return response.json(); })
         .then(function(data) {
             sessionState.checked = true;
@@ -179,16 +199,16 @@
         const dropdown = document.getElementById('userDropdown') || document.querySelector('.UserDropdown');
         if (dropdown && !dropdown.querySelector('.mobile-nav-home')) {
             const homeLink = document.createElement('a');
-            homeLink.href = '../LandingPage/LandingPage.html';
+            homeLink.href = rootUrl('LandingPage/LandingPage.html');
             homeLink.textContent = 'Home';
             homeLink.className = 'mobile-nav-home';
 
             const prodLink = document.createElement('a');
-            prodLink.href = '../Products/Prodbrowse.html';
+            prodLink.href = rootUrl('Products/Prodbrowse.html');
             prodLink.textContent = 'Products';
 
             const portLink = document.createElement('a');
-            portLink.href = '../Portfolio/PortfolioPage.html';
+            portLink.href = rootUrl('Portfolio/PortfolioPage.html');
             portLink.textContent = 'Portfolio';
 
             const divider = document.createElement('div');
@@ -234,7 +254,7 @@
         var alarmLink = alarmImg.closest('a') || alarmImg.parentElement;
         alarmLink.style.position = 'relative';
         if (alarmLink.tagName === 'A' && (!alarmLink.getAttribute('href') || alarmLink.getAttribute('href') === '' || alarmLink.getAttribute('href') === '#')) {
-            alarmLink.href = '../Notifications/notifications.html';
+            alarmLink.href = rootUrl('Notifications/notifications.html');
         }
         var alarmBadge = document.createElement('span');
         alarmBadge.className = 'nav-badge';
@@ -257,7 +277,7 @@
     }
 
     // Fetch cart count
-    fetch('../CART/cart_api.php')
+    fetch(rootUrl('CART/cart_api.php'))
         .then(function(r) { return r.json(); })
         .then(function(data) {
             var badge = document.getElementById('navCartBadge');
@@ -269,7 +289,7 @@
         .catch(function() {});
 
     // Fetch order count
-    fetch('../MyOrders/myorders_api.php')
+    fetch(rootUrl('MyOrders/myorders_api.php'))
         .then(function(r) { return r.json(); })
         .then(function(data) {
             var badge = document.getElementById('navBillingBadge');
@@ -286,7 +306,7 @@
         .catch(function() {});
 
     // Fetch notification count
-    fetch('../Registration/notification_count.php')
+    fetch(rootUrl('Registration/notification_count.php'))
         .then(function(r) { return r.json(); })
         .then(function(data) {
             var badge = document.getElementById('navAlarmBadge');

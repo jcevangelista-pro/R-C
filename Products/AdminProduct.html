@@ -796,9 +796,9 @@ function openUpdateModal(product) {
 
 function bomRowHtml(material = {}) {
   const options = inventoryOptions.map(item => `<option value="${item.inventory_id}" ${String(item.inventory_id) === String(material.inventory_id || '') ? 'selected' : ''}>${escHtml(item.item_name)} (${escHtml(item.unit_of_measure)})</option>`).join('');
-  return `<div class="bom-row" style="display:grid;grid-template-columns:minmax(150px,1fr) 100px 36px;gap:6px;margin-bottom:6px;max-width:100%;">
-    <select class="DropDown bom-material" style="width:100%;"><option value="">Select material</option>${options}</select>
-    <input class="PDInput bom-quantity" type="number" min="0.01" step="0.01" value="${Number(material.quantity_required || 1)}" aria-label="Quantity required">
+  return `<div class="bom-row" style="display:grid;grid-template-columns:minmax(120px,1fr) 100px 36px;gap:6px;margin-bottom:6px;max-width:100%;">
+    <select class="DropDown bom-material" style="width:100%;min-width:0;box-sizing:border-box;"><option value="">Select material</option>${options}</select>
+    <input class="PDInput bom-quantity" type="number" min="0.01" step="0.01" value="${Number(material.quantity_required || 1)}" aria-label="Quantity required" style="width:100%;min-width:0;box-sizing:border-box;">
     <button type="button" class="remove-bom" aria-label="Remove material" style="border:0;border-radius:6px;cursor:pointer;">×</button>
   </div>`;
 }

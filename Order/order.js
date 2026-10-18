@@ -52,7 +52,7 @@ function renderPendingTable(orders, tbodyId) {
                 <div class="order-actions">
                     <button class="btn-accept" onclick="acceptOrder('${o.order_id}')">Accept</button>
                     <button class="btn-reject" onclick="rejectOrder('${o.order_id}')">Reject</button>
-                    <button type="button" class="order-arrow pending-detail-btn" aria-label="View details for order ${htmlEscape(o.order_id)}" title="View order details" onclick="openOrderDetailModal('${o.order_id}','${esc(o.product_name || '-')}','${esc(o.customer_name)}','${money(o.total_amount)}','PENDING','-','${o.date_requested_fmt || '-'}','${o.time_requested || ''}','-','','-','','${o.total_quantity || 0}')">&gt;</button>
+                    <button type="button" class="order-arrow pending-detail-btn" aria-label="View details for order ${htmlEscape(o.order_id)}" title="View order details" onclick="openOrderDetailModal('${o.order_id}','${esc(o.product_name || '-')}','${esc(o.customer_name)}','${money(o.total_amount)}','PENDING','-','${o.date_requested_fmt || '-'}','${o.time_requested || ''}','-','','-','','${o.total_quantity || 0}','${esc(o.product_image || '')}')">&gt;</button>
                 </div>
             </td>
         </tr>
@@ -77,7 +77,7 @@ function renderHistoryTable(orders) {
             <td>${money(o.total_amount)}</td>
             <td><span class="order-status-badge ${statusClass}">${o.order_status.toUpperCase()}</span></td>
             <td>
-                <span class="order-arrow" onclick="openOrderDetailModal('${o.order_id}','${esc(o.product_name||'')}','${esc(o.customer_name)}','${money(o.total_amount)}','${o.order_status.toUpperCase()}','${esc(o.accepted_by_name||'-')}','${o.date_requested_fmt||'-'}','${o.time_requested||''}','${o.date_accepted_fmt||'-'}','${o.time_accepted||''}','${o.date_finished_fmt||'-'}','${o.time_finished||''}','${o.total_quantity || 0}')">&gt;</span>
+                <span class="order-arrow" onclick="openOrderDetailModal('${o.order_id}','${esc(o.product_name||'')}','${esc(o.customer_name)}','${money(o.total_amount)}','${o.order_status.toUpperCase()}','${esc(o.accepted_by_name||'-')}','${o.date_requested_fmt||'-'}','${o.time_requested||''}','${o.date_accepted_fmt||'-'}','${o.time_accepted||''}','${o.date_finished_fmt||'-'}','${o.time_finished||''}','${o.total_quantity || 0}','${esc(o.product_image||'')}')">&gt;</span>
             </td>
         </tr>`;
     }).join('');
@@ -126,12 +126,28 @@ async function rejectOrder(orderId) {
 // ── Order Detail Modal ──────────────────────────────────────
 function openOrderDetailModal(orderId, product, customer, total, status, acceptedBy,
                                dateRequested, timeRequested, dateAccepted, timeAccepted,
-                               dateFinished, timeFinished, quantity) {
+                               dateFinished, timeFinished, quantity, image) {
     document.getElementById('orderDetailId').textContent = orderId;
     document.getElementById('orderDetailProduct').textContent = product;
     document.getElementById('orderDetailQuantity').textContent = quantity;
     document.getElementById('orderDetailCustomer').textContent = customer;
     document.getElementById('orderDetailTotal').textContent = total;
+
+    const detailImg = document.getElementById('orderDetailImage');
+    const detailImgPlaceholder = document.getElementById('orderDetailImagePlaceholder');
+    if (image) {
+        detailImg.src = '../Products/' + image;
+        detailImg.style.display = '';
+        detailImgPlaceholder.style.display = 'none';
+        detailImg.onerror = function() {
+            detailImg.style.display = 'none';
+            detailImgPlaceholder.style.display = 'flex';
+        };
+    } else {
+        detailImg.removeAttribute('src');
+        detailImg.style.display = 'none';
+        detailImgPlaceholder.style.display = 'flex';
+    }
     document.getElementById('orderDetailAcceptedBy').textContent = acceptedBy;
     document.getElementById('orderDetailDateRequested').textContent = dateRequested;
     document.getElementById('orderDetailTimeRequested').textContent = timeRequested;

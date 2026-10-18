@@ -497,6 +497,34 @@
     border-top: 1px solid #f3c6dc;
     margin-bottom: 18px;
   }
+
+  .order-detail-image-wrap {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 18px;
+  }
+
+  .order-detail-image {
+    width: 120px;
+    height: 120px;
+    object-fit: cover;
+    border-radius: 10px;
+    border: 2px solid #ec4899;
+  }
+
+  .order-detail-image-placeholder {
+    width: 120px;
+    height: 120px;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    border: 2px dashed #f3c6dc;
+    background: #fdf2f8;
+    color: #be185d;
+    font-size: 12px;
+    font-weight: 700;
+  }
  
   .order-detail-row {
     display: flex;
