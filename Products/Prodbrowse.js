@@ -305,7 +305,15 @@ const escapeHtml = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'
     .then(r => r.json())
     .then(data => {
       if (data.logged_in) {
-        userDropdown.innerHTML = `<a href="../LandingPage/LandingPage.html">Home</a><a href="../Products/Prodbrowse.html">Products</a><a href="../Portfolio/PortfolioPage.html">Portfolio</a><a href="../Profile/Profilepage.html">Profile</a><a href="../Registration/logout.php" class="logout-link">Log Out</a>`;
+        // On desktop the HOME/PRODUCTS/PORTFOLIO links are already visible in
+        // the navbar, so the dropdown only needs Profile and Log Out. Those
+        // links are shown in the dropdown on mobile where the navbar text is
+        // hidden (matching the <=600px breakpoint used elsewhere).
+        const isMobile = window.innerWidth <= 600;
+        const mobileLinks = isMobile
+          ? `<a href="../LandingPage/LandingPage.html">Home</a><a href="../Products/Prodbrowse.html">Products</a><a href="../Portfolio/PortfolioPage.html">Portfolio</a>`
+          : '';
+        userDropdown.innerHTML = `${mobileLinks}<a href="../Profile/Profilepage.html">Profile</a><a href="../Registration/logout.php" class="logout-link">Log Out</a>`;
         // Add logout confirmation
         userDropdown.querySelector('.logout-link').addEventListener('click', function(e) {
           e.preventDefault();
