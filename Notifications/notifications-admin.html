@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Notifications - R&amp;C Printing Services</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
+  <!-- Admin sidebar/topbar layout -->
+  <link rel="stylesheet" href="../CUSTOMER/CustomerLand.css">
+  <link rel="stylesheet" href="../UserSystem/UserSystem.css">
+  <!-- Reused notification list styles -->
+  <link rel="stylesheet" href="notifications.css">
+  <style>
+    /* Override the customer notifications.css body background so this page
+       matches the admin dashboard layout. */
+    body {
+      background: #f6f7fb;
+    }
+    /* The shared admin ".main" uses display:flex with its direction commented
+       out, which would place the topbar and content side by side. Force a
+       column layout so the notifications box sits below the topbar and can use
+       the full available width. */
+    .main {
+      flex-direction: column;
+    }
+    /* Notifications box fills the available width of the admin main area and
+       flexes with the viewport, with a sensible cap on very wide screens. */
+    .admin-notif-page {
+      padding: 10px 0 40px;
+      display: flex;
+      justify-content: flex-start;
+      width: 100%;
+    }
+    .admin-notif-page .notif-card {
+      width: 100%;
+      max-width: 100%;
+      box-sizing: border-box;
+    }
+    /* The notification list grows with its content and scrolls only when it
+       exceeds the viewport height. */
+    .admin-notif-page .notif-list {
+      max-height: calc(100vh - 220px);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ── SIDEBAR ─────────────────────────────────────────── -->
+  <div class="sidebar">
+    <div class="brand">
+      <img src="../imgs/image 2.png" alt="R&C Logo">
+      <div class="brand-text">R&amp;C PRINTING<br>SERVICES</div>
+    </div>
+
+    <div class="nav-label">MAIN</div>
+    <a class="nav-item" href="../Dashboard/Dashboard.html">
+      <span>Dashboard</span>
+      <span class="nav-icon"><img src="../imgs/Performance Macbook.png" alt=""></span>
+    </a>
+    <a class="nav-item" href="../Inventory/inventory-admin.html">
+      <span>Inventory</span>
+      <span class="nav-icon"><img src="../imgs/Boxes.png" alt=""></span>
+    </a>
+    <a class="nav-item" href="../Order/order-admin.html">
+      <span>Orders</span>
+      <span class="nav-icon"><img src="../imgs/Shopping Cart.png" alt=""></span>
+    </a>
+    <a class="nav-item" href="../CUSTOMER/CustomerLand.html">
+      <span>Customer</span>
+      <span class="nav-icon"><img src="../imgs/User Male.png" alt=""></span>
+    </a>
+    <a class="nav-item" href="../Products/AdminProduct.html">
+      <span>Products</span>
+      <span class="nav-icon"><img src="../imgs/Product.png" alt=""></span>
+    </a>
+    <a class="nav-item" href="../UserSystem/UserSystem.html">
+      <span>Users</span>
+      <span class="nav-icon"><img src="../imgs/user.png" alt=""></span>
+    </a>
+  </div>
+
+  <!-- ── MAIN ───────────────────────────────────────────── -->
+  <div class="main">
+
+    <!-- Topbar -->
+    <div class="topbar">
+      <h1>Notifications</h1>
+      <div class="owner-tag">
+        <span>Admin</span>
+        <img src="../imgs/Test Account.png" alt="Admin">
+      </div>
+    </div>
+
+    <!-- Notifications content -->
+    <div class="admin-notif-page">
+      <div class="notif-card">
+        <div class="notif-header">
+          <h1>Notifications</h1>
+          <button class="mark-all-btn" id="markAllBtn">Mark all as read</button>
+        </div>
+        <div class="notif-list" id="notifList">
+          <p class="notif-loading">Loading notifications...</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Admin session guard + topbar actions (role display, logout, bell) -->
+  <script src="../Registration/admin_session.js"></script>
+  <script>
+  const escapeHtml = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+  async function loadNotifications() {
+      try {
+          const res = await fetch('notifications_api.php');
+          const data = await res.json();
+          if (!data.success) throw new Error(data.error);
+
+          const list = document.getElementById('notifList');
+
+          if (data.notifications.length === 0) {
+              list.innerHTML = '<p class="notif-empty">No notifications yet.</p>';
+              return;
+          }
+
+          list.innerHTML = data.notifications.map(n => {
+              const timeAgo = formatTime(n.created_at);
+              const readClass = n.is_read ? 'read' : 'unread';
+              const orderId = n.order_id || '';
+              const targetUrl = n.target_url || '';
+              return `
+              <div class="notif-item ${readClass}" data-id="${n.notification_id}" data-order="${escapeHtml(orderId)}" data-target="${escapeHtml(targetUrl)}">
+                  <div class="notif-dot"></div>
+                  <div class="notif-content">
+                      <div class="notif-title">${escapeHtml(n.title)}</div>
+                      <div class="notif-message">${escapeHtml(n.message)}</div>
+                      <div class="notif-meta">
+                          <span class="notif-sender">From: ${escapeHtml(n.sender_name)} (${escapeHtml(n.sender_role)})</span>
+                          <span class="notif-time">${timeAgo}</span>
+                      </div>
+                  </div>
+              </div>`;
+          }).join('');
+
+          list.querySelectorAll('.notif-item').forEach(item => {
+              item.addEventListener('click', async function() {
+                  const id = this.dataset.id;
+                  const orderId = this.dataset.order;
+                  const targetUrl = this.dataset.target;
+
+                  if (this.classList.contains('unread')) {
+                      await fetch('notifications_api.php', {
+                          method: 'POST',
+                          headers: {'Content-Type':'application/json'},
+                          body: JSON.stringify({ action: 'mark_read', notification_id: parseInt(id) })
+                      });
+                      this.classList.remove('unread');
+                      this.classList.add('read');
+                  }
+
+                  if (orderId && targetUrl) {
+                      window.location.href = targetUrl;
+                  }
+              });
+          });
+
+      } catch (err) {
+          document.getElementById('notifList').innerHTML = `<p class="notif-empty" style="color:#ef4444;">Failed to load notifications.</p>`;
+      }
+  }
+
+  document.getElementById('markAllBtn').addEventListener('click', async function() {
+      await fetch('notifications_api.php', {
+          method: 'POST',
+          headers: {'Content-Type':'application/json'},
+          body: JSON.stringify({ action: 'mark_all_read' })
+      });
+      document.querySelectorAll('.notif-item.unread').forEach(item => {
+          item.classList.remove('unread');
+          item.classList.add('read');
+      });
+  });
+
+  function formatTime(dateStr) {
+      const date = new Date(dateStr);
+      const now = new Date();
+      const diff = Math.floor((now - date) / 1000);
+
+      if (diff < 60) return 'Just now';
+      if (diff < 3600) return Math.floor(diff / 60) + 'm ago';
+      if (diff < 86400) return Math.floor(diff / 3600) + 'h ago';
+      if (diff < 604800) return Math.floor(diff / 86400) + 'd ago';
+      return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  }
+
+  loadNotifications();
+  </script>
+</body>
+</html>

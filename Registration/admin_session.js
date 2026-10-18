@@ -77,7 +77,7 @@
         topbarActions.appendChild(ownerTag);
         const notificationLink = document.createElement('a');
         notificationLink.className = 'admin-notification-link';
-        notificationLink.href = '../Notifications/notifications.html';
+        notificationLink.href = '../Notifications/notifications-admin.html';
         notificationLink.setAttribute('aria-label', 'View notifications');
         notificationLink.innerHTML = '<img src="../OrderProcess/OrderProcessImgs/Alarm.png" alt=""><span class="admin-notification-badge" hidden></span>';
         topbarActions.insertBefore(notificationLink, ownerTag);
