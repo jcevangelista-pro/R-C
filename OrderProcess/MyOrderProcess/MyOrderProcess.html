@@ -589,60 +589,60 @@
                                                         <img src="../OrderProcessImgs/Location.png" alt="">
                                                     </div>
                                                     <div class="CInformation">
-                                                        <p class="DNText">Delivery (via Lalamove)</p>
-                                                        <p class="NAText">Jane Doe</p>
-                                                        <p class="NAText">Block 12 Lot 8, Phase 3, Barangay Banay-Banay, Cabuyao City, Laguna, 4025</p>
-                                                        <p class="DNText">09XX-XXX-XXXX</p>
+                                                        <p class="DNText" id="s7DeliveryMethod">Delivery</p>
+                                                        <p class="NAText" id="s7CustomerName">—</p>
+                                                        <p class="NAText" id="s7CustomerAddress">—</p>
+                                                        <p class="DNText" id="s7CustomerPhone">—</p>
                                                     </div>
                                                 </div>
 
                                                 <div class="od-inline-row">
                                                     <div class="od-stat">
                                                         <span class="stat-label">NAME:</span>
-                                                        <p class="stat-value" id="odItem">Tumbler (360ml)</p>
-                                                        <p class="stat-value" id="odCatergory">Mug & Tumbler</p>
+                                                        <p class="stat-value" id="s7ItemName">—</p>
+                                                        <p class="stat-value" id="s7ItemCategory">—</p>
                                                     </div>
                                                     <div class="od-stat">
                                                         <span class="stat-label">QUANTITY:</span>
-                                                        <p class="stat-value" id="odTotalPrice">2</p>
+                                                        <p class="stat-value" id="s7ItemQty">—</p>
                                                     </div>
                                                 </div>
 
                                                 <div class="od-inline-row">
                                                     <div class="od-stat">
                                                         <span class="stat-label">PRICE:</span>
-                                                        <p class="stat-value" id="odPrice">P90.00</p>
+                                                        <p class="stat-value" id="s7ItemPrice">P0.00</p>
                                                     </div>
                                                     <div class="od-stat">
                                                         <span class="stat-label">DISCOUNT:</span>
-                                                        <p class="stat-value" id="odPrice">P90.00</p>
+                                                        <p class="stat-value" id="s7Discount">P0.00</p>
                                                     </div>
                                                     <div class="od-stat">
                                                         <span class="stat-label">TOTAL PRICE:</span>
-                                                        <p class="stat-value" id="odPrice">P90.00</p>
+                                                        <p class="stat-value" id="s7ItemTotal">P0.00</p>
                                                     </div>
                                                 </div>
 
                                                 <div class="od-inline-row">
                                                     <div class="od-stat">
                                                         <span class="stat-label">DELIVERY DATE:</span>
-                                                        <p class="stat-value" id="odDate">MAR 26, 2026</p>
-                                                        <p class="stat-value" id="odTime">12:00 PM</p>
+                                                        <p class="stat-value" id="s7DeliveryDate">—</p>
+                                                        <p class="stat-value" id="s7DeliveryTime"></p>
                                                     </div>
                                                     <div class="od-stat">
                                                         <span class="stat-label">DELIVERY FEE:</span>
-                                                        <p class="stat-value" id="odTotalPrice">P90.00</p>
+                                                        <p class="stat-value" id="s7DeliveryFee">P0.00</p>
                                                     </div>
                                                 </div>
                                                 
                                                 <div class="ScreenShot-RefNum-Row">
                                                     <div class="field">
                                                         <label class="stat-label"> SUBMIT A PHOTO OF ORDER:</label>
-                                                        <label class="photo-upload" id="photoUploadBox" for="orderPhotoInput">
-                                                            <img id="photoPreview" style="display:none;">
-                                                            <span id="photoUploadIcon">📷</span>
+                                                        <label class="photo-upload" id="s7PhotoBox" for="s7PhotoInput">
+                                                            <img id="s7PhotoPreview" style="display:none;">
+                                                            <span id="s7PhotoIcon">📷</span>
                                                         </label>
-                                                        <input type="file" id="orderPhotoInput" accept="image/*" style="display:none;">
+                                                        <input type="file" id="s7PhotoInput" accept="image/*" style="display:none;">
                                                     </div>
                                                 </div>
                                             </div>
@@ -652,12 +652,12 @@
                                                 <div class="status-history">
                                                     <div class="ItemColumn">
                                                         <label class="stat-label"> ITEM:</label>
-                                                        <img src="../OrderProcessImgs\ProductPic.png" alt="" class="ItemImg">
+                                                        <img src="../OrderProcessImgs/ProductPic.png" alt="" class="ItemImg" id="s7ItemImage">
                                                         <div class="od-stat">
                                                             <span class="stat-label">TOTAL AMOUNT PAID:</span>
-                                                            <p class="stat-value" id="odTotalPrice">P90.00</p>
+                                                            <p class="stat-value" id="s7TotalPaid">P0.00</p>
                                                         </div>
-                                                        <button class="done-btn" id="orderDoneBtn">SUBMIT</button>
+                                                        <button class="done-btn" id="s7ConfirmBtn">CONFIRM RECEIPT</button>
                                                     </div>
                                                 </div>
                                             </div>
@@ -713,17 +713,17 @@
                                                     <div class="OrderStatInfoContainer">
                                                         <div class="OrdText-Stat-Row">
                                                             <p class="OrdStatText">Order Status</p>
-                                                            <p class="OrdStat">Completed</p>
+                                                            <p class="OrdStat" id="s8OrderStatus">Completed</p>
                                                         </div>
 
                                                         <div class="OrdText-Stat-Row">
                                                             <p class="OrdStatText">Payment Status</p>
-                                                            <p class="OrdStat">Fully Paid</p>
+                                                            <p class="OrdStat" id="s8PaymentStatus">Fully Paid</p>
                                                         </div>
 
                                                         <div class="OrdText-Stat-Row">
                                                             <p class="OrdStatText">Delivery Status</p>
-                                                            <p class="OrdStat">Delivered</p>
+                                                            <p class="OrdStat" id="s8DeliveryStatus">Delivered</p>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -800,17 +800,17 @@
                                                     <div class="OrdReceipt-Stat-Row-Cont">
                                                         <div class="OrdReceipt-Stat-Row">
                                                             <p class="OrdReceiptText">Receipt No:</p>
-                                                            <p class="OrdReceiptStat">RC-2026-00124</p>
+                                                            <p class="OrdReceiptStat" id="s8ReceiptNo">—</p>
                                                         </div>
 
                                                         <div class="OrdReceipt-Stat-Row">
                                                             <p class="OrdReceiptText">Order ID:</p>
-                                                            <p class="OrdReceiptStat">ORD-2026-00124</p>
+                                                            <p class="OrdReceiptStat" id="s8OrderId">—</p>
                                                         </div>
 
                                                         <div class="OrdReceipt-Stat-Row">
                                                             <p class="OrdReceiptText">Date:</p>
-                                                            <p class="OrdReceiptStat">May 25, 2026</p>
+                                                            <p class="OrdReceiptStat" id="s8ReceiptDate">—</p>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -823,12 +823,12 @@
                                                     <div class="OrdCust-Stat-Row-Cont">
                                                         <div class="OrdCust-Stat-Row">
                                                             <p class="OrdCustText">Customer Name:</p>
-                                                            <p class="OrdCustInfo">Jane Doe</p>
+                                                            <p class="OrdCustInfo" id="s8CustomerName">—</p>
                                                         </div>
 
                                                         <div class="OrdReceipt-Stat-Row">
                                                             <p class="OrdCustText">Contact Number:</p>
-                                                            <p class="OrdCustInfo">09XX-XXX-XXXX</p>
+                                                            <p class="OrdCustInfo" id="s8CustomerContact">—</p>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -841,22 +841,22 @@
                                                     <div class="OrdProd-Stat-Row-Cont">
                                                         <div class="OrdProd-Stat-Row">
                                                             <p class="OrdProdText">Product:</p>
-                                                            <p class="OrdProdInfo">Tumbler (360ml)</p>
+                                                            <p class="OrdProdInfo" id="s8Product">—</p>
                                                         </div>
 
                                                         <div class="OrdProd-Stat-Row">
                                                             <p class="OrdProdText">Quantity:</p>
-                                                            <p class="OrdProdInfo">2</p>
+                                                            <p class="OrdProdInfo" id="s8Quantity">—</p>
                                                         </div>
 
                                                         <div class="OrdProd-Stat-Row">
                                                             <p class="OrdProdText">Customization Type:</p>
-                                                            <p class="OrdProdInfo">Uploaded Custom Design</p>
+                                                            <p class="OrdProdInfo" id="s8Customization">—</p>
                                                         </div>
 
                                                         <div class="OrdProd-Stat-Row">
                                                             <p class="OrdProdText">Delivery Method:</p>
-                                                            <p class="OrdProdInfo">Delivery (via Lalamove)</p>
+                                                            <p class="OrdProdInfo" id="s8DeliveryMethod">—</p>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -869,32 +869,32 @@
                                                     <div class="OrdPaym-Stat-Row-Cont">
                                                         <div class="OrdPaym-Stat-Row">
                                                             <p class="OrdPaymText">Payment Type:</p>
-                                                            <p class="OrdPaymInfo">50% Down Payment</p>
+                                                            <p class="OrdPaymInfo" id="s8PaymentType">—</p>
                                                         </div>
 
                                                         <div class="OrdPaym-Stat-Row">
                                                             <p class="OrdPaymText">Payment Method:</p>
-                                                            <p class="OrdPaymInfo">Bank (BPI)</p>
+                                                            <p class="OrdPaymInfo" id="s8PaymentMethod">—</p>
                                                         </div>
 
                                                         <div class="OrdPaym-Stat-Row">
                                                             <p class="OrdPaymText">Amount Paid:</p>
-                                                            <p class="OrdPaymInfo">₱131.00</p>
+                                                            <p class="OrdPaymInfo" id="s8AmountPaid">₱0.00</p>
                                                         </div>
 
                                                         <div class="OrdPaym-Stat-Row">
                                                             <p class="OrdPaymText">Remaining Balance:</p>
-                                                            <p class="OrdPaymInfo">₱0.00</p>
+                                                            <p class="OrdPaymInfo" id="s8Remaining">₱0.00</p>
                                                         </div>
 
                                                         <div class="OrdPaym-Stat-Row">
                                                             <p class="OrdPaymText">Reference Number:</p>
-                                                            <p class="OrdPaymInfo">1234567890</p>
+                                                            <p class="OrdPaymInfo" id="s8Reference">—</p>
                                                         </div>
 
                                                         <div class="OrdPaym-Stat-Row">
                                                             <p class="OrdPaymText">Payment Status:</p>
-                                                            <p class="OrdPaymInfo">Fully Paid</p>
+                                                            <p class="OrdPaymInfo" id="s8PaymentStatusDetail">—</p>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -946,7 +946,7 @@
  
 <script src='https://code.jquery.com/jquery-2.2.4.min.js'></script>
 <script src='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js'></script>
-<script src="MyOrderProcess.js?v=3"></script>
+<script src="MyOrderProcess.js?v=12"></script>
 <script src="../../CART/cart_badge.js"></script>
 <script>
 const navUser = document.getElementById('NavUser');

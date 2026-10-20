@@ -294,14 +294,18 @@ try {
 
             require_order_access($pdo, $orderId, true);
             $pdo->beginTransaction();
-            $lock = $pdo->prepare("SELECT o.order_status, o.inventory_deducted_at, o.payment_type, op.status FROM orders o JOIN order_process op ON op.order_id=o.order_id JOIN process_steps ps ON ps.process_step_id=op.process_step_id WHERE o.order_id=? AND ps.step_number=? FOR UPDATE");
+            $lock = $pdo->prepare("SELECT o.order_status, o.inventory_deducted_at, o.payment_type, o.remaining_balance, op.status FROM orders o JOIN order_process op ON op.order_id=o.order_id JOIN process_steps ps ON ps.process_step_id=op.process_step_id WHERE o.order_id=? AND ps.step_number=? FOR UPDATE");
             $lock->execute([$orderId, $stepNumber]);
             $state = $lock->fetch();
             if (!$state || $state['order_status'] !== 'In Progress' || $state['status'] !== 'In Progress') {
                 $pdo->rollBack(); api_error('This is not the current active order step.', 409);
             }
 
-            $skipFinalPayment = $stepNumber === 5 && $state['payment_type'] === 'Full Payment';
+            // Step 5 only skips payment verification when the order is already
+            // fully paid (remaining balance is zero). A delivery fee added in
+            // Step 4 keeps a balance due even after a full Step 3 payment, so
+            // the final payment must still be collected in that case.
+            $skipFinalPayment = $stepNumber === 5 && round((float)$state['remaining_balance'], 2) <= 0;
 
             if (in_array($stepNumber, [3, 5], true) && !$skipFinalPayment) {
                 $paymentType = $stepNumber === 3 ? ['Full Payment','50% Down Payment'] : ['Final Payment'];
@@ -375,14 +379,25 @@ try {
             } else {
                 // Mark next step as In Progress
                 $nextStep = $stepNumber + 1;
-                if ($stepNumber === 4 && $state['payment_type'] === 'Full Payment') {
-                    $pdo->prepare("
-                        UPDATE order_process op
-                        JOIN process_steps ps ON ps.process_step_id = op.process_step_id
-                        SET op.status = 'Skipped', op.completed_by = ?, op.completed_at = NOW()
-                        WHERE op.order_id = ? AND ps.step_number = 5
-                    ")->execute([$userId, $orderId]);
-                    $nextStep = 6;
+
+                // Step 5 (Final Payment) can only be skipped when the order is
+                // already fully paid. A full payment in Step 3 does NOT settle a
+                // delivery fee added in Step 4, so we check the recomputed
+                // remaining balance rather than the original payment type.
+                if ($stepNumber === 4) {
+                    $balStmt = $pdo->prepare("SELECT remaining_balance FROM orders WHERE order_id = ?");
+                    $balStmt->execute([$orderId]);
+                    $remainingBalance = round((float)$balStmt->fetchColumn(), 2);
+
+                    if ($remainingBalance <= 0) {
+                        $pdo->prepare("
+                            UPDATE order_process op
+                            JOIN process_steps ps ON ps.process_step_id = op.process_step_id
+                            SET op.status = 'Skipped', op.completed_by = ?, op.completed_at = NOW()
+                            WHERE op.order_id = ? AND ps.step_number = 5
+                        ")->execute([$userId, $orderId]);
+                        $nextStep = 6;
+                    }
                 }
                 $stmt = $pdo->prepare("
                     UPDATE order_process op

@@ -483,6 +483,11 @@ body .Navbar a#BName {
     font-weight: 700;
 }
 
+/* State-specific colours driven by the real step status. */
+.status-badge.badge-completed { background: #dcfce7; color: #15803d; }
+.status-badge.badge-inprocess { background: #dbeafe; color: #1d4ed8; }
+.status-badge.badge-pending   { background: #fff1f6; color: var(--pink); }
+
 /* RIGHT SIDE */
 
 .status-time {
@@ -1122,6 +1127,23 @@ body.cancel-modal-open { overflow: hidden; }
     font-weight: 700;
     border-radius: 10px;
     z-index: 10;
+}
+
+/* ================= COMPLETED (READ-ONLY) STEPS ================= */
+/* A finished step stays viewable but its controls are disabled so the
+   customer cannot, e.g., submit another payment after approval. */
+.tab-pane.step-readonly button:disabled,
+.tab-pane.step-readonly input:disabled,
+.tab-pane.step-readonly select:disabled,
+.tab-pane.step-readonly textarea:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+.tab-pane.step-readonly .checkbox-option,
+.tab-pane.step-readonly .photo-upload {
+    opacity: 0.7;
+    filter: grayscale(0.2);
 }
 
 

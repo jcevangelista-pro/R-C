@@ -189,6 +189,27 @@ try {
             if (current_role() !== 'customer') api_error('Only the customer can submit payment.', 403);
             if (!in_array($paymentMethod, ['GCash','Bank'], true) || !in_array($paymentType, ['Full Payment','50% Down Payment'], true)) api_error('Invalid payment selection.', 422);
 
+            // Payment is only allowed while Step 3 is the active (In Progress)
+            // step. Once admin/owner approves it, the step is Completed and no
+            // further payment may be submitted. Also block duplicate submissions
+            // while a payment is already awaiting verification.
+            $stepCheck = $pdo->prepare("
+                SELECT op.status
+                FROM order_process op
+                JOIN process_steps ps ON ps.process_step_id = op.process_step_id
+                WHERE op.order_id = ? AND ps.step_number = 3
+            ");
+            $stepCheck->execute([$orderId]);
+            $step3Status = $stepCheck->fetchColumn();
+            if ($step3Status !== 'In Progress') {
+                api_error('The payment step is not open for submission.', 409);
+            }
+            $existing = $pdo->prepare("SELECT COUNT(*) FROM payments WHERE order_id=? AND payment_type IN ('Full Payment','50% Down Payment') AND status IN ('Submitted','Verified')");
+            $existing->execute([$orderId]);
+            if ((int)$existing->fetchColumn() > 0) {
+                api_error('A payment has already been submitted for this order.', 409);
+            }
+
             // Calculate amount paid based on payment type
             $stmt = $pdo->prepare("SELECT product_total, amount_deducted, rush_fee FROM orders WHERE order_id = ?");
             $stmt->execute([$orderId]);
@@ -221,6 +242,27 @@ try {
 
             if (current_role() !== 'customer') api_error('Only the customer can submit payment.', 403);
             if (!in_array($paymentMethod, ['GCash','Bank'], true)) api_error('Select a valid payment method.', 422);
+
+            // Final payment is only allowed while Step 5 is the active step.
+            // Once approved (Completed/Skipped) no further payment is accepted,
+            // and a pending Final Payment cannot be resubmitted.
+            $stepCheck = $pdo->prepare("
+                SELECT op.status
+                FROM order_process op
+                JOIN process_steps ps ON ps.process_step_id = op.process_step_id
+                WHERE op.order_id = ? AND ps.step_number = 5
+            ");
+            $stepCheck->execute([$orderId]);
+            $step5Status = $stepCheck->fetchColumn();
+            if ($step5Status !== 'In Progress') {
+                api_error('The final payment step is not open for submission.', 409);
+            }
+            $existing = $pdo->prepare("SELECT COUNT(*) FROM payments WHERE order_id=? AND payment_type='Final Payment' AND status IN ('Submitted','Verified')");
+            $existing->execute([$orderId]);
+            if ((int)$existing->fetchColumn() > 0) {
+                api_error('A final payment has already been submitted for this order.', 409);
+            }
+
             $amount = max(0, (float)$accessOrder['remaining_balance']);
             if ($amount <= 0) api_error('This order has no remaining balance.', 409);
             $stmt = $pdo->prepare("INSERT INTO payments (order_id,submitted_by,amount,payment_method,payment_type,reference_number,proof_path,status) VALUES (?,?,?,?,'Final Payment',?,?,'Submitted')");
@@ -313,6 +355,71 @@ try {
             if ($stmt->rowCount() !== 1) api_error('There is no quotation awaiting a response.', 409);
             audit_event($pdo, 'quotation.'.strtolower($status), $orderId);
             echo json_encode(['success'=>true,'message'=>'Quotation '.$status.'.']);
+            exit;
+        }
+
+        // Step 7: Customer confirms the order has been received (optional photo).
+        // Confirming completes Step 7 and advances the order straight to the
+        // final step (Step 8 — Order Completed), marking the order Completed.
+        if ($action === 'confirm_received') {
+            if (current_role() !== 'customer') api_error('Only the customer can confirm receipt.', 403);
+
+            $pdo->beginTransaction();
+
+            // Step 7 must be the active step to confirm receipt.
+            $stmt = $pdo->prepare("
+                SELECT op.process_id, op.status, op.image
+                FROM order_process op
+                JOIN process_steps ps ON ps.process_step_id = op.process_step_id
+                WHERE op.order_id = ? AND ps.step_number = 7
+                FOR UPDATE
+            ");
+            $stmt->execute([$orderId]);
+            $step7 = $stmt->fetch();
+            if (!$step7 || $step7['status'] !== 'In Progress') {
+                $pdo->rollBack();
+                api_error('Order receipt can only be confirmed once the order is out for delivery and awaiting your confirmation.', 409);
+            }
+
+            // Optional proof photo goes into the step-7 process image, served
+            // through evidence.php?kind=process&step=7.
+            $imagePath = $step7['image'];
+            if (isset($_FILES['proof']) && ($_FILES['proof']['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_NO_FILE) {
+                $imagePath = store_image_upload($_FILES['proof'], 'process');
+            }
+
+            // Complete Step 7 with the customer's confirmation.
+            $pdo->prepare("
+                UPDATE order_process
+                SET status = 'Completed', completed_by = ?, completed_at = NOW(),
+                    image = ?, notes = 'Customer confirmed order received.', process_date = CURDATE()
+                WHERE process_id = ?
+            ")->execute([$userId, $imagePath, $step7['process_id']]);
+
+            // Advance to the final step (Step 8 — Order Completed).
+            $pdo->prepare("
+                UPDATE order_process op
+                JOIN process_steps ps ON ps.process_step_id = op.process_step_id
+                SET op.status = 'In Progress'
+                WHERE op.order_id = ? AND ps.step_number = 8
+            ")->execute([$orderId]);
+
+            // The order is now complete.
+            $pdo->prepare("UPDATE orders SET order_status = 'Completed', date_finished = NOW() WHERE order_id = ?")
+                ->execute([$orderId]);
+
+            // Notify admin/owner that the customer confirmed receipt and the
+            // order has been completed.
+            $message = "Customer confirmed receipt of order {$orderId}. The order is now completed.";
+            $recipients = $pdo->query("SELECT user_id FROM users WHERE role IN ('admin','owner') AND is_active=1")->fetchAll(PDO::FETCH_COLUMN);
+            $notify = $pdo->prepare("INSERT INTO notifications (process_id,user_id,sent_by,title,message) VALUES (?,?,?,?,?)");
+            foreach ($recipients as $recipientId) {
+                $notify->execute([$step7['process_id'], $recipientId, $userId, 'Order Received & Completed', $message]);
+            }
+
+            audit_event($pdo, 'order.received_confirmed', $orderId, ['step'=>7]);
+            $pdo->commit();
+            echo json_encode(['success'=>true,'message'=>'Thank you! Your order is now complete.']);
             exit;
         }
 

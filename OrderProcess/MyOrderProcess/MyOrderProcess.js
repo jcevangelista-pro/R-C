@@ -3,6 +3,8 @@ let currentOrderId = null;
 let currentUserId = null;
 let orderMessages = [];
 let orderSteps = [];
+let orderData = null;
+let orderItems = [];
 let requestedStepNumber = null;
 let cancellableStep = null;
 function htmlEscape(value) { return String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
@@ -63,6 +65,21 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Switch to a step when its tab is clicked (only if unlocked)
     tabs.forEach(function (tab, index) {
+        // Block Bootstrap's own data-toggle="tab" handler for locked steps.
+        // Bootstrap binds to the inner <a>, so we intercept in the capture
+        // phase and stop the event before its delegated handler can run.
+        // Without this, clicking a locked step's circle would still switch to
+        // the (shadowed) next step even though it has not been approved.
+        const anchor = tab.querySelector('a[data-toggle="tab"]');
+        if (anchor) {
+            anchor.addEventListener('click', function (e) {
+                if (tab.classList.contains('locked')) {
+                    e.preventDefault();
+                    e.stopImmediatePropagation();
+                }
+            }, true);
+        }
+
         tab.addEventListener('click', function (e) {
             e.preventDefault();
 
@@ -80,28 +97,48 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Lock/unlock steps based on order process data
     window.applyStepLocks = function() {
-        if (!orderSteps || orderSteps.length === 0) return;
-
         const tabs = document.querySelectorAll('.nav-tabs[role="tablist"] > li');
         const panes = document.querySelectorAll('.tab-content > .tab-pane');
-        if (!tabs || !panes) return;
+        if (!tabs || !panes || !tabs.length) return;
 
-        // Find the highest completed step number
-        let highestCompleted = 0;
-        let currentActiveStep = 1;
+        // A freshly checked-out order is still "Pending" and has no process
+        // rows yet (those are created when the admin accepts it). In that case
+        // only Step 1 (Order Details) is viewable and every later step must be
+        // locked — otherwise all steps would appear accessible.
+        const hasSteps = orderSteps && orderSteps.length > 0;
 
-        orderSteps.forEach(function(step) {
-            const stepNum = parseInt(step.step_number);
-            if (step.status === 'Completed') {
-                highestCompleted = Math.max(highestCompleted, stepNum);
-            }
-            if (step.status === 'In Progress') {
-                currentActiveStep = stepNum;
-            }
-        });
+        // Determine how far the customer may navigate. A step counts as
+        // "approved" only once admin/owner marks it Completed (or Skipped).
+        // Approving the current step is what sets the NEXT step to In Progress,
+        // so the current In Progress step is the furthest accessible step.
+        // Everything beyond it stays locked until the admin approves.
+        let highestApproved = 0;   // highest Completed/Skipped step number
+        let currentActiveStep = 0; // the single In Progress step, if any
 
-        // Allow access to completed steps + current active step only
-        const maxAccessible = Math.max(highestCompleted + 1, currentActiveStep);
+        if (hasSteps) {
+            orderSteps.forEach(function(step) {
+                const stepNum = parseInt(step.step_number);
+                if (step.status === 'Completed' || step.status === 'Skipped') {
+                    highestApproved = Math.max(highestApproved, stepNum);
+                }
+                if (step.status === 'In Progress') {
+                    currentActiveStep = stepNum;
+                }
+            });
+        }
+
+        // Accessible range:
+        //  - all approved steps (Completed/Skipped), and
+        //  - the current In Progress step (reached only because the previous
+        //    step was approved).
+        // With no process rows yet (just checked out) only Step 1 is open.
+        let maxAccessible = currentActiveStep > 0 ? currentActiveStep : highestApproved;
+        if (!hasSteps) maxAccessible = 1;
+
+        // Fall back to step 1 for display when nothing is active yet.
+        const displayStep = currentActiveStep > 0
+            ? currentActiveStep
+            : (highestApproved > 0 ? highestApproved : 1);
 
         tabs.forEach(function(tab, index) {
             const stepNum = index + 1;
@@ -125,7 +162,7 @@ document.addEventListener('DOMContentLoaded', function () {
         // Show the current active step on load
         const visibleStep = requestedStepNumber && requestedStepNumber <= maxAccessible
             ? requestedStepNumber
-            : currentActiveStep;
+            : displayStep;
         const activeIndex = visibleStep - 1;
         tabs.forEach(function(t) { t.classList.remove('active'); });
         panes.forEach(function(p) { p.classList.remove('active'); });
@@ -180,6 +217,8 @@ async function loadOrderProcess() {
 
         orderMessages = data.messages || [];
         orderSteps = data.steps || [];
+        orderData = data.order || null;
+        orderItems = data.items || [];
         cancellableStep = data.can_cancel ? Number(data.cancel_step) : null;
         updateCancellationButtons();
 
@@ -272,8 +311,268 @@ async function loadOrderProcess() {
             applyStepLocks();
         }
 
+        // Fill each step's "Submitted" date with the real approval/submission
+        // date for that specific step.
+        populateStepDates();
+
+        // Lock down interactive controls on steps that are already completed,
+        // so (for example) a submitted & approved payment cannot be resubmitted.
+        applyStepReadOnly();
+
+        // Fill Step 7 (Order Received) with the real product and customer info.
+        populateStep7();
+
+        // Fill Step 8 (Order Completed) summary/receipt with real order data.
+        populateStep8();
+
+        // Update each step's status badge to reflect its real status.
+        populateStepBadges();
+
     } catch (err) {
         console.error('Failed to load order process:', err);
+    }
+}
+
+// ── Step dates ──────────────────────────────────────────────
+// Format a DB datetime (e.g. "2026-08-10 07:42:00") like "August 10, 2026 | 7:42 AM".
+function formatStepDate(value) {
+    if (!value) return null;
+    // Normalize "YYYY-MM-DD HH:MM:SS" to an ISO-ish string so Date parses it
+    // consistently across browsers.
+    const parsed = new Date(String(value).replace(' ', 'T'));
+    if (isNaN(parsed.getTime())) return null;
+    const datePart = parsed.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+    const timePart = parsed.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+    return datePart + ' | ' + timePart;
+}
+
+// Return the real date for a given step number:
+//   - Completed/Skipped -> completed_at (the approved date)
+//   - In Progress       -> created_at (when the step became active)
+//   - otherwise         -> null (not reached yet)
+function stepDateFor(stepNumber) {
+    const step = (orderSteps || []).find(s => parseInt(s.step_number) === stepNumber);
+    if (step) {
+        if ((step.status === 'Completed' || step.status === 'Skipped') && step.completed_at) {
+            return formatStepDate(step.completed_at);
+        }
+        if (step.status === 'In Progress') {
+            return formatStepDate(step.created_at) || formatStepDate(step.process_date);
+        }
+        // Reached but no timestamp yet.
+        return formatStepDate(step.completed_at) || formatStepDate(step.created_at);
+    }
+    // Step 1 represents the checkout submission even before process rows exist.
+    if (stepNumber === 1 && orderData && orderData.date_requested) {
+        return formatStepDate(orderData.date_requested);
+    }
+    return null;
+}
+
+// Fill every step's "Submitted" history line and the order timeline with the
+// real per-step date, or a placeholder when the step has not been reached.
+function populateStepDates() {
+    const PENDING = 'Pending';
+    for (let n = 1; n <= 8; n++) {
+        const pane = document.getElementById('step' + n);
+        if (pane) {
+            const dateEl = pane.querySelector('.status-history .status-history-item div p');
+            if (dateEl) dateEl.textContent = stepDateFor(n) || PENDING;
+        }
+    }
+
+    // Order timeline summary (one .OPCTime per step, in order 1..8).
+    const timelineTimes = document.querySelectorAll('.OrderTimelineContainer .OPCTime');
+    timelineTimes.forEach(function(el, idx) {
+        el.textContent = stepDateFor(idx + 1) || PENDING;
+    });
+}
+
+// Disable interactive controls inside any step that is already Completed or
+// Skipped. A finished step is read-only: no more payments, messages, uploads,
+// or option toggles. Viewing the step's content remains possible.
+function applyStepReadOnly() {
+    for (let n = 1; n <= 8; n++) {
+        const pane = document.getElementById('step' + n);
+        if (!pane) continue;
+
+        const step = (orderSteps || []).find(s => parseInt(s.step_number) === n);
+        const isDone = step && (step.status === 'Completed' || step.status === 'Skipped');
+
+        if (isDone) {
+            pane.classList.add('step-readonly');
+            // Disable every form control and action button inside the step.
+            pane.querySelectorAll('button, input, select, textarea').forEach(function(el) {
+                // Keep the cancel-order button logic alone; it is already
+                // hidden/managed separately and only shows in steps 1-2.
+                el.disabled = true;
+            });
+            // Neutralize the custom checkbox/option toggles (they are <div>s,
+            // not form controls) by blocking pointer interaction.
+            pane.querySelectorAll('.checkbox-option, .photo-upload').forEach(function(el) {
+                el.style.pointerEvents = 'none';
+            });
+        } else {
+            pane.classList.remove('step-readonly');
+        }
+    }
+}
+
+// Populate Step 7 (Order Received Confirmation) with the real customer and
+// product information from the loaded order.
+function populateStep7() {
+    const setText = (id, value) => { const el = document.getElementById(id); if (el) el.textContent = value; };
+    const peso = v => 'P' + (Number(v) || 0).toFixed(2);
+
+    if (orderData) {
+        const o = orderData;
+        const method = o.delivery_method || 'Pickup';
+        setText('s7DeliveryMethod', method === 'Pickup' ? 'Pickup at store' : 'Delivery');
+        setText('s7CustomerName', o.customer_name || '—');
+        setText('s7CustomerAddress',
+            method === 'Pickup' ? 'Pickup at store' : (o.delivery_address || o.address || '—'));
+        setText('s7CustomerPhone', o.phone_num || '—');
+
+        // Delivery date/time (may be null until scheduled).
+        const deliveryDate = formatStepDate(o.delivery_date);
+        if (deliveryDate) {
+            const parts = deliveryDate.split(' | ');
+            setText('s7DeliveryDate', parts[0] || '—');
+            setText('s7DeliveryTime', parts[1] || '');
+        } else {
+            setText('s7DeliveryDate', '—');
+            setText('s7DeliveryTime', '');
+        }
+
+        setText('s7DeliveryFee', peso(o.delivery_fee));
+        setText('s7Discount', peso(o.amount_deducted));
+        setText('s7TotalPaid', peso(o.amount_paid));
+    }
+
+    // Product information. The layout shows one product block, so summarise:
+    // name/category/image from the first item, quantity as the total across
+    // items, and prices from the order totals.
+    if (orderItems && orderItems.length) {
+        const first = orderItems[0];
+        const totalQty = orderItems.reduce((sum, it) => sum + (parseInt(it.quantity) || 0), 0);
+        const productSubtotal = orderItems.reduce((sum, it) =>
+            sum + (parseFloat(it.unit_price) || 0) * (parseInt(it.quantity) || 0), 0);
+
+        const extraNames = orderItems.length > 1 ? ` (+${orderItems.length - 1} more)` : '';
+        setText('s7ItemName', (first.name || '—') + extraNames);
+        setText('s7ItemCategory', first.type_of_product || '');
+        setText('s7ItemQty', String(totalQty));
+        setText('s7ItemPrice', peso(first.unit_price));
+
+        // Total price = product subtotal minus the order-level discount amount.
+        const discount = orderData ? (parseFloat(orderData.amount_deducted) || 0) : 0;
+        setText('s7ItemTotal', peso(Math.max(0, productSubtotal - discount)));
+
+        const img = document.getElementById('s7ItemImage');
+        if (img && first.image_path) {
+            img.src = '../../Products/' + first.image_path;
+        }
+    }
+
+    // If the customer already submitted a receipt photo, show it in the upload
+    // preview so the confirmation is visible on return visits.
+    const step7 = (orderSteps || []).find(s => parseInt(s.step_number) === 7);
+    if (step7 && step7.image) {
+        const preview = document.getElementById('s7PhotoPreview');
+        const icon = document.getElementById('s7PhotoIcon');
+        if (preview) {
+            preview.src = '../../OrderProcess/evidence.php?kind=process&step=7&order_id=' + encodeURIComponent(currentOrderId);
+            preview.style.display = 'block';
+        }
+        if (icon) icon.style.display = 'none';
+    }
+}
+
+// Populate Step 8 (Order Completed) summary and receipt with real order data.
+function populateStep8() {
+    const setText = (id, value) => { const el = document.getElementById(id); if (el) el.textContent = value; };
+    const peso = v => '\u20B1' + (Number(v) || 0).toFixed(2); // ₱
+
+    if (orderData) {
+        const o = orderData;
+        const method = o.delivery_method || 'Pickup';
+        const isPickup = method === 'Pickup';
+
+        // Status information
+        setText('s8OrderStatus', o.order_status || '—');
+        const payStatusMap = { Paid: 'Fully Paid', Partial: 'Partially Paid', Unpaid: 'Unpaid' };
+        const payStatusLabel = payStatusMap[o.payment_status] || (o.payment_status || '—');
+        setText('s8PaymentStatus', payStatusLabel);
+        setText('s8PaymentStatusDetail', payStatusLabel);
+        setText('s8DeliveryStatus', o.order_status === 'Completed'
+            ? (isPickup ? 'Picked Up' : 'Delivered')
+            : (isPickup ? 'For Pickup' : 'For Delivery'));
+
+        // Receipt header
+        setText('s8ReceiptNo', o.receipt_no || ('RC-' + (o.order_id || '').replace(/^ORD-/, '')));
+        setText('s8OrderId', o.order_id || currentOrderId || '—');
+        const receiptDate = formatStepDate(o.date_finished) || formatStepDate(o.date_requested);
+        setText('s8ReceiptDate', receiptDate ? receiptDate.split(' | ')[0] : '—');
+
+        // Customer information
+        setText('s8CustomerName', o.customer_name || '—');
+        setText('s8CustomerContact', o.phone_num || '—');
+
+        // Product details (delivery method + customization live on the order)
+        setText('s8Customization', o.customization_type || 'Standard');
+        setText('s8DeliveryMethod', isPickup ? 'Pickup at store' : 'Delivery');
+
+        // Payment details
+        setText('s8PaymentType', o.payment_type || '—');
+        setText('s8PaymentMethod', o.payment_method || '—');
+        setText('s8AmountPaid', peso(o.amount_paid));
+        setText('s8Remaining', peso(o.remaining_balance));
+        setText('s8Reference', o.reference_number || '—');
+    }
+
+    // Product + quantity from the order items.
+    if (orderItems && orderItems.length) {
+        const first = orderItems[0];
+        const totalQty = orderItems.reduce((sum, it) => sum + (parseInt(it.quantity) || 0), 0);
+        const extra = orderItems.length > 1 ? ` (+${orderItems.length - 1} more)` : '';
+        setText('s8Product', (first.name || '—') + extra);
+        setText('s8Quantity', String(totalQty));
+    }
+}
+
+// Update each step's status badge (below the step description) to reflect the
+// step's real status:
+//   Completed/Skipped -> "COMPLETED"
+//   In Progress       -> "IN PROCESS" (the current step)
+//   otherwise         -> the original "Available after ..." pending message.
+function populateStepBadges() {
+    for (let n = 1; n <= 8; n++) {
+        const pane = document.getElementById('step' + n);
+        if (!pane) continue;
+        const badge = pane.querySelector('.status-message .status-badge');
+        if (!badge) continue;
+
+        // Remember the default pending text the first time we touch the badge
+        // so it can be restored if the step is not yet reached.
+        if (badge.dataset.defaultText === undefined) {
+            badge.dataset.defaultText = badge.textContent.trim();
+        }
+
+        const step = (orderSteps || []).find(s => parseInt(s.step_number) === n);
+        const status = step ? step.status : null;
+
+        badge.classList.remove('badge-completed', 'badge-inprocess', 'badge-pending');
+
+        if (status === 'Completed' || status === 'Skipped') {
+            badge.textContent = '🟢 COMPLETED';
+            badge.classList.add('badge-completed');
+        } else if (status === 'In Progress') {
+            badge.textContent = '🔵 IN PROCESS';
+            badge.classList.add('badge-inprocess');
+        } else {
+            badge.textContent = badge.dataset.defaultText;
+            badge.classList.add('badge-pending');
+        }
     }
 }
 
@@ -509,6 +808,40 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
+
+    // Step 7: Customer confirms the order has been received.
+    const confirmReceiptBtn = document.getElementById('s7ConfirmBtn');
+    if (confirmReceiptBtn) {
+        confirmReceiptBtn.addEventListener('click', async function(e) {
+            e.preventDefault();
+            if (!currentOrderId) { alert('No order loaded.'); return; }
+            if (!confirm('Confirm that you have received this order?')) return;
+
+            confirmReceiptBtn.disabled = true;
+            try {
+                const form = new FormData();
+                form.append('action', 'confirm_received');
+                form.append('order_id', currentOrderId);
+                const proof = document.getElementById('s7PhotoInput');
+                if (proof && proof.files[0]) form.append('proof', proof.files[0]);
+
+                const res = await fetch(ORDER_PROCESS_API, { method: 'POST', body: form });
+                const data = await res.json();
+                if (data.success) {
+                    alert(data.message || 'Receipt confirmed.');
+                    // Jump to the final step (Order Completed) after confirming.
+                    requestedStepNumber = 8;
+                    loadOrderProcess();
+                } else {
+                    alert(data.error || 'Failed to confirm receipt.');
+                    confirmReceiptBtn.disabled = false;
+                }
+            } catch (err) {
+                alert('Error confirming receipt.');
+                confirmReceiptBtn.disabled = false;
+            }
+        });
+    }
 });
 
 function updateCancellationButtons() {
