@@ -51,7 +51,7 @@
         <?php if ($loggedInRole === 'Owner'): ?>
         <button class="btn-add-material" id="addMaterialBtn" style="background:#ec4899;color:#fff;border:none;border-radius:6px;padding:10px 18px;font-weight:700;font-size:13px;cursor:pointer;margin-right:12px;">+ Add Material</button>
         <?php endif; ?>
-        <div class="filter-link"><img src="../imgs/Funnel.png" alt=""> Filter</div>
+        <div class="filter-link" id="filterLink"><img src="../imgs/Funnel.png" alt=""> Filter</div>
       </div>
 
       <table>
@@ -69,6 +69,9 @@
           <tr><td colspan="6" style="text-align:center;color:#9ca3af;padding:24px;">Loading...</td></tr>
         </tbody>
       </table>
+      <div id="invSeeAllWrap" style="display:none;text-align:center;margin-top:14px;">
+        <button type="button" id="invSeeAllBtn" style="background:#ec4899;color:#fff;border:none;border-radius:8px;padding:10px 24px;font-weight:700;font-size:14px;cursor:pointer;">See All Items</button>
+      </div>
     </div>
 
     <!-- Archive history table -->
@@ -112,6 +115,54 @@
           <tr><td colspan="6" style="text-align:center;color:#9ca3af;padding:16px;">Loading...</td></tr>
         </tbody>
       </table>
+    </div>
+  </div>
+
+  <!-- Filter Modal -->
+  <div class="overlay" id="filterOverlay">
+    <div class="modal filter-modal">
+      <button class="back-btn" onclick="closeFilterModal()">&lt;</button>
+      <div class="modal-title">Filter Inventory</div>
+      <hr>
+
+      <div class="section" style="margin-top:14px;">
+        <div class="label">CATEGORY</div>
+        <select id="filterCategory" style="width:100%;height:40px;border:1px solid #e5e7eb;border-radius:6px;padding:0 10px;font-size:14px;margin-top:4px;">
+          <option value="">All categories</option>
+          <option value="MUGS">MUGS</option>
+          <option value="SHIRTS">SHIRTS</option>
+          <option value="PAPER">PAPER</option>
+          <option value="SUPPLY">SUPPLY</option>
+          <option value="PEN">PEN</option>
+          <option value="FANS">FANS</option>
+          <option value="OTHER">OTHER</option>
+        </select>
+      </div>
+
+      <div class="section" style="margin-top:12px;">
+        <div class="label">STATUS</div>
+        <select id="filterStatus" style="width:100%;height:40px;border:1px solid #e5e7eb;border-radius:6px;padding:0 10px;font-size:14px;margin-top:4px;">
+          <option value="">All statuses</option>
+          <option value="Normal Stock">Normal Stock</option>
+          <option value="Low Stock">Low Stock</option>
+          <option value="High Stock">High Stock</option>
+          <option value="Out of Stock">Out of Stock</option>
+        </select>
+      </div>
+
+      <div class="section" style="margin-top:12px;">
+        <div class="label">SORT BY NAME</div>
+        <select id="filterSort" style="width:100%;height:40px;border:1px solid #e5e7eb;border-radius:6px;padding:0 10px;font-size:14px;margin-top:4px;">
+          <option value="">Default</option>
+          <option value="az">A – Z</option>
+          <option value="za">Z – A</option>
+        </select>
+      </div>
+
+      <div class="btn-row" style="margin-top:20px;">
+        <div class="btn btn-cancel" onclick="resetFilters()">RESET</div>
+        <div class="btn btn-update" onclick="applyFilters()">APPLY</div>
+      </div>
     </div>
   </div>
 
@@ -310,7 +361,7 @@ async function loadInventory() {
     const data = await res.json();
     if (!data.success) throw new Error(data.error);
     inventoryItems = data.items;
-    renderInventory(data.items);
+    refreshInventoryView();
     renderHistory(data.history);
     loadArchived();
   } catch (err) {
@@ -383,12 +434,93 @@ function renderHistory(history) {
 
 function esc(s) { return String(s).replace(/'/g, "\\'").replace(/"/g, '&quot;'); }
 
-// ── Search ──────────────────────────────────────────────────
+// ── Search + Filter ─────────────────────────────────────────
+let currentFilters = { category: '', status: '', sort: '' };
+
+function getVisibleInventory() {
+  const q = document.getElementById('searchInput').value.toLowerCase();
+  let list = inventoryItems.filter(i =>
+    i.item_name.toLowerCase().includes(q) || i.category.toLowerCase().includes(q)
+  );
+
+  if (currentFilters.category) {
+    list = list.filter(i => i.category === currentFilters.category);
+  }
+  if (currentFilters.status) {
+    list = list.filter(i => i.status === currentFilters.status);
+  }
+  if (currentFilters.sort === 'az') {
+    list = list.slice().sort((a, b) => a.item_name.localeCompare(b.item_name));
+  } else if (currentFilters.sort === 'za') {
+    list = list.slice().sort((a, b) => b.item_name.localeCompare(a.item_name));
+  }
+  return list;
+}
+
+const INVENTORY_DISPLAY_LIMIT = 20;
+let showingAllInventory = false;
+
+function refreshInventoryView() {
+  const list = getVisibleInventory();
+  const visible = showingAllInventory ? list : list.slice(0, INVENTORY_DISPLAY_LIMIT);
+  renderInventory(visible);
+
+  // Show the toggle button whenever the current result set exceeds the limit.
+  // Label it "See All" when collapsed and "Show Less" when expanded.
+  const wrap = document.getElementById('invSeeAllWrap');
+  const btn = document.getElementById('invSeeAllBtn');
+  if (wrap && btn) {
+    if (list.length > INVENTORY_DISPLAY_LIMIT) {
+      wrap.style.display = '';
+      btn.textContent = showingAllInventory ? 'Show Less' : `See All Items (${list.length})`;
+    } else {
+      wrap.style.display = 'none';
+    }
+  }
+}
+
 document.getElementById('searchInput').addEventListener('input', function() {
-  const q = this.value.toLowerCase();
-  const filtered = inventoryItems.filter(i => i.item_name.toLowerCase().includes(q) || i.category.toLowerCase().includes(q));
-  renderInventory(filtered);
+  showingAllInventory = false;
+  refreshInventoryView();
 });
+
+// Toggle between all items and the limited view when the button is clicked.
+const invSeeAllBtn = document.getElementById('invSeeAllBtn');
+if (invSeeAllBtn) {
+  invSeeAllBtn.addEventListener('click', function() {
+    showingAllInventory = !showingAllInventory;
+    refreshInventoryView();
+  });
+}
+
+// ── Filter Modal ────────────────────────────────────────────
+function openFilterModal() {
+  document.getElementById('filterCategory').value = currentFilters.category;
+  document.getElementById('filterStatus').value = currentFilters.status;
+  document.getElementById('filterSort').value = currentFilters.sort;
+  document.getElementById('filterOverlay').classList.add('show');
+}
+function closeFilterModal() { document.getElementById('filterOverlay').classList.remove('show'); }
+function applyFilters() {
+  currentFilters.category = document.getElementById('filterCategory').value;
+  currentFilters.status = document.getElementById('filterStatus').value;
+  currentFilters.sort = document.getElementById('filterSort').value;
+  showingAllInventory = false;
+  refreshInventoryView();
+  closeFilterModal();
+}
+function resetFilters() {
+  currentFilters = { category: '', status: '', sort: '' };
+  document.getElementById('filterCategory').value = '';
+  document.getElementById('filterStatus').value = '';
+  document.getElementById('filterSort').value = '';
+  showingAllInventory = false;
+  refreshInventoryView();
+  closeFilterModal();
+}
+
+const filterLink = document.getElementById('filterLink');
+if (filterLink) filterLink.addEventListener('click', openFilterModal);
 
 // ── Update Modal ────────────────────────────────────────────
 function openModal(id, itemName, currentStock, currentCategory, currentSize) {

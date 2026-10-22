@@ -63,33 +63,53 @@
     <!-- ── ROW 1: Order stat tiles + Monthly Order chart + Inventory summary -->
     <div class="row-grid row-2">
 
-      <!-- Left: 6 stat tiles in a 2-col grid -->
+      <!-- Left: 6 order stat tiles + customer summary tiles -->
       <div class="card">
         <div class="stat-grid">
-          <div class="stat-tile pink">
+          <a class="stat-tile pink" href="../Order/order-admin.html">
             <div class="stat-label">Total Orders</div>
             <div class="stat-value" id="statTotalOrders">—</div>
-          </div>
-          <div class="stat-tile orange">
+          </a>
+          <a class="stat-tile orange" href="../Order/order-admin.html">
             <div class="stat-label">Orders Due Today</div>
             <div class="stat-value" id="statDueToday">—</div>
-          </div>
-          <div class="stat-tile blue">
+          </a>
+          <a class="stat-tile blue" href="../Order/order-admin.html">
             <div class="stat-label">Pending Orders</div>
             <div class="stat-value" id="statPending">—</div>
-          </div>
-          <div class="stat-tile purple">
+          </a>
+          <a class="stat-tile purple" href="../Order/order-admin.html">
             <div class="stat-label">Processing Orders</div>
             <div class="stat-value" id="statProcessing">—</div>
-          </div>
-          <div class="stat-tile green">
+          </a>
+          <a class="stat-tile green" href="../Order/order-admin.html">
             <div class="stat-label">Completed Orders</div>
             <div class="stat-value" id="statCompleted">—</div>
-          </div>
-          <div class="stat-tile red">
+          </a>
+          <a class="stat-tile red" href="../Order/order-admin.html">
             <div class="stat-label">Cancelled Orders</div>
             <div class="stat-value" id="statCancelled">—</div>
-          </div>
+          </a>
+        </div>
+
+        <!-- Customer summary tiles, placed below the order tiles -->
+        <div class="summary-grid" style="margin-top:14px;">
+          <a class="summary-tile pink" href="../CUSTOMER/CustomerLand.html">
+            <div class="summary-label">Total Customers</div>
+            <div class="summary-value" id="sumTotalCustomers">—</div>
+          </a>
+          <a class="summary-tile green" href="../CUSTOMER/CustomerLand.html">
+            <div class="summary-label">Repeat Customers</div>
+            <div class="summary-value" id="sumRepeatCustomers">—</div>
+          </a>
+          <a class="summary-tile blue" href="../CUSTOMER/CustomerLand.html">
+            <div class="summary-label">Total Revenue</div>
+            <div class="summary-value" id="sumTotalRevenue">—</div>
+          </a>
+          <a class="summary-tile purple" href="../CUSTOMER/CustomerLand.html">
+            <div class="summary-label">Current Revenue</div>
+            <div class="summary-value" id="sumCurrentRevenue">—</div>
+          </a>
         </div>
       </div>
 
@@ -106,83 +126,45 @@
 
         <!-- Inventory summary -->
         <div class="card">
-          <div class="inv-row">
+          <a class="inv-row" href="../Inventory/inventory-admin.html">
             <span class="inv-label">Low Stock Items</span>
             <div class="inv-right">
               <span class="inv-count orange" id="invLow">—</span>
               <span class="inv-arrow">&gt;</span>
             </div>
-          </div>
-          <div class="inv-row">
+          </a>
+          <a class="inv-row" href="../Inventory/inventory-admin.html">
             <span class="inv-label">High Stock Items</span>
             <div class="inv-right">
               <span class="inv-count green" id="invHigh">—</span>
               <span class="inv-arrow">&gt;</span>
             </div>
-          </div>
-          <div class="inv-row">
+          </a>
+          <a class="inv-row" href="../Inventory/inventory-admin.html">
             <span class="inv-label">Out of Stock Items</span>
             <div class="inv-right">
               <span class="inv-count red" id="invOut">—</span>
               <span class="inv-arrow">&gt;</span>
             </div>
-          </div>
-          <div class="inv-row">
+          </a>
+          <a class="inv-row" href="../Inventory/inventory-admin.html">
             <span class="inv-label">Total Inventory Items</span>
             <div class="inv-right">
               <span class="inv-count pink" id="invTotal">—</span>
               <span class="inv-arrow">&gt;</span>
             </div>
-          </div>
+          </a>
         </div>
 
       </div>
     </div>
 
-    <!-- ── ROW 2: Monthly Sales Revenue + Inventory summary (right col already used) -->
-    <div class="row-grid row-2">
-
-      <!-- Monthly Sales Revenue chart -->
-      <div class="card">
-        <div class="chart-title">Monthly Sales Revenue</div>
-        <div class="chart-wrap">
-          <canvas id="chartMonthlySales"></canvas>
-        </div>
+    <!-- ── ROW 2: Monthly Sales Revenue (full width) -->
+    <div class="card">
+      <div class="chart-title">Monthly Sales Revenue</div>
+      <div class="chart-wrap">
+        <canvas id="chartMonthlySales"></canvas>
       </div>
-
-      <!-- Spacer column (inventory already shown above, keep layout balanced) -->
-      <!-- We reuse this col for a mini stats repeat on smaller screens via CSS -->
-      <div class="card" style="display:flex; flex-direction:column; justify-content:center; gap:0;">
-        <div class="inv-row">
-          <span class="inv-label">Low Stock Items</span>
-          <div class="inv-right">
-            <span class="inv-count orange" id="invLow2">—</span>
-            <span class="inv-arrow">&gt;</span>
-          </div>
-        </div>
-        <div class="inv-row">
-          <span class="inv-label">High Stock Items</span>
-          <div class="inv-right">
-            <span class="inv-count green" id="invHigh2">—</span>
-            <span class="inv-arrow">&gt;</span>
-          </div>
-        </div>
-        <div class="inv-row">
-          <span class="inv-label">Out of Stock Items</span>
-          <div class="inv-right">
-            <span class="inv-count red" id="invOut2">—</span>
-            <span class="inv-arrow">&gt;</span>
-          </div>
-        </div>
-        <div class="inv-row">
-          <span class="inv-label">Total Inventory Items</span>
-          <div class="inv-right">
-            <span class="inv-count pink" id="invTotal2">—</span>
-            <span class="inv-arrow">&gt;</span>
-          </div>
-        </div>
-      </div>
-
     </div>
 
     <!-- ── ROW 3: Recent Orders table (full width) -->
@@ -207,39 +189,12 @@
       </table>
     </div>
 
-    <!-- ── ROW 4: Monthly Customers chart + Summary stats -->
-    <div class="row-grid row-2">
-
-      <!-- Monthly Customers chart -->
-      <div class="card">
-        <div class="chart-title">Monthly Customers</div>
-        <div class="chart-wrap">
-          <canvas id="chartMonthlyCustomers"></canvas>
-        </div>
+    <!-- ── ROW 4: Monthly Customers chart (full width) -->
+    <div class="card">
+      <div class="chart-title">Monthly Customers</div>
+      <div class="chart-wrap">
+        <canvas id="chartMonthlyCustomers"></canvas>
       </div>
-
-      <!-- Customer summary tiles -->
-      <div class="card" style="display:flex; flex-direction:column; justify-content:center;">
-        <div class="summary-grid">
-          <div class="summary-tile pink">
-            <div class="summary-label">Total Customers</div>
-            <div class="summary-value" id="sumTotalCustomers">—</div>
-          </div>
-          <div class="summary-tile green">
-            <div class="summary-label">Repeat Customers</div>
-            <div class="summary-value" id="sumRepeatCustomers">—</div>
-          </div>
-          <div class="summary-tile blue">
-            <div class="summary-label">Total Revenue</div>
-            <div class="summary-value" id="sumTotalRevenue">—</div>
-          </div>
-          <div class="summary-tile purple">
-            <div class="summary-label">Current Revenue</div>
-            <div class="summary-value" id="sumCurrentRevenue">—</div>
-          </div>
-        </div>
-      </div>
-
     </div>
 
   </div><!-- /.main -->
@@ -294,13 +249,11 @@
       document.getElementById('statCompleted').textContent   = fmt(data.orders.completed);
       document.getElementById('statCancelled').textContent   = fmt(data.orders.cancelled);
 
-      // ── Inventory (both copies)
-      ['', '2'].forEach(suffix => {
-        document.getElementById('invLow'   + suffix).textContent = fmt(data.inventory.low_stock);
-        document.getElementById('invHigh'  + suffix).textContent = fmt(data.inventory.high_stock);
-        document.getElementById('invOut'   + suffix).textContent = fmt(data.inventory.out_of_stock);
-        document.getElementById('invTotal' + suffix).textContent = fmt(data.inventory.total);
-      });
+      // ── Inventory summary
+      document.getElementById('invLow').textContent   = fmt(data.inventory.low_stock);
+      document.getElementById('invHigh').textContent  = fmt(data.inventory.high_stock);
+      document.getElementById('invOut').textContent   = fmt(data.inventory.out_of_stock);
+      document.getElementById('invTotal').textContent = fmt(data.inventory.total);
 
       // ── Customer summary
       document.getElementById('sumTotalCustomers').textContent  = fmt(data.customers.total);

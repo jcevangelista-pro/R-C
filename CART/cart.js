@@ -273,11 +273,14 @@ function renderOrderModal(){
   sizeRow.style.display = isTshirt ? '' : 'none';
   if (isTshirt) {
     sizeSelect.value = item.size || '';
-    // Show available sizes only (disable options with no price mapping)
+    // Only restrict sizes when a non-empty price map exists. If no sized BOM
+    // is configured (empty/absent map) keep every size selectable so the
+    // dropdown is never fully disabled.
+    const hasPriceMap = item.sizePrices && Object.keys(item.sizePrices).length > 0;
     Array.from(sizeSelect.options).forEach(opt => {
       if (opt.value === '') return; // keep the placeholder
-      opt.disabled = item.sizePrices && !(opt.value in item.sizePrices);
-      opt.textContent = (item.sizePrices && opt.value in item.sizePrices)
+      opt.disabled = hasPriceMap && !(opt.value in item.sizePrices);
+      opt.textContent = (hasPriceMap && opt.value in item.sizePrices)
         ? `${opt.value} — ${money(item.sizePrices[opt.value])}`
         : opt.value;
     });

@@ -402,17 +402,37 @@ body{
 }
 
 .od-size-select {
-  border: none;
+  border: 1px solid #c7c4dd;
   border-radius: 8px;
-  padding: 8px 10px;
+  padding: 9px 34px 9px 12px;
   font-size: 13px;
   font-weight: 600;
   font-family: inherit;
   color: var(--navy);
-  background: #e9e8f0;
+  background-color: #e9e8f0;
+  /* Custom caret so the control reads as a dropdown across browsers. */
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%231e3163' stroke-width='3'><path d='M6 9l6 6 6-6'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
   cursor: pointer;
   width: 100%;
   max-width: 200px;
+  /* Guarantee the control sits above sibling layers and receives clicks. */
+  position: relative;
+  z-index: 1;
+  pointer-events: auto;
+}
+
+.od-size-select:focus {
+  outline: none;
+  border-color: #6b6fd6;
+}
+
+.od-size-select option:disabled {
+  color: #9ca3af;
 }
  
 .field textarea{

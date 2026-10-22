@@ -42,7 +42,7 @@
                         <input type="text" id="FirstName" placeholder="Moiraine" required class="Input">
 
                         <label for="MiddleName" class="Label">Middle Name</label>
-                        <input type="text" id="MiddleName" placeholder="Damodred" class="Input">
+                        <input type="text" id="MiddleName" placeholder="Damodred (optional)" class="Input">
                         
                         <label for="LastName" class="Label">Last Name</label>
                         <input type="text" id="LastName" placeholder="Sanche" required class="Input">
@@ -62,7 +62,7 @@
 
                         <div class="TermsPolicy">
                             <input type="checkbox" id="TermsandPolicy" required>
-                            <label for="TermsandPolicy" class="Label">By creating this account, I agree to the <a href="">Terms and Privacy Policy.</a> </label>
+                            <label for="TermsandPolicy" class="Label">By creating this account, I agree to the <a href="#" id="TermsLink">Terms and Privacy Policy.</a> </label>
                         </div> <br>
 
                         <div id="signupError" class="form-feedback form-feedback--error" role="alert" aria-live="assertive"></div>
@@ -85,16 +85,120 @@
         </div>
     </div>
     
+    <!-- Terms and Privacy Policy Modal -->
+    <div class="terms-modal-overlay" id="termsModalOverlay" hidden>
+        <div class="terms-modal" role="dialog" aria-modal="true" aria-labelledby="termsModalTitle">
+            <button type="button" class="terms-modal-close" id="termsModalClose" aria-label="Close">&times;</button>
+            <h2 class="terms-modal-title" id="termsModalTitle">Terms and Privacy Policy</h2>
+            <div class="terms-modal-body" id="termsModalBody">
+                <!-- Terms and privacy policy content goes here. -->
+            </div>
+            <div class="terms-modal-actions">
+                <button type="button" class="terms-modal-btn" id="termsModalOk">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .terms-modal-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background: rgba(30, 49, 99, 0.5);
+        }
+        .terms-modal-overlay[hidden] { display: none; }
+        .terms-modal {
+            position: relative;
+            width: min(560px, 100%);
+            max-height: calc(100vh - 60px);
+            overflow-y: auto;
+            background: #fff;
+            border-radius: 16px;
+            padding: 26px 28px 20px;
+            box-shadow: 0 20px 60px rgba(30, 49, 99, 0.3);
+        }
+        .terms-modal-close {
+            position: absolute;
+            top: 12px;
+            right: 16px;
+            border: 0;
+            background: transparent;
+            color: #9ca3af;
+            font-size: 26px;
+            line-height: 1;
+            cursor: pointer;
+        }
+        .terms-modal-close:hover { color: #F868AA; }
+        .terms-modal-title {
+            margin: 0 24px 14px 0;
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: #1E3163;
+        }
+        .terms-modal-body {
+            min-height: 120px;
+            font-size: 14px;
+            line-height: 1.6;
+            color: #374151;
+            white-space: pre-wrap;
+        }
+        .terms-modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+        .terms-modal-btn {
+            min-width: 110px;
+            padding: 10px 18px;
+            border-radius: 9px;
+            border: none;
+            background: #F868AA;
+            color: #fff;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+        .terms-modal-btn:hover { background: #e14f95; }
+    </style>
+
     <script src="password_toggle.js"></script>
     <script>
     const signupForm = document.getElementById('signupForm');
     const signupError = document.getElementById('signupError');
     const signupSuccess = document.getElementById('signupSuccess');
 
+    // ── Terms and Privacy Policy modal ──────────────────────
+    const termsOverlay = document.getElementById('termsModalOverlay');
+    const openTermsModal = () => { termsOverlay.hidden = false; };
+    const closeTermsModal = () => { termsOverlay.hidden = true; };
+    document.getElementById('TermsLink').addEventListener('click', function(e) {
+        e.preventDefault();
+        openTermsModal();
+    });
+    document.getElementById('termsModalClose').addEventListener('click', closeTermsModal);
+    document.getElementById('termsModalOk').addEventListener('click', closeTermsModal);
+    termsOverlay.addEventListener('click', function(e) {
+        if (e.target === termsOverlay) closeTermsModal();
+    });
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && !termsOverlay.hidden) closeTermsModal();
+    });
+
     signupForm.addEventListener('submit', async function(e) {
         e.preventDefault();
         signupError.style.display = 'none';
         signupSuccess.style.display = 'none';
+
+        // Require agreement to the Terms and Privacy Policy before signing up.
+        if (!document.getElementById('TermsandPolicy').checked) {
+            signupError.textContent = 'You must agree to the Terms and Privacy Policy to sign up.';
+            signupError.style.display = 'block';
+            return;
+        }
 
         const data = {
             action: 'signup',

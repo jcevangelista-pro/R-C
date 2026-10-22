@@ -12,7 +12,8 @@ try {
         // Public view: only front_page_visible products
         if ($view === 'public') {
             $stmt = $pdo->query("
-                SELECT product_id AS id, name, description, material_used, type_of_product, price, image_path, front_page_visible
+                SELECT product_id AS id, name, description, material_used, type_of_product, price,
+                       COALESCE(NULLIF(image_path, ''), '../imgs/image 2.png') AS image_path, front_page_visible
                 FROM products
                 WHERE is_archived = 0 AND is_active = 1 AND front_page_visible = 1
                 ORDER BY updated_at DESC
@@ -25,7 +26,8 @@ try {
         // Best sellers: products with most orders, fallback to front_page_visible
         if ($view === 'bestsellers') {
             $stmt = $pdo->query("
-                SELECT p.product_id AS id, p.name, p.type_of_product, p.price, p.image_path,
+                SELECT p.product_id AS id, p.name, p.type_of_product, p.price,
+                       COALESCE(NULLIF(p.image_path, ''), '../imgs/image 2.png') AS image_path,
                        COALESCE(SUM(od.quantity), 0) AS total_sold
                 FROM products p
                 LEFT JOIN order_details od ON od.product_id = p.product_id
@@ -42,7 +44,8 @@ try {
         // Portfolio view: all front-page products grouped by type_of_product
         if ($view === 'portfolio') {
             $stmt = $pdo->query("
-                SELECT product_id AS id, name, type_of_product, price, image_path
+                SELECT product_id AS id, name, type_of_product, price,
+                       COALESCE(NULLIF(image_path, ''), '../imgs/image 2.png') AS image_path
                 FROM products
                 WHERE is_archived = 0 AND is_active = 1 AND front_page_visible = 1
                 ORDER BY type_of_product, name
@@ -61,6 +64,19 @@ try {
         }
 
         require_role(['admin', 'owner']);
+
+        // Archived view: products that have been archived
+        if ($view === 'archived') {
+            $stmt = $pdo->query("
+                SELECT product_id AS id, name, type_of_product, price, image_path
+                FROM products
+                WHERE is_archived = 1 AND is_active = 1
+                ORDER BY updated_at DESC
+            ");
+            echo json_encode(['success' => true, 'products' => $stmt->fetchAll()]);
+            exit;
+        }
+
         // Admin view: all active products
         $stmt = $pdo->query("
             SELECT product_id AS id, name, description, material_used, type_of_product, price, image_path, front_page_visible, is_archived, is_active
@@ -169,6 +185,14 @@ try {
                 $imagePath = 'uploads/' . $filename;
             }
 
+            // No picture uploaded: fall back to the shared default image. The
+            // path is relative to the Products/ folder (where image_path values
+            // are resolved from), so it also resolves correctly from the order
+            // views that prefix "../Products/".
+            if ($imagePath === null) {
+                $imagePath = '../imgs/image 2.png';
+            }
+
             $stmt = $pdo->prepare("
                 INSERT INTO products (name, material_used, type_of_product, price, image_path, created_by)
                 VALUES (?, ?, ?, ?, ?, ?)
@@ -226,6 +250,16 @@ try {
             $stmt->execute([$id]);
             audit_event($pdo, 'product.archived', null, ['product_id'=>$id]);
             echo json_encode(['success' => true, 'message' => 'Product archived.']);
+            exit;
+        }
+
+        if ($action === 'unarchive') {
+            $id = (int)($_POST['id'] ?? 0);
+            if (!$id) { echo json_encode(['success' => false, 'error' => 'ID required.']); exit; }
+            $stmt = $pdo->prepare("UPDATE products SET is_archived = 0 WHERE product_id = ?");
+            $stmt->execute([$id]);
+            audit_event($pdo, 'product.unarchived', null, ['product_id'=>$id]);
+            echo json_encode(['success' => true, 'message' => 'Product unarchived.']);
             exit;
         }
 

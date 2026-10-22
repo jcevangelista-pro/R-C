@@ -142,9 +142,15 @@ function showSummaryView(){
 function buildOrderDetails(order){
   const price = Number(order.price || 0);
   const discount = Number(order.discount_percent || 0);
-  const totalPrice = price * order.qty * (1 - discount / 100);
   const deliveryFee = Number(order.delivery_fee || 0);
-  const totalPaid = Number(order.amount_paid || 0);
+
+  // total_amount is the authoritative order grand total and already includes
+  // the discount, rush fee, and delivery fee (see calculate_order_totals).
+  // Deriving the product/base total from it keeps the breakdown consistent so
+  // that TOTAL PRICE + DELIVERY FEE == TOTAL AMOUNT PAID.
+  const grandTotal = Number(order.total_amount || 0);
+  const totalPrice = Math.max(0, grandTotal - deliveryFee); // base total (after discount/rush), excludes delivery
+  const totalPaid = grandTotal;                              // = totalPrice + deliveryFee
 
   const statusMap = {
     completed: { payment: order.payment_status, delivery: "DELIVERED", orderType: order.is_rush == 1 ? "RUSH" : "STANDARD", orderStatus: "COMPLETED" },
@@ -192,7 +198,18 @@ function openOrderSummary(customer, orderIndex){
   document.getElementById('summaryQty').textContent = order.qty;
   document.getElementById('summaryDeliveryDate').textContent = details.deliveryDate;
 
-  document.getElementById('summaryThumb').style.background = "linear-gradient(135deg, #2b2f68, #6b6fd6)";
+  // Show the product image in the item thumbnail, falling back to the
+  // gradient placeholder when the product has no image.
+  const summaryThumb = document.getElementById('summaryThumb');
+  if (order.image) {
+    summaryThumb.style.backgroundImage = `url('../Products/${order.image}')`;
+    summaryThumb.style.backgroundSize = 'cover';
+    summaryThumb.style.backgroundPosition = 'center';
+    summaryThumb.style.backgroundRepeat = 'no-repeat';
+  } else {
+    summaryThumb.style.backgroundImage = 'none';
+    summaryThumb.style.background = "linear-gradient(135deg, #2b2f68, #6b6fd6)";
+  }
 
   document.getElementById('summaryPrice').textContent = money(details.price);
   document.getElementById('summaryDiscount').textContent = details.discount + "%";

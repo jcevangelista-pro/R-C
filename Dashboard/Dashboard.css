@@ -140,6 +140,16 @@ body {
   border-top: 4px solid;
   box-shadow: 0 2px 6px rgba(0,0,0,0.08);
   background: #fff;
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+
+a.stat-tile:hover,
+a.summary-tile:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.14);
 }
 
 .stat-tile.pink   { border-color: #ec4899; }
@@ -191,8 +201,14 @@ body {
   justify-content: space-between;
   padding: 14px 0;
   border-bottom: 1px solid #f3f4f6;
-  cursor: default;
+  cursor: pointer;
+  text-decoration: none;
+  color: inherit;
+  transition: background 0.12s ease;
 }
+
+.inv-row:hover { background: #fafafa; }
+.inv-row:hover .inv-arrow { color: #ec4899; }
 
 .inv-row:last-child { border-bottom: none; }
 
@@ -306,6 +322,10 @@ body {
   border-top: 4px solid;
   box-shadow: 0 2px 6px rgba(0,0,0,0.08);
   background: #fff;
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
 }
 
 .summary-tile.pink   { border-color: #ec4899; }

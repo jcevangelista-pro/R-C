@@ -508,6 +508,17 @@
         </div>
         <!-- Products loaded dynamically -->
       </div>
+      <div id="seeAllWrap" style="display:none;text-align:center;margin-top:16px;">
+        <button type="button" id="seeAllBtn" style="background:#ec4899;color:#fff;border:none;border-radius:8px;padding:10px 24px;font-weight:700;font-size:14px;cursor:pointer;">See All Products</button>
+      </div>
+    </div>
+
+    <!-- Archived Products -->
+    <div class="panel2" id="archivedPanel" style="margin-top:20px;">
+      <h2 style="color:#ec4899;font-size:22px;font-weight:800;margin-bottom:16px;">Archived Products</h2>
+      <div id="archivedContainer">
+        <p id="archivedEmpty" style="color:#9ca3af;font-size:14px;">No archived products.</p>
+      </div>
     </div>
 
     <!-- Add Product Modal -->
@@ -545,6 +556,7 @@
             <option value="ID & Card">ID &amp; Card</option>
             <option value="Keychain">Keychain</option>
             <option value="Notebook">Notebook</option>
+            <option value="Pen">Pen</option>
             <option value="Sublimation">Sublimation</option>
           </select>
           <div>
@@ -598,6 +610,7 @@
                 <option value="ID & Card">ID &amp; Card</option>
                 <option value="Keychain">Keychain</option>
                 <option value="Notebook">Notebook</option>
+                <option value="Pen">Pen</option>
                 <option value="Sublimation">Sublimation</option>
               </select>
               <div>
@@ -645,39 +658,136 @@ async function loadProducts() {
     document.getElementById('TTopCategory3').textContent = data.stats.top_category;
 
     renderProducts(data.products);
+    loadArchivedProducts();
   } catch (err) {
     console.error(err);
   }
 }
 
+// ── Archived products ───────────────────────────────────────
+async function loadArchivedProducts() {
+  const container = document.getElementById('archivedContainer');
+  try {
+    const res = await fetch(PRODUCT_API + '?view=archived');
+    const data = await res.json();
+    if (!data.success) throw new Error(data.error || 'Failed to load archived products.');
+
+    const items = data.products || [];
+    if (!items.length) {
+      container.innerHTML = '<p style="color:#9ca3af;font-size:14px;">No archived products.</p>';
+      return;
+    }
+
+    container.innerHTML = items.map(p => {
+      const img = p.image_path
+        ? `<img src="${p.image_path}" alt="" style="width:48px;height:48px;object-fit:cover;border-radius:8px;flex:0 0 48px;">`
+        : `<div style="width:48px;height:48px;border-radius:8px;background:#e5e7eb;flex:0 0 48px;"></div>`;
+      return `
+        <div class="archived-row" style="display:flex;align-items:center;gap:14px;padding:10px 12px;border-bottom:1px solid #f1f1f6;">
+          ${img}
+          <div style="flex:1;min-width:0;">
+            <div style="font-weight:700;color:#1b1f4b;">${escHtml(p.name)}</div>
+            <div style="font-size:12px;color:#6b7280;">${escHtml(p.type_of_product || '')}</div>
+          </div>
+          <button type="button" class="unarchive-btn" data-id="${p.id}"
+            style="background:#22c55e;color:#fff;border:none;border-radius:6px;padding:8px 16px;font-weight:700;font-size:13px;cursor:pointer;">
+            Unarchive
+          </button>
+        </div>`;
+    }).join('');
+  } catch (err) {
+    container.innerHTML = `<p style="color:#ef4444;font-size:14px;">${escHtml(err.message)}</p>`;
+  }
+}
+
+// Delegated handler for unarchive buttons.
+document.getElementById('archivedContainer').addEventListener('click', async (e) => {
+  const btn = e.target.closest('.unarchive-btn');
+  if (!btn) return;
+  if (!confirm('Unarchive this product?')) return;
+  btn.disabled = true;
+  try {
+    const formData = new FormData();
+    formData.append('action', 'unarchive');
+    formData.append('id', btn.dataset.id);
+    const res = await fetch(PRODUCT_API, { method: 'POST', body: formData });
+    const data = await res.json();
+    if (data.success) {
+      loadProducts(); // refresh both active grid and archived list
+    } else {
+      alert(data.error || 'Failed to unarchive product.');
+      btn.disabled = false;
+    }
+  } catch (err) {
+    alert('Error unarchiving product.');
+    btn.disabled = false;
+  }
+});
+
+const PRODUCT_DISPLAY_LIMIT = 20;
+let allProducts = [];
+let showingAllProducts = false;
+
+function createProductCard(p) {
+  const card = document.createElement('div');
+  card.className = 'ProductCard';
+  card.dataset.id = p.id;
+
+  if (p.image_path) {
+    card.innerHTML = `
+      <img src="${p.image_path}" alt="" class="ProductPicture">
+      <p class="ProductName">${escHtml(p.name)}</p>
+      <p class="ProductType">${escHtml(p.type_of_product || '')}</p>
+    `;
+  } else {
+    card.innerHTML = `
+      <div class="no-image-placeholder"></div>
+      <p class="ProductName">${escHtml(p.name)}</p>
+      <p class="ProductType">${escHtml(p.type_of_product || '')}</p>
+    `;
+  }
+
+  card.addEventListener('click', () => openUpdateModal(p));
+  return card;
+}
+
 function renderProducts(products) {
+  allProducts = products || [];
+  showingAllProducts = false;
+  drawProducts();
+}
+
+function drawProducts() {
   const container = document.getElementById('productContainer');
   // Keep the Add Product card, remove the rest
   const addCard = document.getElementById('AddProduct');
   container.innerHTML = '';
   container.appendChild(addCard);
 
-  products.forEach(p => {
-    const card = document.createElement('div');
-    card.className = 'ProductCard';
-    card.dataset.id = p.id;
+  const visible = showingAllProducts
+    ? allProducts
+    : allProducts.slice(0, PRODUCT_DISPLAY_LIMIT);
 
-    if (p.image_path) {
-      card.innerHTML = `
-        <img src="${p.image_path}" alt="" class="ProductPicture">
-        <p class="ProductName">${escHtml(p.name)}</p>
-        <p class="ProductType">${escHtml(p.type_of_product || '')}</p>
-      `;
-    } else {
-      card.innerHTML = `
-        <div class="no-image-placeholder"></div>
-        <p class="ProductName">${escHtml(p.name)}</p>
-        <p class="ProductType">${escHtml(p.type_of_product || '')}</p>
-      `;
-    }
+  visible.forEach(p => container.appendChild(createProductCard(p)));
 
-    card.addEventListener('click', () => openUpdateModal(p));
-    container.appendChild(card);
+  // Show the toggle button whenever there are more products than the limit.
+  // Label it "See All" when collapsed and "Show Less" when expanded.
+  const wrap = document.getElementById('seeAllWrap');
+  const btn = document.getElementById('seeAllBtn');
+  if (allProducts.length > PRODUCT_DISPLAY_LIMIT) {
+    wrap.style.display = '';
+    btn.textContent = showingAllProducts ? 'Show Less' : `See All Products (${allProducts.length})`;
+  } else {
+    wrap.style.display = 'none';
+  }
+}
+
+// Toggle between all products and the limited view when the button is clicked.
+const seeAllBtnEl = document.getElementById('seeAllBtn');
+if (seeAllBtnEl) {
+  seeAllBtnEl.addEventListener('click', function() {
+    showingAllProducts = !showingAllProducts;
+    drawProducts();
   });
 }
 
@@ -798,7 +908,7 @@ function bomRowHtml(material = {}) {
   const options = inventoryOptions.map(item => `<option value="${item.inventory_id}" ${String(item.inventory_id) === String(material.inventory_id || '') ? 'selected' : ''}>${escHtml(item.item_name)} (${escHtml(item.unit_of_measure)})</option>`).join('');
   return `<div class="bom-row" style="display:grid;grid-template-columns:minmax(120px,1fr) 100px 36px;gap:6px;margin-bottom:6px;max-width:100%;">
     <select class="DropDown bom-material" style="width:100%;min-width:0;box-sizing:border-box;"><option value="">Select material</option>${options}</select>
-    <input class="PDInput bom-quantity" type="number" min="0.01" step="0.01" value="${Number(material.quantity_required || 1)}" aria-label="Quantity required" style="width:100%;min-width:0;box-sizing:border-box;">
+    <input class="PDInput bom-quantity" type="number" min="1" step="1" value="${Math.max(1, Math.round(Number(material.quantity_required || 1)))}" aria-label="Quantity required" style="width:100%;min-width:0;box-sizing:border-box;">
     <button type="button" class="remove-bom" aria-label="Remove material" style="border:0;border-radius:6px;cursor:pointer;">×</button>
   </div>`;
 }
@@ -818,7 +928,7 @@ document.getElementById('updateBomRows').addEventListener('click', e => {
 function collectBom() {
   return [...document.querySelectorAll('#updateBomRows .bom-row')].map(row => ({
     inventory_id: Number(row.querySelector('.bom-material').value),
-    quantity_required: Number(row.querySelector('.bom-quantity').value)
+    quantity_required: Math.round(Number(row.querySelector('.bom-quantity').value))
   })).filter(item => item.inventory_id && item.quantity_required > 0);
 }
 
