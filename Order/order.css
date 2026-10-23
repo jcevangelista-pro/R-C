@@ -1023,6 +1023,7 @@
 
 .verif-discount-row {
   display: flex;
+  flex-wrap: wrap;
   gap: 24px;
   align-items: flex-end;
   margin-top: 16px;
@@ -1030,7 +1031,7 @@
   border-top: 2px solid #f3f4f6;
 }
 
-.verif-field { display: flex; flex-direction: column; }
+.verif-field { display: flex; flex-direction: column; flex: 1 1 160px; min-width: 0; }
 
 .verif-discount-input {
   display: flex;

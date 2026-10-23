@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>R&C Printing Services - My Cart</title>
  
-<link rel="stylesheet" href="cart.css?v=2">
+<link rel="stylesheet" href="cart.css?v=4">
 <link rel="stylesheet" href="../CustomerNav.css">
  
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -86,7 +86,6 @@
                 <p class="stat-sub" id="sumCustomerPhone">09XX-XXX-XXXX</p>
                 <p class="stat-sub" id="sumCustomerEmail"></p>
             </div>
-            <button class="side-back-btn next-item-btn" id="summaryNextBtn" title="Next item">›</button>
         </div>
  
         <div class="order-details-content">
@@ -141,7 +140,7 @@
                 </div>
             </div>
  
-            <div class="field-row two upload-row">
+            <div class="field-row two upload-row" id="sumUploadRow">
                 <div class="field">
                     <label>ORDER PHOTO</label>
                     <div class="photo-upload readonly-photo" id="sumPhotoBox">
@@ -153,11 +152,8 @@
                     <label>ORDER DESCRIPTION</label>
                     <div class="description-view" id="sumDescription">No description provided.</div>
                 </div>
-            </div>
-
-            <!-- Size summary — shown only for T-Shirt products -->
-            <div class="field-row two" id="sumSizeRow" style="display:none;">
-                <div class="field">
+                <!-- Size shown here (beside the description) only for T-Shirt products -->
+                <div class="field" id="sumSizeField" style="display:none;">
                     <label>SIZE</label>
                     <p class="stat-value" id="sumSize" style="font-size:14px;">—</p>
                 </div>
@@ -167,7 +163,10 @@
  
         <div class="selection-block bottom-row">
             <span class="cart-total-label" id="sumTotalFooter">TOTAL: P90.00 (1 ITEM)</span>
-            <button class="done-btn" id="summaryCheckoutBtn">CHECK OUT</button>
+            <div class="summary-actions">
+                <button class="done-btn next-order-btn" id="summaryNextBtn" style="display:none;">Next Order</button>
+                <button class="done-btn" id="summaryCheckoutBtn">CHECK OUT</button>
+            </div>
         </div>
  
     </div>
@@ -415,7 +414,7 @@
 </main>
  
 <script src="cartdata.js"></script>
-<script src="cart.js?v=2"></script>
+<script src="cart.js?v=5"></script>
 <script>
 // User dropdown toggle + logout
 const navUser = document.getElementById('NavUser');

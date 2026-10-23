@@ -395,7 +395,14 @@ async function saveCurrentStepEvidence() {
     form.append('action','save_evidence'); form.append('order_id',reviewOrderId);
     form.append('step_number',reviewViewingStep);
     form.append('notes',document.getElementById('reviewStepNotes').value.trim());
-    const file = document.getElementById('reviewStepEvidence');
+    // On Step 4 the dedicated "Delivery Fee Image" input takes precedence so
+    // the uploaded picture is stored as Step 4's evidence — the customer sees
+    // it in their Final Payment (Step 5) card via evidence.php (kind=process).
+    let file = document.getElementById('reviewStepEvidence');
+    if (reviewViewingStep === 4) {
+        const deliveryImg = document.getElementById('s4DeliveryFeeImage');
+        if (deliveryImg && deliveryImg.files[0]) file = deliveryImg;
+    }
     if (file.files[0]) form.append('evidence',file.files[0]);
     const response = await fetch(ORDER_API,{method:'POST',body:form});
     const data = await response.json();

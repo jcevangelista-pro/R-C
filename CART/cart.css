@@ -254,6 +254,33 @@ body{
 .checkout-btn:hover, .done-btn:hover{
   background: #383c7c;
 }
+
+/* Secondary "Next Order" button shown beside Check Out for multi-item orders */
+.done-btn.next-order-btn{
+  background: #fff;
+  color: var(--navy);
+  border: 2px solid var(--navy);
+}
+.done-btn.next-order-btn:hover{
+  background: #eef0fb;
+}
+
+/* Wider Order Summary modal so the size fits beside the order description */
+#summaryModal{
+  max-width: 760px;
+}
+
+/* Stack the footer buttons so "Next Order" sits above "Check Out" */
+.selection-block.bottom-row .summary-actions{
+  margin-left: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.selection-block.bottom-row .summary-actions .done-btn{
+  margin: 0;
+  min-width: 150px;
+}
  
 /* ================= MODAL OVERLAY (Delivery Details) ================= */
 .modal-overlay{

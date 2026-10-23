@@ -9,6 +9,30 @@ let deliveryInfo = {
   phone: "",
   email: ""
 };
+
+// Pre-populate delivery/customer info from the logged-in customer so the
+// order summary shows the real name, address, phone, and email even before
+// the delivery form is opened (previously it defaulted to "Guest Customer").
+function prefillDeliveryInfo(){
+  fetch('cart_api.php', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({ action: 'get_delivery' })
+  })
+  .then(r => r.json())
+  .then(data => {
+    if (data.success && data.delivery) {
+      const d = data.delivery;
+      const fullName = [d.first_name, d.middle_name, d.last_name].filter(Boolean).join(' ').trim();
+      if (fullName) deliveryInfo.name = fullName;
+      if (d.address && d.address !== '—' && d.address.trim()) deliveryInfo.address = d.address.trim();
+      if (d.phone_num && d.phone_num.trim()) deliveryInfo.phone = d.phone_num.trim();
+      if (d.email && d.email.trim()) deliveryInfo.email = d.email.trim();
+    }
+  })
+  .catch(() => {});
+}
+prefillDeliveryInfo();
  
 let activeItemIndex = 0;
  
@@ -475,11 +499,15 @@ function renderSummaryModal(){
     ? item.description
     : "No description provided.";
 
-  // Show size in summary only for products that use a SHIRTS inventory material
+  // Show size beside the order description only for products that use a
+  // SHIRTS inventory material; widen that row to three columns when shown.
   const isTshirt = (item.needsSize === true);
-  const sumSizeRow = document.getElementById('sumSizeRow');
+  const sumUploadRow = document.getElementById('sumUploadRow');
+  const sumSizeField = document.getElementById('sumSizeField');
   const sumSize = document.getElementById('sumSize');
-  sumSizeRow.style.display = isTshirt ? '' : 'none';
+  sumSizeField.style.display = isTshirt ? '' : 'none';
+  sumUploadRow.classList.toggle('three', isTshirt);
+  sumUploadRow.classList.toggle('two', !isTshirt);
   if (isTshirt) {
     sumSize.textContent = item.size || 'Not selected';
   }
