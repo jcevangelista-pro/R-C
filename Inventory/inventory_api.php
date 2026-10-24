@@ -111,17 +111,18 @@ try {
             $itemName = trim($body['item_name'] ?? '');
             $category = strtoupper(trim($body['category'] ?? ''));
             $size = isset($body['size']) && $body['size'] !== '' ? $body['size'] : null;
+            $unitCost = max(0, round((float)($body['unit_cost'] ?? 0), 2));
             if (!$id) { echo json_encode(['success' => false, 'error' => 'Invalid item.']); exit; }
             if (!$itemName) { echo json_encode(['success' => false, 'error' => 'Item name is required.']); exit; }
-            $validCategories = ['MUGS','SHIRTS','PAPER','SUPPLY','PEN','FANS','OTHER'];
+            $validCategories = ['MUGS','SHIRTS','PAPER','SUPPLY','PEN','FANS','INK','OTHER'];
             if (!in_array($category, $validCategories)) $category = 'OTHER';
             $validSizes = ['XS','S','M','L','XL','2XL','3XL'];
             // Only SHIRTS items can have a size; clear it for other categories
             if ($category !== 'SHIRTS') $size = null;
             if ($size !== null && !in_array($size, $validSizes)) $size = null;
-            $stmt = $pdo->prepare("UPDATE inventory SET item_name = ?, category = ?, size = ? WHERE inventory_id = ? AND is_active = 1");
-            $stmt->execute([$itemName, $category, $size, $id]);
-            audit_event($pdo, 'inventory.item_updated', null, ['inventory_id' => $id, 'item_name' => $itemName, 'category' => $category, 'size' => $size]);
+            $stmt = $pdo->prepare("UPDATE inventory SET item_name = ?, category = ?, size = ?, unit_cost = ? WHERE inventory_id = ? AND is_active = 1");
+            $stmt->execute([$itemName, $category, $size, $unitCost, $id]);
+            audit_event($pdo, 'inventory.item_updated', null, ['inventory_id' => $id, 'item_name' => $itemName, 'category' => $category, 'size' => $size, 'unit_cost' => $unitCost]);
             echo json_encode(['success' => true, 'message' => 'Item updated.']);
             exit;
         }
@@ -142,7 +143,7 @@ try {
                 exit;
             }
 
-            $validCategories = ['MUGS','SHIRTS','PAPER','SUPPLY','PEN','FANS','OTHER'];
+            $validCategories = ['MUGS','SHIRTS','PAPER','SUPPLY','PEN','FANS','INK','OTHER'];
             if (!in_array($category, $validCategories)) $category = 'OTHER';
             $validSizes = ['XS','S','M','L','XL','2XL','3XL'];
             if ($category !== 'SHIRTS') $size = null;

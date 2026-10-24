@@ -94,7 +94,7 @@ CREATE TABLE inventory (
     inventory_id         INT AUTO_INCREMENT PRIMARY KEY,
     item_name            VARCHAR(150) NOT NULL,
     description          TEXT NULL,
-    category             ENUM('MUGS','SHIRTS','PAPER','SUPPLY','PEN','FANS','OTHER') NOT NULL DEFAULT 'OTHER',
+    category             ENUM('MUGS','SHIRTS','PAPER','SUPPLY','PEN','FANS','INK','OTHER') NOT NULL DEFAULT 'OTHER',
     unit_of_measure      VARCHAR(50) NOT NULL,
     stock                DECIMAL(12,2) NOT NULL DEFAULT 0.00,
     reorder_level        DECIMAL(12,2) NOT NULL DEFAULT 10.00,

@@ -12,7 +12,11 @@ try {
         // Public view: only front_page_visible products
         if ($view === 'public') {
             $stmt = $pdo->query("
-                SELECT product_id AS id, name, description, material_used, type_of_product, price,
+                SELECT product_id AS id, name, description, material_used, type_of_product,
+                       (price + COALESCE((SELECT SUM(pm.quantity_required * i.unit_cost)
+                                          FROM product_materials pm
+                                          JOIN inventory i ON i.inventory_id = pm.inventory_id
+                                          WHERE pm.product_id = products.product_id), 0)) AS price,
                        COALESCE(NULLIF(image_path, ''), '../imgs/image 2.png') AS image_path, front_page_visible
                 FROM products
                 WHERE is_archived = 0 AND is_active = 1 AND front_page_visible = 1
@@ -26,7 +30,11 @@ try {
         // Best sellers: products with most orders, fallback to front_page_visible
         if ($view === 'bestsellers') {
             $stmt = $pdo->query("
-                SELECT p.product_id AS id, p.name, p.type_of_product, p.price,
+                SELECT p.product_id AS id, p.name, p.type_of_product,
+                       (p.price + COALESCE((SELECT SUM(pm.quantity_required * i.unit_cost)
+                                            FROM product_materials pm
+                                            JOIN inventory i ON i.inventory_id = pm.inventory_id
+                                            WHERE pm.product_id = p.product_id), 0)) AS price,
                        COALESCE(NULLIF(p.image_path, ''), '../imgs/image 2.png') AS image_path,
                        COALESCE(SUM(od.quantity), 0) AS total_sold
                 FROM products p
@@ -44,7 +52,11 @@ try {
         // Portfolio view: all front-page products grouped by type_of_product
         if ($view === 'portfolio') {
             $stmt = $pdo->query("
-                SELECT product_id AS id, name, type_of_product, price,
+                SELECT product_id AS id, name, type_of_product,
+                       (price + COALESCE((SELECT SUM(pm.quantity_required * i.unit_cost)
+                                          FROM product_materials pm
+                                          JOIN inventory i ON i.inventory_id = pm.inventory_id
+                                          WHERE pm.product_id = products.product_id), 0)) AS price,
                        COALESCE(NULLIF(image_path, ''), '../imgs/image 2.png') AS image_path
                 FROM products
                 WHERE is_archived = 0 AND is_active = 1 AND front_page_visible = 1

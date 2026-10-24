@@ -31,7 +31,12 @@ try {
 
         $stmt = $pdo->prepare("
             SELECT c.cart_id, c.product_id, c.quantity,
-                   p.name, p.type_of_product AS category, p.price, p.image_path,
+                   p.name, p.type_of_product AS category, p.image_path,
+                   (p.price + COALESCE((SELECT SUM(pm.quantity_required * i.unit_cost)
+                                        FROM product_materials pm
+                                        JOIN inventory i ON i.inventory_id = pm.inventory_id
+                                        WHERE pm.product_id = p.product_id
+                                          AND NOT (i.category = 'SHIRTS' AND i.size IS NOT NULL)), 0)) AS price,
                    EXISTS (
                        SELECT 1
                        FROM product_materials pm
@@ -221,7 +226,12 @@ try {
             // Get selected cart items and lock them for the checkout transaction
             $placeholders = implode(',', array_fill(0, count($cartIds), '?'));
             $stmt = $pdo->prepare("
-                SELECT c.cart_id, c.product_id, c.quantity, p.price
+                SELECT c.cart_id, c.product_id, c.quantity,
+                       (p.price + COALESCE((SELECT SUM(pm.quantity_required * i.unit_cost)
+                                            FROM product_materials pm
+                                            JOIN inventory i ON i.inventory_id = pm.inventory_id
+                                            WHERE pm.product_id = p.product_id
+                                              AND NOT (i.category = 'SHIRTS' AND i.size IS NOT NULL)), 0)) AS price
                 FROM cart c
                 JOIN products p ON p.product_id = c.product_id
                 WHERE c.cart_id IN ($placeholders) AND c.customer_id = ? AND p.is_active=1 AND p.is_archived=0

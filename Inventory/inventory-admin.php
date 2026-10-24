@@ -135,6 +135,7 @@
           <option value="SUPPLY">SUPPLY</option>
           <option value="PEN">PEN</option>
           <option value="FANS">FANS</option>
+          <option value="INK">INK (Bottles)</option>
           <option value="OTHER">OTHER</option>
         </select>
       </div>
@@ -204,6 +205,10 @@
           <option value="2XL">2XL</option>
           <option value="3XL">3XL</option>
         </select>
+      </div>
+      <div class="section" style="margin-top:4px;">
+        <div class="label">UNIT COST (₱)</div>
+        <input type="number" id="modalUnitCost" min="0" step="0.01" placeholder="0.00" style="width:100%;height:40px;border:1px solid #e5e7eb;border-radius:6px;padding:0 12px;font-size:14px;margin-top:4px;">
       </div>
       <div class="section">
         <div class="label">ADD / DEDUCT STOCK</div>
@@ -285,6 +290,7 @@
           <option value="SUPPLY">SUPPLY</option>
           <option value="PEN">PEN</option>
           <option value="FANS">FANS</option>
+          <option value="INK">INK (Bottles)</option>
           <option value="OTHER">OTHER</option>
         </select>
       </div>
@@ -396,7 +402,7 @@ function renderInventory(items) {
       <td><span class="status-badge ${statusBadgeClass(i.status)}">${i.status}</span></td>
       <td>
         <div class="action-icons">
-          <button class="icon-btn" onclick="openModal(${i.id}, '${esc(i.item_name)}', ${i.stock}, '${esc(i.category)}', '${esc(i.size||'')}')">&#9998;</button>
+          <button class="icon-btn" onclick="openModal(${i.id}, '${esc(i.item_name)}', ${i.stock}, '${esc(i.category)}', '${esc(i.size||'')}', ${Number(i.unit_cost) || 0})">&#9998;</button>
           <button class="icon-btn" onclick="openArchiveModal(${i.id}, '${esc(i.item_name)}')">&#128451;</button>
         </div>
       </td>
@@ -524,7 +530,7 @@ const filterLink = document.getElementById('filterLink');
 if (filterLink) filterLink.addEventListener('click', openFilterModal);
 
 // ── Update Modal ────────────────────────────────────────────
-function openModal(id, itemName, currentStock, currentCategory, currentSize) {
+function openModal(id, itemName, currentStock, currentCategory, currentSize, currentUnitCost) {
   activeItemId = id;
   document.getElementById('modalItemName').textContent = itemName;
   document.getElementById('modalItemNameInput').value = itemName;
@@ -536,6 +542,7 @@ function openModal(id, itemName, currentStock, currentCategory, currentSize) {
   document.getElementById('modalCategory').value = currentCategory || 'OTHER';
   toggleModalSize(currentCategory || 'OTHER', 'modalSizeRow');
   document.getElementById('modalSize').value = currentSize || '';
+  document.getElementById('modalUnitCost').value = (currentUnitCost != null ? Number(currentUnitCost) : 0).toFixed(2);
   selectStockMode('add');
   document.getElementById('updateOverlay').classList.add('show');
 }
@@ -561,26 +568,33 @@ function updateNewTotal() {
 function closeModal() { document.getElementById('updateOverlay').classList.remove('show'); }
 
 async function submitUpdate() {
-  if (stockQuantity <= 0) return;
   const category = document.getElementById('modalCategory').value;
   const size = category === 'SHIRTS' ? (document.getElementById('modalSize').value || null) : null;
   const itemName = document.getElementById('modalItemNameInput').value.trim();
+  const unitCost = Math.max(0, parseFloat(document.getElementById('modalUnitCost').value) || 0);
 
   if (!itemName) { alert('Item name is required.'); return; }
 
-  // Update name + category + size
-  await fetch(API, {
+  // Update name + category + size + unit cost
+  const itemRes = await fetch(API, {
     method: 'POST', headers: {'Content-Type':'application/json'},
-    body: JSON.stringify({ action: 'update_item', id: activeItemId, item_name: itemName, category, size })
+    body: JSON.stringify({ action: 'update_item', id: activeItemId, item_name: itemName, category, size, unit_cost: unitCost })
   });
+  const itemData = await itemRes.json();
+  if (!itemData.success) { alert(itemData.error); return; }
 
-  // Update stock
-  const res = await fetch(API, {
-    method: 'POST', headers: {'Content-Type':'application/json'},
-    body: JSON.stringify({ action:'update_stock', id: activeItemId, mode: stockMode, quantity: stockQuantity, remarks: document.getElementById('modalRemarks').value.trim() })
-  });
-  const data = await res.json();
-  if (data.success) { closeModal(); loadInventory(); } else { alert(data.error); }
+  // Update stock only when a quantity change was entered.
+  if (stockQuantity > 0) {
+    const res = await fetch(API, {
+      method: 'POST', headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ action:'update_stock', id: activeItemId, mode: stockMode, quantity: stockQuantity, remarks: document.getElementById('modalRemarks').value.trim() })
+    });
+    const data = await res.json();
+    if (!data.success) { alert(data.error); return; }
+  }
+
+  closeModal();
+  loadInventory();
 }
 
 // ── Archive Modal ───────────────────────────────────────────
