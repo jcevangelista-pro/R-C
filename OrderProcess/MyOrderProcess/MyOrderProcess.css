@@ -1149,22 +1149,32 @@ body.cancel-modal-open { overflow: hidden; }
 
 /* ── TABLET: keep the 8 step circles in a single scrollable row ── */
 @media (max-width: 900px) and (min-width: 601px) {
-  .wizard .nav-tabs {
-    display: flex;
-    flex-wrap: nowrap;
+  /* Scroll ONLY the step-icon bar (.wizard-inner). The step info panes
+     (.tab-content) live outside .wizard-inner and stay full-width/fixed. */
+  .wizard { overflow: visible; }
+  .wizard-inner {
     overflow-x: auto;
     overflow-y: hidden;
     -webkit-overflow-scrolling: touch;
-    padding-bottom: 8px;
+    min-width: 0;
   }
-  .wizard .nav-tabs > li { width: auto !important; flex: 0 0 auto; min-width: 72px; }
-  .wizard .nav-tabs > li a { width: 56px !important; height: 56px !important; margin: 10px auto !important; }
-  .wizard .nav-tabs > li span.round-tab {
-    position: static !important;
-    width: 56px; height: 56px; line-height: 54px; font-size: 20px;
-  }
-  .wizard li:after, .wizard li.active:after { display: none; }
-  .connecting-line { display: none; }
+  .wizard-inner .nav-tabs { min-width: 760px; }
+  .connecting-line { width: 80%; }
+}
+
+/* ── RESPONSIVE NAVBAR/HEADER (order process) ─────────────── */
+@media (max-width: 768px) {
+  /* The desktop rule forces the brand to 32px with !important, which blows
+     out the mobile header. Override it at matching specificity + !important. */
+  body .Navbar a#BName { font-size: 18px !important; white-space: nowrap; }
+  .order-process-header { font-size: 18px; padding: 14px; }
+}
+
+@media (max-width: 600px) {
+  body .Navbar a#BName { font-size: 15px !important; }
+  /* Keep the top icons tidy and let the long brand share the row cleanly. */
+  .Navbar .Img { width: 20px; height: 20px; }
+  .Navbar ul { gap: 6px; }
 }
 
 /* ── MOBILE RESPONSIVE ───────────────────────────────────── */
@@ -1172,40 +1182,21 @@ body.cancel-modal-open { overflow: hidden; }
   .order-process-card { margin: 4px; border-radius: 10px; }
   .order-process-header { font-size: 16px; padding: 14px; }
 
-  /* ── Step wizard (Bootstrap .nav-tabs): make it a horizontal
-        scroll row of evenly sized steps so the 8 circles never
-        overlap or wrap onto a second row. ── */
-  .wizard { margin: 10px auto; }
-  .wizard .nav-tabs {
-    display: flex;
-    flex-wrap: nowrap;
+  /* ── Step wizard: scroll ONLY the icon bar (.wizard-inner) horizontally so
+        the later steps are reachable by swiping. The step info panes
+        (.tab-content) sit outside .wizard-inner, so they stay fixed and do
+        not scroll sideways. ── */
+  .wizard { margin: 10px auto; overflow: visible; }
+  .wizard-inner {
     overflow-x: auto;
     overflow-y: hidden;
     -webkit-overflow-scrolling: touch;
-    margin: 16px 0 0;
-    padding-bottom: 8px;
+    min-width: 0;
   }
-  .wizard .nav-tabs > li {
-    width: auto !important;
-    flex: 0 0 auto;
-    min-width: 54px;
-  }
-  /* Round tabs flow inline (not absolutely positioned) on mobile. */
-  .wizard .nav-tabs > li a {
-    width: 46px !important;
-    height: 46px !important;
-    margin: 6px auto !important;
-  }
-  .wizard .nav-tabs > li span.round-tab {
-    position: static !important;
-    width: 46px;
-    height: 46px;
-    line-height: 44px;
-    font-size: 18px;
-  }
-  .wizard li:after,
-  .wizard li.active:after { display: none; }   /* hide the little arrow markers */
-  .connecting-line { display: none; }          /* the absolute line misaligns when steps scroll */
+  .wizard-inner .nav-tabs { min-width: 620px; }
+  .wizard .nav-tabs > li a { width: 56px !important; height: 56px !important; margin: 16px auto !important; }
+  .wizard .nav-tabs > li span.round-tab { width: 56px; height: 56px; line-height: 54px; font-size: 20px; }
+  .connecting-line { top: 50%; }
   .wizard .tab-pane { padding-top: 20px; }
 
   .bs-calltoaction { padding: 10px; }
@@ -1228,7 +1219,25 @@ body.cancel-modal-open { overflow: hidden; }
   .ItemImg { width: 100%; height: auto; }
   .OrdSum-Receipt-Container { flex-direction: column; gap: 16px; }
   .HeaderRowType { width: 100%; }
-  .chat-container { margin-top: 10px; }
+  .chat-container {
+    margin-top: 10px;
+    max-width: 100%;
+    overflow: visible;      /* was hidden → clipped the Send button */
+    box-sizing: border-box;
+  }
+  .chat-container * { box-sizing: border-box; }
+  .chat-messages { padding: 12px; min-height: 140px; max-height: 240px; }
+  .chat-header { padding: 10px 12px; }
+  /* Input + Send stack-friendly: input flexes, button keeps a fixed size and
+     stays visible; they wrap if the row is too tight. */
+  .chat-input-row {
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 10px 12px;
+    width: 100%;
+  }
+  .chat-input { flex: 1 1 100%; min-width: 0; }
+  .chat-send-btn { flex: 0 0 auto; width: 100%; padding: 10px 16px; }
   .review-modal { padding: 14px 16px 20px; }
   .review-steps-bar { gap: 6px; }
   .review-step-dot { width: 28px; height: 28px; font-size: 11px; }

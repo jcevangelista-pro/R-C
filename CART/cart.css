@@ -847,24 +847,61 @@ body{
 
 /* ── MOBILE RESPONSIVE ───────────────────────────────────── */
 @media (max-width: 600px) {
-  .cart-card { border-radius: 10px; margin: 0 8px; }
+  .page { padding: 10px 0; }
+  .cart-card { border-radius: 10px; margin: 0 8px; min-height: unset; overflow: hidden; }
   .cart-header { flex-direction: column; align-items: flex-start; gap: 8px; padding: 14px 14px 10px; }
   .cart-table-head { display: none; }
-  .cart-row { flex-wrap: wrap; gap: 6px; padding: 12px 14px; }
-  .row-thumb img, .row-thumb { width: 50px !important; height: 50px !important; }
-  .row-name { font-size: 13px; }
-  .row-category { font-size: 11px; }
-  .row-price, .row-qty, .row-total, .row-status { font-size: 12px; }
+
+  /* Each cart item becomes a stacked card (base rule is display:grid, so
+     flex-wrap alone did nothing and the 130px thumb column overflowed). */
+  .cart-rows { padding: 4px 10px 8px; }
+  .cart-row {
+    display: flex !important;
+    flex-wrap: wrap;
+    align-items: center;
+    column-gap: 10px;
+    row-gap: 6px;
+    padding: 12px;
+    margin-bottom: 10px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: #fff;
+  }
+  .cart-row .radio-dot { flex: 0 0 auto; align-self: flex-start; margin-top: 4px; }
+  .cart-row .row-thumb,
+  .cart-row .row-thumb img { width: 56px !important; height: 56px !important; }
+  .cart-row .row-thumb { flex: 0 0 56px; align-self: flex-start; }
+  /* Name/category block fills the remaining width beside the thumbnail. */
+  .cart-row > div:nth-child(3) { flex: 1; min-width: 0; }
+  .cart-row .row-name { font-size: 14px; white-space: normal; }
+  .cart-row .row-category { font-size: 11px; }
+  .cart-row .row-chevron { flex: 0 0 auto; margin-left: auto; font-size: 26px; align-self: flex-start; }
+
+  /* Price / qty / total wrap to their own line with inline labels. */
+  .cart-row .row-price,
+  .cart-row .row-qty,
+  .cart-row .row-total { font-size: 12px; text-align: left; }
+  .cart-row .row-price { flex-basis: 100%; }
+  .cart-row .row-price::before { content: "Price: "; color: var(--text-muted); font-weight: 400; }
+  .cart-row .row-qty::before { content: "Qty: "; color: var(--text-muted); font-weight: 400; }
+  .cart-row .row-total::before { content: "Total: "; color: var(--text-muted); font-weight: 400; }
+
   .cart-footer { padding: 12px 14px; flex-direction: column; gap: 10px; align-items: stretch; }
   .checkout-btn { width: 100%; padding: 12px; }
   .modal-overlay { padding: 10px; }
   .delivery-modal-card, .order-modal-card { width: 100%; max-height: 92vh; padding: 16px; border-radius: 12px; }
-  .od-grid { flex-direction: column; gap: 10px; }
+
+  /* Modal content: force single-column stacking (these rows are grids). */
+  .od-grid { flex-direction: column; gap: 10px; align-items: flex-start; }
   .od-details-col { width: 100%; }
   .od-inline-row { flex-wrap: wrap; gap: 10px; }
-  .field-row.three, .field-row.two { flex-direction: column; gap: 10px; }
-  .field-row.two.uneven { flex-direction: column; }
-  .selection-block.bottom-row { flex-direction: column; gap: 10px; }
+  .field-row, .field-row.two, .field-row.three, .field-row.two.uneven {
+    grid-template-columns: 1fr;
+  }
+  .selection-block.two-up { flex-direction: column; gap: 14px; }
+  .selection-block.bottom-row { flex-direction: column; gap: 10px; align-items: stretch; }
+  .selection-block.bottom-row .summary-actions { margin-left: 0; width: 100%; }
+  .selection-block.bottom-row .summary-actions .done-btn { width: 100%; }
   .done-btn { width: 100%; }
   .remove-btn { width: 100%; }
   .cart-action-feedback { top: 72px; right: 16px; left: 16px; width: auto; }
