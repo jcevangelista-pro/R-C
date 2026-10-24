@@ -65,7 +65,7 @@ span.round-tab:hover {
 }
  
 .wizard .nav-tabs > li {
-    width: 25%;
+    width: 12.5%;
 }
  
 .wizard li:after {
@@ -1147,26 +1147,79 @@ body.cancel-modal-open { overflow: hidden; }
 }
 
 
+/* ── TABLET: keep the 8 step circles in a single scrollable row ── */
+@media (max-width: 900px) and (min-width: 601px) {
+  .wizard .nav-tabs {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 8px;
+  }
+  .wizard .nav-tabs > li { width: auto !important; flex: 0 0 auto; min-width: 72px; }
+  .wizard .nav-tabs > li a { width: 56px !important; height: 56px !important; margin: 10px auto !important; }
+  .wizard .nav-tabs > li span.round-tab {
+    position: static !important;
+    width: 56px; height: 56px; line-height: 54px; font-size: 20px;
+  }
+  .wizard li:after, .wizard li.active:after { display: none; }
+  .connecting-line { display: none; }
+}
+
 /* ── MOBILE RESPONSIVE ───────────────────────────────────── */
 @media (max-width: 600px) {
   .order-process-card { margin: 4px; border-radius: 10px; }
   .order-process-header { font-size: 16px; padding: 14px; }
-  .wizard-inner { min-width: unset; overflow-x: auto; }
-  .order-steps { min-width: unset; overflow-x: auto; padding-bottom: 8px; }
-  .order-steps > li { min-width: 60px; }
-  .order-steps .round-tab { width: 44px; height: 44px; line-height: 40px; font-size: 16px; }
-  .order-steps .step-label { font-size: 9px; }
-  .connecting-line { top: 22px; }
+
+  /* ── Step wizard (Bootstrap .nav-tabs): make it a horizontal
+        scroll row of evenly sized steps so the 8 circles never
+        overlap or wrap onto a second row. ── */
+  .wizard { margin: 10px auto; }
+  .wizard .nav-tabs {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    margin: 16px 0 0;
+    padding-bottom: 8px;
+  }
+  .wizard .nav-tabs > li {
+    width: auto !important;
+    flex: 0 0 auto;
+    min-width: 54px;
+  }
+  /* Round tabs flow inline (not absolutely positioned) on mobile. */
+  .wizard .nav-tabs > li a {
+    width: 46px !important;
+    height: 46px !important;
+    margin: 6px auto !important;
+  }
+  .wizard .nav-tabs > li span.round-tab {
+    position: static !important;
+    width: 46px;
+    height: 46px;
+    line-height: 44px;
+    font-size: 18px;
+  }
+  .wizard li:after,
+  .wizard li.active:after { display: none; }   /* hide the little arrow markers */
+  .connecting-line { display: none; }          /* the absolute line misaligns when steps scroll */
+  .wizard .tab-pane { padding-top: 20px; }
+
   .bs-calltoaction { padding: 10px; }
   .status-card { grid-template-columns: 1fr; gap: 10px; }
   #PaymentCard { height: auto; }
   #FinalPaymentCard { height: auto; }
   #OrderReceivedCard { height: auto; }
   .BottomRowType { flex-direction: column; gap: 16px; }
-  .BRT-LeftColumn { width: 100%; margin-left: 0; }
-  .BRT-RightColumn { width: 100%; justify-content: flex-start; }
+  .BRT-LeftColumn { width: 100% !important; margin-left: 0; }
+  .BRT-RightColumn { width: 100% !important; justify-content: flex-start; }
   .MoP-PT-Row { flex-direction: column; gap: 16px; }
-  .od-inline-row { flex-wrap: wrap; gap: 10px; width: auto; }
+  /* Nested fixed 550px rows would overflow — force fluid width. */
+  .od-inline-row,
+  .BRT-LeftColumn .od-inline-row { flex-wrap: wrap; gap: 10px; width: 100% !important; }
   .ScreenShot-RefNum-Row { flex-direction: column; gap: 12px; }
   .GCLogo { width: 100px; height: auto; }
   .GCQr { height: 160px; }

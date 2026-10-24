@@ -96,12 +96,18 @@
 
 @media (max-width: 900px){
 
-  .cart-table-head,
-  .order-row{
-    grid-template-columns: 100px 140px 1fr 0.8fr 0.9fr 120px;
+  .cart-table-head{
+    grid-template-columns: 70px 1fr 0.8fr 0.7fr 0.9fr 110px;
     font-size:10px;
     padding:14px 16px;
   }
+  .order-row{
+    grid-template-columns: 70px 1fr 0.8fr 0.7fr 0.9fr 110px 36px;
+    font-size:10px;
+    padding:14px 16px;
+  }
+  .order-row .row-status{ width:100% !important; box-sizing:border-box; }
+  .order-row .row-chevron{ font-size:28px; }
 
   .order-row .row-thumb{
     width:60px;
@@ -150,15 +156,64 @@
 
 /* ── MOBILE RESPONSIVE (≤600px) ─────────────────────────── */
 @media (max-width: 600px) {
-  .cart-card { border-radius: 10px; margin: 0 8px; }
+  .cart-card { border-radius: 10px; margin: 0 8px; overflow: hidden; }
   .cart-header { flex-direction: column; align-items: flex-start; gap: 8px; padding: 12px 12px 8px; }
   .cart-table-head { display: none; }
   .order-tabs { flex-wrap: wrap; gap: 4px; }
   .order-tab { font-size: 10px; padding: 6px 10px; }
-  .order-row { flex-wrap: wrap; gap: 6px; padding: 10px 12px; }
-  .order-row .row-thumb { width: 50px !important; height: 50px !important; }
-  .row-name { font-size: 13px; }
-  .row-price, .row-qty, .row-total { font-size: 12px; }
-  .row-status { font-size: 11px; }
-  .row-chevron { margin-left: auto; }
+
+  /* Turn each order into a stacked card instead of an overflowing grid. */
+  .order-rows { padding: 4px 10px 10px; }
+  .order-row {
+    display: flex !important;
+    flex-wrap: wrap;
+    align-items: center;
+    column-gap: 10px;
+    row-gap: 6px;
+    padding: 12px;
+    margin-bottom: 10px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: #fff;
+  }
+  .order-row .row-thumb {
+    width: 56px !important;
+    height: 56px !important;
+    flex: 0 0 56px;
+    align-self: flex-start;
+  }
+  /* Name/category block takes the remaining width beside the thumbnail. */
+  .order-row > div:nth-child(2) { flex: 1; min-width: 0; }
+  .order-row .row-name { font-size: 14px; white-space: normal; }
+  .order-row .row-category { font-size: 11px; }
+  .order-row .row-chevron {
+    flex: 0 0 auto;
+    font-size: 28px;
+    margin-left: auto;
+    align-self: flex-start;
+    text-align: right;
+  }
+
+  /* Price / qty / total wrap onto their own line with inline labels. */
+  .order-row .row-price,
+  .order-row .row-qty,
+  .order-row .row-total {
+    font-size: 12px;
+    text-align: left;
+  }
+  .order-row .row-price { flex-basis: 100%; }
+  .order-row .row-price::before { content: "Price: "; font-weight: 400; color: var(--text-muted); }
+  .order-row .row-qty::before { content: "Qty: "; font-weight: 400; color: var(--text-muted); }
+  .order-row .row-total::before { content: "Total: "; font-weight: 400; color: var(--text-muted); }
+
+  /* Status becomes a full-width badge, no fixed width (was 210px → overflow). */
+  .order-row .row-status {
+    flex-basis: 100%;
+    width: 100% !important;
+    box-sizing: border-box;
+    padding: 6px 10px;
+    font-size: 11px;
+  }
 }
+
+/* ── SMALL TABLET (601–900px): row-status handled in the 900px block above ── */

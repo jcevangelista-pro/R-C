@@ -316,6 +316,7 @@
             <option value="box">box</option>
             <option value="carton">carton</option>
             <option value="set">set</option>
+            <option value="bottle">bottle</option>
           </select>
         </div>
       </div>

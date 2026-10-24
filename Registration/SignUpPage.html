@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
     <title>R&C Printing Services</title>
-    <link rel="stylesheet" href="LogInPage.css?v=2">
+    <link rel="stylesheet" href="LogInPage.css?v=3">
     <link rel="stylesheet" href="SignUpPage.css">
     <link rel="stylesheet" href="../CustomerNav.css">
 </head>
@@ -13,14 +13,17 @@
 
     <!--Navigation Bar-->
     <nav class="Navbar">
-            <a href="LandingPage.html" id="BName">R&C PRINTING SERVICES</a>
-        <ul>
-            <li><a href=""><img src="../imgs/typing.png" alt="" class="Img"></a></li>
-            <li><a href=""><img src="../imgs/trolley.png" alt="" class="Img"></a></li>
-            <li><a href="">HOME</a></li>
-            <li><a href="">PRODUCTS</a></li>
-            <li><a href="">PORTFOLIO</a></li>
-            <li><a href=""><img src="../imgs/user.png" alt="" class="Img"></a></li>
+        <a href="../LandingPage/LandingPage.html" id="BName">R&C PRINTING SERVICES</a>
+        <button type="button" class="nav-hamburger" id="navHamburger" aria-label="Open menu" aria-expanded="false">
+            <span></span><span></span><span></span>
+        </button>
+        <ul id="navMenu">
+            <li class="nav-icon-item"><a href=""><img src="../imgs/typing.png" alt="" class="Img"></a></li>
+            <li class="nav-icon-item"><a href=""><img src="../imgs/trolley.png" alt="" class="Img"></a></li>
+            <li class="nav-text-item"><a href="../LandingPage/LandingPage.html">HOME</a></li>
+            <li class="nav-text-item"><a href="../Products/Prodbrowse.html">PRODUCTS</a></li>
+            <li class="nav-text-item"><a href="../Portfolio/PortfolioPage.html">PORTFOLIO</a></li>
+            <li class="nav-icon-item"><a href=""><img src="../imgs/user.png" alt="" class="Img"></a></li>
         </ul>
     </nav>
 
@@ -91,7 +94,31 @@
             <button type="button" class="terms-modal-close" id="termsModalClose" aria-label="Close">&times;</button>
             <h2 class="terms-modal-title" id="termsModalTitle">Terms and Privacy Policy</h2>
             <div class="terms-modal-body" id="termsModalBody">
-                <!-- Terms and privacy policy content goes here. -->
+<b>Terms and Conditions</b>
+Please read these Terms and Conditions carefully before placing an order with R&C Printing Services. By using the website and placing an order, customers acknowledge their responsibility to review and comply with the applicable terms outlined below.
+1. <b>Pricing and Quotations</b>
+    All prices are quoted in Philippine pesos (PHP). Prices are based on the specific quantity and order specifications indicated in the quotation. Any changes to the requested quantity will require a new quotation.
+2. <b>Down Payment and Remaining Balance</b>
+    A 50% advance payment of the total quoted amount is required upon order confirmation. The remaining 50% balance must be paid before delivery.
+3. <b>Changes in Order Quantity</b>
+    Once the down payment has been made, the quantity of items ordered cannot be decreased. Customers may request additional quantities; however, the additional items will be subject to a new quotation.
+4. <b>Order Cancellation</b>
+    Orders cannot be cancelled once the down payment has been made, subject to applicable laws and consumer rights.
+5. <b>Production Lead Time</b>
+    The estimated production lead time is 3–5 days for the entire order, starting from receipt of the required down payment. Customers may contact R&C Printing Services for clarification regarding the expected completion and delivery of their orders.
+6. <b>Payment Methods and Bank Transactions</b>
+    Customers must follow the payment instructions provided by R&C Printing Services. Payments made by cheque must be deposited into the designated bank account of the business. Customers should ensure that their payment details and submitted proof of payment are accurate and complete.
+    For bank account information and other payment instructions, customers should refer to the payment details provided by R&C Printing Services through its designated channels or the system.
+7. <b>Order Confirmation and Processing</b>
+    Orders are subject to verification and confirmation by R&C Printing Services. Customers should review their order details, quantities, and customization specifications carefully before confirming their orders.
+    The processing of an order will proceed according to the applicable payment requirements and order verification procedures.
+8. <b>Inquiries and Clarifications</b>
+    For questions or further clarification regarding quotations, payments, order specifications, production schedules, or other concerns, customers may contact R&C Printing Services through its designated communication channels.
+9. <b>Acknowledgment</b>
+    By proceeding with an order, customers acknowledge that they have read and understood these Terms and Conditions. Customers are encouraged to clarify any concerns with R&C Printing Services before confirming an order or making a payment.
+
+<br><p style="text-align: center; font-display: auto;">Thank you for choosing R&C Printing Services. We look forward to serving your needs and providing quality printing services.</p>
+
             </div>
             <div class="terms-modal-actions">
                 <button type="button" class="terms-modal-btn" id="termsModalOk">Close</button>
@@ -238,6 +265,27 @@
     document.getElementById('BBack').addEventListener('click', function() {
         window.history.back();
     });
+
+    // Mobile hamburger menu toggle
+    (function(){
+        const burger = document.getElementById('navHamburger');
+        const menu = document.getElementById('navMenu');
+        if (burger && menu) {
+            burger.addEventListener('click', function(e){
+                e.stopPropagation();
+                const open = menu.classList.toggle('open');
+                burger.classList.toggle('open', open);
+                burger.setAttribute('aria-expanded', open ? 'true' : 'false');
+            });
+            document.addEventListener('click', function(e){
+                if (!menu.contains(e.target) && e.target !== burger) {
+                    menu.classList.remove('open');
+                    burger.classList.remove('open');
+                    burger.setAttribute('aria-expanded', 'false');
+                }
+            });
+        }
+    })();
     </script>
 </body>
 </html>

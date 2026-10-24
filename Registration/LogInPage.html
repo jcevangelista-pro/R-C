@@ -5,21 +5,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
     <title>R&C Printing Services</title>
-    <link rel="stylesheet" href="LogInPage.css?v=2">
+    <link rel="stylesheet" href="LogInPage.css?v=3">
     <link rel="stylesheet" href="../CustomerNav.css">
 </head>
 <body>
 
     <!--Navigation Bar-->
     <nav class="Navbar">
-            <a href="LandingPage.html" id="BName">R&C PRINTING SERVICES</a>
-        <ul>
-            <li><a href=""><img src="../imgs/typing.png" alt="" class="Img"></a></li>
-            <li><a href=""><img src="../imgs/trolley.png" alt="" class="Img"></a></li>
-            <li><a href="">HOME</a></li>
-            <li><a href="">PRODUCTS</a></li>
-            <li><a href="">PORTFOLIO</a></li>
-            <li><a href=""><img src="../imgs/user.png" alt="" class="Img"></a></li>
+        <a href="../LandingPage/LandingPage.html" id="BName">R&C PRINTING SERVICES</a>
+        <button type="button" class="nav-hamburger" id="navHamburger" aria-label="Open menu" aria-expanded="false">
+            <span></span><span></span><span></span>
+        </button>
+        <ul id="navMenu">
+            <li class="nav-icon-item"><a href=""><img src="../imgs/typing.png" alt="" class="Img"></a></li>
+            <li class="nav-icon-item"><a href=""><img src="../imgs/trolley.png" alt="" class="Img"></a></li>
+            <li class="nav-text-item"><a href="../LandingPage/LandingPage.html">HOME</a></li>
+            <li class="nav-text-item"><a href="../Products/Prodbrowse.html">PRODUCTS</a></li>
+            <li class="nav-text-item"><a href="../Portfolio/PortfolioPage.html">PORTFOLIO</a></li>
+            <li class="nav-icon-item"><a href=""><img src="../imgs/user.png" alt="" class="Img"></a></li>
         </ul>
     </nav>
 
@@ -115,6 +118,27 @@
     document.getElementById('BBack').addEventListener('click', function() {
         window.history.back();
     });
+
+    // Mobile hamburger menu toggle
+    (function(){
+        const burger = document.getElementById('navHamburger');
+        const menu = document.getElementById('navMenu');
+        if (burger && menu) {
+            burger.addEventListener('click', function(e){
+                e.stopPropagation();
+                const open = menu.classList.toggle('open');
+                burger.classList.toggle('open', open);
+                burger.setAttribute('aria-expanded', open ? 'true' : 'false');
+            });
+            document.addEventListener('click', function(e){
+                if (!menu.contains(e.target) && e.target !== burger) {
+                    menu.classList.remove('open');
+                    burger.classList.remove('open');
+                    burger.setAttribute('aria-expanded', 'false');
+                }
+            });
+        }
+    })();
     </script>
 </body>
 </html>
