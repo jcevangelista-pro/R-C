@@ -387,3 +387,84 @@ a.summary-tile:hover {
 }
 
 @keyframes spin { to { transform: rotate(360deg); } }
+
+
+/* ── RESPONSIVE: TABLET ──────────────────────────────────── */
+@media (max-width: 1024px) {
+  .row-2 { grid-template-columns: 1fr; }
+  .row-3 { grid-template-columns: 1fr 1fr; }
+  .topbar h1 { font-size: 32px; }
+}
+
+/* ── RESPONSIVE: MOBILE ──────────────────────────────────── */
+@media (max-width: 768px) {
+  /* Stack the page: sidebar becomes a horizontal top bar, main fills width. */
+  body { flex-direction: column; }
+
+  .sidebar {
+    position: static;
+    width: 100%;
+    height: auto;
+    flex-direction: row;
+    align-items: center;
+    gap: 4px;
+    padding: 8px 10px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+  }
+  .brand { padding: 0 10px 0 4px; flex: 0 0 auto; }
+  .brand img { width: 34px; height: 34px; }
+  .brand-text { font-size: 12px; white-space: nowrap; }
+  .nav-label { display: none; }
+  .sidebar .nav-item {
+    flex: 0 0 auto;
+    padding: 8px 12px;
+    font-size: 12px;
+    border-radius: 8px;
+    white-space: nowrap;
+    justify-content: center;
+    gap: 6px;
+  }
+  .sidebar .nav-item.active { border-left: 0; border-bottom: 3px solid #ec4899; padding-left: 12px; }
+
+  .main {
+    margin-left: 0;
+    padding: 16px;
+    gap: 16px;
+  }
+
+  .topbar { padding: 12px 16px; }
+  .topbar h1 { font-size: 26px; }
+  .owner-tag { font-size: 16px; }
+  .owner-tag img { width: 30px; height: 30px; }
+
+  /* Single-column rows and the right-side chart/inventory stacks. */
+  .row-2, .row-3 { grid-template-columns: 1fr; }
+  .row-grid .card + div,
+  .row-grid > div { min-width: 0; }
+
+  .section-title, .chart-title { font-size: 16px; }
+  .chart-wrap { height: 200px; }
+
+  .stat-value { font-size: 30px; }
+  .summary-value { font-size: 22px; }
+  .inv-count { font-size: 26px; }
+
+  /* Recent Orders table: allow horizontal scroll instead of squishing. */
+  .orders-table {
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    white-space: nowrap;
+  }
+}
+
+/* ── RESPONSIVE: SMALL PHONES ────────────────────────────── */
+@media (max-width: 480px) {
+  .stat-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+  .summary-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+  .topbar h1 { font-size: 22px; }
+  .stat-value { font-size: 26px; }
+  .stat-label, .summary-label { font-size: 10px; }
+}
