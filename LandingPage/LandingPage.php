@@ -53,9 +53,9 @@
                 <div class="PicContainer">
                     <div class="PC1">
                         <img src="../imgs/MugPicture.jpg" alt="" class="Pictures" id="Picture1">
-                        <img src="../imgs/MugPicture.jpg" alt="" class="Pictures" id="Picture2">
+                        <img src="../imgs/landingPagepic2.jpg" alt="" class="Pictures" id="Picture2">
                     </div>
-                        <img src="../imgs/MugPicture.jpg" alt="" class="Pictures" id="Picture3">
+                        <img src="../imgs/landingPagepic3.jpg" alt="" class="Pictures" id="Picture3">
                 </div>
             </div>
         </div>

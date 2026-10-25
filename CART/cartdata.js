@@ -13,6 +13,7 @@ async function loadCartFromDB() {
             name: item.name,
             category: item.category || '',
             price: item.price,
+            basePrice: item.price,   // product cost + non-shirt materials (excludes shirt size)
             qty: item.quantity,
             image: item.image_path || null,
             needsSize: item.uses_shirt === true,

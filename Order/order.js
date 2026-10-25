@@ -20,6 +20,7 @@ async function loadOrders() {
         renderPendingTable(data.pending_rush, 'pendingRushBody');
         renderHistoryTable(data.history);
         renderProcessTable(data.in_progress);
+        applyOrderFilters();   // keep any active search applied after re-render
         return true;
     } catch (err) {
         console.error('Error loading orders:', err);
@@ -653,3 +654,51 @@ async function sendAdminMessage() {
     if (Number.isInteger(linkedStep) && linkedStep >= 1 && linkedStep <= 8) reviewViewingStep = linkedStep;
     if (linkedOrderId) openOrderReviewModal(linkedOrderId);
 })();
+
+
+// ── Order table search ──────────────────────────────────────
+// Each search input carries data-body="<tbodyId>". Typing filters that
+// table's rows by matching the row's visible text (Order ID / customer /
+// product / status / date). Re-applied after loadOrders() re-renders.
+function filterOrderTable(input) {
+    const tbody = document.getElementById(input.dataset.body);
+    if (!tbody) return;
+    const q = input.value.trim().toLowerCase();
+    const rows = tbody.querySelectorAll('tr');
+    let visible = 0;
+    rows.forEach(row => {
+        // Skip the "No ... / Loading" placeholder rows (single full-width cell).
+        if (row.querySelector('td[colspan]')) return;
+        const match = row.textContent.toLowerCase().includes(q);
+        row.style.display = match ? '' : 'none';
+        if (match) visible++;
+    });
+    // Show a "no matches" note when a query hides everything.
+    let note = tbody.querySelector('.order-search-empty');
+    const hasRealRows = tbody.querySelector('tr:not(.order-search-empty) td:not([colspan])');
+    if (q && visible === 0 && hasRealRows) {
+        if (!note) {
+            note = document.createElement('tr');
+            note.className = 'order-search-empty';
+            const td = document.createElement('td');
+            td.colSpan = 7;
+            td.style.cssText = 'text-align:center;color:#9ca3af;padding:16px;';
+            td.textContent = 'No orders match your search.';
+            note.appendChild(td);
+            tbody.appendChild(note);
+        }
+        note.style.display = '';
+    } else if (note) {
+        note.style.display = 'none';
+    }
+}
+
+function applyOrderFilters() {
+    document.querySelectorAll('input[data-body]').forEach(input => {
+        if (input.value.trim()) filterOrderTable(input);
+    });
+}
+
+document.querySelectorAll('input[data-body]').forEach(input => {
+    input.addEventListener('input', () => filterOrderTable(input));
+});

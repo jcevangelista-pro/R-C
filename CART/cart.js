@@ -301,11 +301,13 @@ function renderOrderModal(){
     // is configured (empty/absent map) keep every size selectable so the
     // dropdown is never fully disabled.
     const hasPriceMap = item.sizePrices && Object.keys(item.sizePrices).length > 0;
+    const base = (item.basePrice != null) ? Number(item.basePrice) : Number(item.price);
     Array.from(sizeSelect.options).forEach(opt => {
       if (opt.value === '') return; // keep the placeholder
       opt.disabled = hasPriceMap && !(opt.value in item.sizePrices);
+      // Label shows the effective price for that size = base price + size cost.
       opt.textContent = (hasPriceMap && opt.value in item.sizePrices)
-        ? `${opt.value} — ${money(item.sizePrices[opt.value])}`
+        ? `${opt.value} — ${money(base + Number(item.sizePrices[opt.value]))}`
         : opt.value;
     });
   }
@@ -416,9 +418,13 @@ document.getElementById('odSizeSelect').addEventListener('change', (e) => {
   const selectedSize = e.target.value;
   item.size = selectedSize || null;
 
-  // Update item price from the size→cost map
+  // Price = base product price (product cost + non-shirt materials) PLUS the
+  // selected size's unit cost. When no size is chosen, fall back to base.
+  const base = (item.basePrice != null) ? Number(item.basePrice) : Number(item.price);
   if (selectedSize && item.sizePrices && selectedSize in item.sizePrices) {
-    item.price = item.sizePrices[selectedSize];
+    item.price = base + Number(item.sizePrices[selectedSize]);
+  } else {
+    item.price = base;
   }
 
   // Refresh all price displays in the modal without full re-render

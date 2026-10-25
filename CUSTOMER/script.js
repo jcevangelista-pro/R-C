@@ -42,16 +42,72 @@ function renderRows(list){
   });
 }
 
-// ── Search ──────────────────────────────────────────────────
+// ── Search + Filter ─────────────────────────────────────────
 const searchInput = document.querySelector('.search-box input');
-searchInput.addEventListener('input', (e) => {
-  const q = e.target.value.toLowerCase();
-  const filtered = customers.filter(c =>
+let custFilter = 'all';   // all | pending | cancelled | completed | hasorders
+let custSort = '';        // '' | most | least
+
+// Count a customer's orders by status (case-insensitive).
+function orderCountByStatus(customer, status) {
+  const orders = customer.orders || [];
+  if (!status) return orders.length;
+  return orders.filter(o => String(o.status).toLowerCase() === status).length;
+}
+
+function getVisibleCustomers() {
+  const q = searchInput.value.toLowerCase();
+  let list = customers.filter(c =>
     c.name.toLowerCase().includes(q) ||
-    c.contact.toLowerCase().includes(q) ||
-    c.address.toLowerCase().includes(q)
+    String(c.contact).toLowerCase().includes(q) ||
+    String(c.address).toLowerCase().includes(q)
   );
-  renderRows(filtered);
+
+  if (custFilter === 'pending')        list = list.filter(c => orderCountByStatus(c, 'pending') > 0);
+  else if (custFilter === 'cancelled') list = list.filter(c => orderCountByStatus(c, 'cancelled') > 0);
+  else if (custFilter === 'completed') list = list.filter(c => orderCountByStatus(c, 'completed') > 0);
+  else if (custFilter === 'hasorders') list = list.filter(c => (c.orders || []).length > 0);
+
+  if (custSort === 'most') {
+    list = list.slice().sort((a, b) => (b.orders || []).length - (a.orders || []).length);
+  } else if (custSort === 'least') {
+    list = list.slice().sort((a, b) => (a.orders || []).length - (b.orders || []).length);
+  }
+  return list;
+}
+
+function applyCustomerView() {
+  renderRows(getVisibleCustomers());
+}
+
+searchInput.addEventListener('input', applyCustomerView);
+
+// ── Filter Modal ────────────────────────────────────────────
+const custFilterOverlay = document.getElementById('custFilterOverlay');
+document.getElementById('custFilterBtn').addEventListener('click', () => {
+  // Reflect current state in the controls, then open.
+  document.querySelectorAll('input[name="custFilter"]').forEach(r => { r.checked = r.value === custFilter; });
+  document.getElementById('custFilterSort').value = custSort;
+  custFilterOverlay.hidden = false;
+});
+function closeCustFilter() { custFilterOverlay.hidden = true; }
+document.getElementById('custFilterClose').addEventListener('click', closeCustFilter);
+custFilterOverlay.addEventListener('click', e => { if (e.target === custFilterOverlay) closeCustFilter(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && !custFilterOverlay.hidden) closeCustFilter(); });
+
+document.getElementById('custFilterApply').addEventListener('click', () => {
+  const sel = document.querySelector('input[name="custFilter"]:checked');
+  custFilter = sel ? sel.value : 'all';
+  custSort = document.getElementById('custFilterSort').value;
+  applyCustomerView();
+  closeCustFilter();
+});
+document.getElementById('custFilterReset').addEventListener('click', () => {
+  custFilter = 'all';
+  custSort = '';
+  document.querySelectorAll('input[name="custFilter"]').forEach(r => { r.checked = r.value === 'all'; });
+  document.getElementById('custFilterSort').value = '';
+  applyCustomerView();
+  closeCustFilter();
 });
 
 /* ================= ORDER RECORDS MODAL ================= */

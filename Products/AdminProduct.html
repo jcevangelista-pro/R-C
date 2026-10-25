@@ -499,6 +499,14 @@
       </div>
     </div>
 
+    <div class="product-search-bar" style="margin:16px 0 0;display:flex;justify-content:flex-end;">
+      <div style="position:relative;max-width:320px;width:100%;">
+        <input type="text" id="productSearchInput" placeholder="Search products by name or type…"
+          style="width:100%;height:40px;border:1px solid #e5e7eb;border-radius:8px;padding:0 38px 0 14px;font-size:14px;outline:none;">
+        <span style="position:absolute;right:14px;top:50%;transform:translateY(-50%);color:#ec4899;">&#128269;</span>
+      </div>
+    </div>
+
     <div class="panel2">
       <div class="PCContainer" id="productContainer">
         <!-- Add Product card (always first) -->
@@ -727,6 +735,7 @@ document.getElementById('archivedContainer').addEventListener('click', async (e)
 const PRODUCT_DISPLAY_LIMIT = 20;
 let allProducts = [];
 let showingAllProducts = false;
+let productSearchTerm = '';
 
 function createProductCard(p) {
   const card = document.createElement('div');
@@ -764,22 +773,48 @@ function drawProducts() {
   container.innerHTML = '';
   container.appendChild(addCard);
 
+  // Filter by the search term (name or type), case-insensitive.
+  const q = (productSearchTerm || '').trim().toLowerCase();
+  const matched = q
+    ? allProducts.filter(p =>
+        (p.name || '').toLowerCase().includes(q) ||
+        (p.type_of_product || '').toLowerCase().includes(q))
+    : allProducts;
+
   const visible = showingAllProducts
-    ? allProducts
-    : allProducts.slice(0, PRODUCT_DISPLAY_LIMIT);
+    ? matched
+    : matched.slice(0, PRODUCT_DISPLAY_LIMIT);
 
   visible.forEach(p => container.appendChild(createProductCard(p)));
+
+  // Empty-state note when a search yields nothing.
+  if (q && matched.length === 0) {
+    const note = document.createElement('p');
+    note.style.cssText = 'color:#9ca3af;font-size:14px;padding:12px;';
+    note.textContent = 'No products match your search.';
+    container.appendChild(note);
+  }
 
   // Show the toggle button whenever there are more products than the limit.
   // Label it "See All" when collapsed and "Show Less" when expanded.
   const wrap = document.getElementById('seeAllWrap');
   const btn = document.getElementById('seeAllBtn');
-  if (allProducts.length > PRODUCT_DISPLAY_LIMIT) {
+  if (matched.length > PRODUCT_DISPLAY_LIMIT) {
     wrap.style.display = '';
-    btn.textContent = showingAllProducts ? 'Show Less' : `See All Products (${allProducts.length})`;
+    btn.textContent = showingAllProducts ? 'Show Less' : `See All Products (${matched.length})`;
   } else {
     wrap.style.display = 'none';
   }
+}
+
+// ── Product search ──────────────────────────────────────────
+const productSearchInput = document.getElementById('productSearchInput');
+if (productSearchInput) {
+  productSearchInput.addEventListener('input', function() {
+    productSearchTerm = this.value;
+    showingAllProducts = false;   // collapse to the limit for the new result set
+    drawProducts();
+  });
 }
 
 // Toggle between all products and the limited view when the button is clicked.

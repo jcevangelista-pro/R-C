@@ -62,6 +62,8 @@
         <div class="col col-contact">Contact</div>
         <div class="col col-address">Address</div>
         <div class="col col-search">
+          <button type="button" id="custFilterBtn" title="Filter customers"
+            style="background:#fff;color:#ec4899;border:none;border-radius:20px;padding:7px 14px;font-weight:700;font-size:12.5px;cursor:pointer;margin-right:8px;white-space:nowrap;">⚙ Filter</button>
           <div class="search-box">
             <input type="text" placeholder="Search Customer">
             <span class="search-icon">&#128269;</span>
@@ -75,6 +77,68 @@
 
   </div><!-- /.main -->
  
+<!-- ================= CUSTOMER FILTER MODAL ================= -->
+<div class="cust-filter-overlay" id="custFilterOverlay" hidden>
+  <div class="cust-filter-modal" role="dialog" aria-modal="true" aria-labelledby="custFilterTitle">
+    <button type="button" class="cust-filter-close" id="custFilterClose" aria-label="Close">&times;</button>
+    <h2 id="custFilterTitle">Filter Customers</h2>
+
+    <div class="cust-filter-section">
+      <div class="cust-filter-label">SHOW</div>
+      <label class="cust-filter-opt"><input type="radio" name="custFilter" value="all" checked> All customers</label>
+      <label class="cust-filter-opt"><input type="radio" name="custFilter" value="pending"> With pending orders</label>
+      <label class="cust-filter-opt"><input type="radio" name="custFilter" value="cancelled"> With cancelled orders</label>
+      <label class="cust-filter-opt"><input type="radio" name="custFilter" value="completed"> With completed orders</label>
+      <label class="cust-filter-opt"><input type="radio" name="custFilter" value="hasorders"> With at least one order</label>
+    </div>
+
+    <div class="cust-filter-section">
+      <div class="cust-filter-label">SORT BY ORDER COUNT</div>
+      <select id="custFilterSort">
+        <option value="">Default (name)</option>
+        <option value="most">Most orders first</option>
+        <option value="least">Fewest orders first</option>
+      </select>
+    </div>
+
+    <div class="cust-filter-actions">
+      <button type="button" class="cust-filter-btn secondary" id="custFilterReset">RESET</button>
+      <button type="button" class="cust-filter-btn primary" id="custFilterApply">APPLY</button>
+    </div>
+  </div>
+</div>
+
+<style>
+  .cust-filter-overlay {
+    position: fixed; inset: 0; z-index: 10000;
+    display: flex; align-items: center; justify-content: center;
+    padding: 20px; background: rgba(27,31,75,0.5);
+  }
+  .cust-filter-overlay[hidden] { display: none; }
+  .cust-filter-modal {
+    position: relative; width: min(420px,100%);
+    background: #fff; border-radius: 16px; padding: 24px 26px 20px;
+    box-shadow: 0 20px 60px rgba(27,31,75,0.3);
+    font-family: inherit;
+  }
+  .cust-filter-close {
+    position: absolute; top: 12px; right: 16px; border: 0; background: transparent;
+    color: #9ca3af; font-size: 26px; line-height: 1; cursor: pointer;
+  }
+  .cust-filter-close:hover { color: #ec4899; }
+  .cust-filter-modal h2 { margin: 0 24px 16px 0; font-size: 1.3rem; font-weight: 800; color: #1b1f4b; }
+  .cust-filter-section { margin-bottom: 16px; }
+  .cust-filter-label { font-size: 11px; font-weight: 800; letter-spacing: .4px; color: #ec4899; margin-bottom: 8px; }
+  .cust-filter-opt { display: flex; align-items: center; gap: 8px; padding: 6px 0; font-size: 14px; color: #374151; cursor: pointer; }
+  #custFilterSort { width: 100%; height: 40px; border: 1px solid #e5e7eb; border-radius: 6px; padding: 0 10px; font-size: 14px; }
+  .cust-filter-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 18px; }
+  .cust-filter-btn { min-width: 100px; padding: 10px 16px; border-radius: 8px; border: none; font-size: 13px; font-weight: 700; cursor: pointer; }
+  .cust-filter-btn.secondary { background: #fff; border: 1px solid #cbd5e1; color: #334155; }
+  .cust-filter-btn.secondary:hover { background: #f1f5f9; }
+  .cust-filter-btn.primary { background: #ec4899; color: #fff; }
+  .cust-filter-btn.primary:hover { background: #db2777; }
+</style>
+
 <!-- ================= ORDER RECORDS MODAL ================= -->
 <div class="modal-overlay" id="orderModalOverlay">
  
@@ -222,7 +286,7 @@
  
 </div>
  
-<script src="script.js"></script>
+<script src="script.js?v=2"></script>
 <script src="../Registration/admin_session.js"></script>
  
 </body>

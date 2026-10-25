@@ -37,27 +37,27 @@
     <div class="stat-grid">
       <div class="stat-card total">
         <div class="stat-label">Total<br>Orders</div>
-        <div class="stat-value" id="statTotalOrders">60</div>
+        <div class="stat-value" id="statTotalOrders">0</div>
       </div>
       <div class="stat-card completed">
         <div class="stat-label">Completed<br>Orders</div>
-        <div class="stat-value" id="statCompletedOrders">57</div>
+        <div class="stat-value" id="statCompletedOrders">0</div>
       </div>
       <div class="stat-card canceled">
         <div class="stat-label">Canceled<br>Orders</div>
-        <div class="stat-value" id="statCanceledOrders">3</div>
+        <div class="stat-value" id="statCanceledOrders">0</div>
       </div>
       <div class="stat-card due-today">
         <div class="stat-label">Orders Due<br>Today</div>
-        <div class="stat-value" id="statDueToday">2</div>
+        <div class="stat-value" id="statDueToday">0</div>
       </div>
       <div class="stat-card pending">
         <div class="stat-label">Pending<br>Orders</div>
-        <div class="stat-value" id="statPendingOrders">3</div>
+        <div class="stat-value" id="statPendingOrders">0</div>
       </div>
       <div class="stat-card processing">
         <div class="stat-label">Processing<br>Orders</div>
-        <div class="stat-value" id="statProcessingOrders">2</div>
+        <div class="stat-value" id="statProcessingOrders">0</div>
       </div>
     </div>
 
@@ -66,7 +66,7 @@
       <div class="panel-header">
         <h2>Pending Orders</h2>
         <div class="search-box">
-          <input type="text" placeholder=""><img src="../imgs/Search.png" alt="">
+          <input type="text" id="searchPending" data-body="pendingBody" placeholder="Search orders…"><img src="../imgs/Search.png" alt="">
         </div>
       </div>
 
@@ -92,7 +92,7 @@
       <div class="panel-header">
         <h2>Pending Orders (Rush)</h2>
         <div class="search-box">
-          <input type="text" placeholder=""><img src="../imgs/Search.png" alt="">
+          <input type="text" id="searchRush" data-body="pendingRushBody" placeholder="Search orders…"><img src="../imgs/Search.png" alt="">
         </div>
       </div>
  
@@ -117,7 +117,7 @@
       <div class="panel-header">
         <h2>Orders History</h2>
         <div class="search-box">
-          <input type="text" placeholder=""><img src="../imgs/Search.png" alt="">
+          <input type="text" id="searchHistory" data-body="historyBody" placeholder="Search orders…"><img src="../imgs/Search.png" alt="">
         </div>
       </div>
  
@@ -145,7 +145,7 @@
       <div class="history-header">
         <h2>Order Process</h2>
         <div class="history-search">
-          <img src="../imgs/Search.png" alt=""> <input type="text" placeholder="">
+          <img src="../imgs/Search.png" alt=""> <input type="text" id="searchProcess" data-body="processBody" placeholder="Search orders…">
         </div>
       </div>
       <table class="history-table">
@@ -477,7 +477,7 @@
     </div>
   </div>
 
-<script src="order.js"></script>
+<script src="order.js?v=2"></script>
 <script src="../Registration/admin_session.js"></script>
 
 </body>

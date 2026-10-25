@@ -189,6 +189,16 @@ a.summary-tile:hover {
   margin-bottom: 14px;
 }
 
+/* Section heading for the Orders / Customers & Revenue summary cards */
+.section-title {
+  font-size: 18px;
+  font-weight: 800;
+  color: #ec4899;
+  margin-bottom: 14px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid #f3f4f6;
+}
+
 .chart-wrap {
   position: relative;
   height: 220px;

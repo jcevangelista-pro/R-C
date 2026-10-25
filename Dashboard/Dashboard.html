@@ -63,54 +63,63 @@
     <!-- ── ROW 1: Order stat tiles + Monthly Order chart + Inventory summary -->
     <div class="row-grid row-2">
 
-      <!-- Left: 6 order stat tiles + customer summary tiles -->
-      <div class="card">
-        <div class="stat-grid">
-          <a class="stat-tile pink" href="../Order/order-admin.html">
-            <div class="stat-label">Total Orders</div>
-            <div class="stat-value" id="statTotalOrders">—</div>
-          </a>
-          <a class="stat-tile orange" href="../Order/order-admin.html">
-            <div class="stat-label">Orders Due Today</div>
-            <div class="stat-value" id="statDueToday">—</div>
-          </a>
-          <a class="stat-tile blue" href="../Order/order-admin.html">
-            <div class="stat-label">Pending Orders</div>
-            <div class="stat-value" id="statPending">—</div>
-          </a>
-          <a class="stat-tile purple" href="../Order/order-admin.html">
-            <div class="stat-label">Processing Orders</div>
-            <div class="stat-value" id="statProcessing">—</div>
-          </a>
-          <a class="stat-tile green" href="../Order/order-admin.html">
-            <div class="stat-label">Completed Orders</div>
-            <div class="stat-value" id="statCompleted">—</div>
-          </a>
-          <a class="stat-tile red" href="../Order/order-admin.html">
-            <div class="stat-label">Cancelled Orders</div>
-            <div class="stat-value" id="statCancelled">—</div>
-          </a>
+      <!-- Left column: separate Orders and Customers/Revenue summary cards -->
+      <div style="display:flex; flex-direction:column; gap:16px;">
+
+        <!-- Orders Summary section -->
+        <div class="card">
+          <div class="section-title">Orders Summary</div>
+          <div class="stat-grid">
+            <a class="stat-tile pink" href="../Order/order-admin.html">
+              <div class="stat-label">Total Orders</div>
+              <div class="stat-value" id="statTotalOrders">—</div>
+            </a>
+            <a class="stat-tile orange" href="../Order/order-admin.html">
+              <div class="stat-label">Orders Due Today</div>
+              <div class="stat-value" id="statDueToday">—</div>
+            </a>
+            <a class="stat-tile blue" href="../Order/order-admin.html">
+              <div class="stat-label">Pending Orders</div>
+              <div class="stat-value" id="statPending">—</div>
+            </a>
+            <a class="stat-tile purple" href="../Order/order-admin.html">
+              <div class="stat-label">Processing Orders</div>
+              <div class="stat-value" id="statProcessing">—</div>
+            </a>
+            <a class="stat-tile green" href="../Order/order-admin.html">
+              <div class="stat-label">Completed Orders</div>
+              <div class="stat-value" id="statCompleted">—</div>
+            </a>
+            <a class="stat-tile red" href="../Order/order-admin.html">
+              <div class="stat-label">Cancelled Orders</div>
+              <div class="stat-value" id="statCancelled">—</div>
+            </a>
+          </div>
         </div>
 
-        <!-- Customer summary tiles, placed below the order tiles -->
-        <div class="summary-grid" style="margin-top:14px;">
-          <a class="summary-tile pink" href="../CUSTOMER/CustomerLand.html">
-            <div class="summary-label">Total Customers</div>
-            <div class="summary-value" id="sumTotalCustomers">—</div>
-          </a>
-          <a class="summary-tile green" href="../CUSTOMER/CustomerLand.html">
-            <div class="summary-label">Repeat Customers</div>
-            <div class="summary-value" id="sumRepeatCustomers">—</div>
-          </a>
-          <a class="summary-tile blue" href="../CUSTOMER/CustomerLand.html">
-            <div class="summary-label">Total Revenue</div>
-            <div class="summary-value" id="sumTotalRevenue">—</div>
-          </a>
-          <a class="summary-tile purple" href="../CUSTOMER/CustomerLand.html">
-            <div class="summary-label">Current Revenue</div>
-            <div class="summary-value" id="sumCurrentRevenue">—</div>
-          </a>
+        <!-- Customers & Revenue Summary section -->
+        <div class="card">
+          <div class="section-title">Customers &amp; Revenue</div>
+          <div class="summary-grid">
+            <a class="summary-tile pink" href="../CUSTOMER/CustomerLand.html">
+              <div class="summary-label">Total Customers</div>
+              <div class="summary-value" id="sumTotalCustomers">—</div>
+            </a>
+            <a class="summary-tile green" href="../CUSTOMER/CustomerLand.html">
+              <div class="summary-label">Repeat Customers</div>
+              <div class="summary-value" id="sumRepeatCustomers">—</div>
+            </a>
+            <a class="summary-tile blue" href="../CUSTOMER/CustomerLand.html">
+              <div class="summary-label">Total Revenue</div>
+              <div class="summary-value" id="sumTotalRevenue">—</div>
+            </a>
+            <a class="summary-tile purple" href="../CUSTOMER/CustomerLand.html">
+              <div class="summary-label">Current Revenue</div>
+              <div class="summary-value" id="sumCurrentRevenue">—</div>
+            </a>
+          </div>
         </div>
+
       </div>
 
       <!-- Right: Monthly Order Quantity chart + Inventory summary stacked -->
