@@ -153,7 +153,7 @@ body {
     width: 115px;
     height: 115px;
     border-radius: 50%;
-    object-fit: cover;
+    object-fit: contain;
 }
 
 /* ================= CONTENT ================= */
@@ -443,6 +443,7 @@ body {
     .Circle {
         width: 100px;
         height: 100px;
+        top: -20px;
     }
 
     .Greetings p {

@@ -512,7 +512,8 @@ h2{font-size:22px;font-weight:700;letter-spacing:-.2px;text-transform:uppercase}
 .stat{background:#fff;border:1px solid rgba(248,104,170,.25);border-radius:14px;padding:14px 16px}
 .stat small{display:block;color:#F868AA;font-size:12px;font-weight:700;letter-spacing:.8px;text-transform:uppercase}
 .stat strong{font-size:24px;font-weight:600}
-.photo{height:339px;border:2px dashed #AABCEB;border-radius:22px;background:linear-gradient(135deg,#dCE3F7,#FFD7EF);display:grid;place-items:center;color:#1E3163;font-weight:600;font-size:16px}
+.photo{height:339px;border-radius:22px;overflow:hidden;background:linear-gradient(135deg,#dCE3F7,#FFD7EF);display:grid;place-items:center;color:#1E3163;font-weight:600;font-size:16px}
+.photo img{width:100%;height:100%;object-fit:cover;display:block;border-radius:22px}
 
 /* WHO WE SERVE */
 .who{padding-top:60px;padding-bottom:58px}
@@ -530,7 +531,9 @@ h2{font-size:22px;font-weight:700;letter-spacing:-.2px;text-transform:uppercase}
 .contact .lead{color:#fff;margin-top:6px;font-size:16px}
 .info{margin-top:6px}
 .info div{display:flex;align-items:center;gap:14px;margin-top:14px;color:#fff;font-size:16px}
-.info i{width:38px;height:38px;border-radius:10px;background:rgba(255,255,255,.35);flex:none}
+.info i{width:38px;height:38px;border-radius:10px;background:rgba(255,255,255,.35);flex:none;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.info i img{width:24px;height:24px;object-fit:contain;display:block}
+.info i.ic-text{font-style:normal;font-size:18px;line-height:1}
 form{background:#fff;border-radius:22px;padding:28px;display:flex;flex-direction:column;gap:14px;box-shadow:0 10px 30px rgba(80,50,150,.12)}
 input,textarea{font:inherit;font-size:13px;width:100%;padding:12px 14px;border:1px solid #d7d0f1;border-radius:10px;background:#faf8fe;color:#1c2340;outline:0}
 input:focus-visible,textarea:focus-visible,button:focus-visible,a:focus-visible{outline:2px solid var(--purple);outline-offset:2px}

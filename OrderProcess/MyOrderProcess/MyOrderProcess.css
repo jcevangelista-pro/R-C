@@ -1196,7 +1196,7 @@ body.cancel-modal-open { overflow: hidden; }
   .wizard-inner .nav-tabs { min-width: 620px; }
   .wizard .nav-tabs > li a { width: 56px !important; height: 56px !important; margin: 16px auto !important; }
   .wizard .nav-tabs > li span.round-tab { width: 56px; height: 56px; line-height: 54px; font-size: 20px; }
-  .connecting-line { top: 50%; }
+  .connecting-line { display: none; }
   .wizard .tab-pane { padding-top: 20px; }
 
   .bs-calltoaction { padding: 10px; }

@@ -9,7 +9,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="LandingPage.css?v=4">
+    <link rel="stylesheet" href="LandingPage.css?v=6">
     <link rel="stylesheet" href="../CustomerNav.css">
 </head>
 
@@ -90,7 +90,7 @@
         <div class="stat"><small>Years in business</small><strong>6+ years</strong></div>
       </div>
     </div>
-    <div class="photo">[ Photo of the shop or team ]</div>
+    <div class="photo"><img src="../imgs/logo.jpg" alt=""></div>
   </div>
 </section>
 
@@ -111,11 +111,12 @@
       <h2>Contact Us</h2>
       <p class="lead">Have a question or want to place an order? Message us.</p>
       <div class="info">
-        <div><i></i>Cabuyao, Laguna</div>
-        <div><i></i>[Phone number]</div>
-        <div><i></i>[Email address]</div>
-        <div><i></i>[Facebook page]</div>
-        <div><i></i>[Business hours]</div>
+        <div><i class="ic-text">📍</i>Cabuyao, Laguna</div>
+        <div><i><img src="../imgs/viber.png" alt="Viber"></i>0992-XXX-XXXX</div>
+        <div><i class="ic-text">✉️</i><a href="">randcprintingservices@gmail.com</a></div>
+        <div><i><img src="../imgs/fb.png" alt="Facebook"></i><a href="https://www.facebook.com/RCpartybuddy">R&C Printing Services</a></div>
+        <div><i><img src="../imgs/ig.png" alt="Tiktok"></i><a href="https://www.instagram.com/rc_printing_services/">ecclang</a></div>
+        <div><i class="ic-text">🕒</i>8:00 am - 5:00 pm</div>
       </div>
     </div>
     <form id="f" novalidate>
