@@ -441,3 +441,127 @@ a.CardProducts:hover {
     background: #a78bfa;
     border-radius: 2px;
 }
+
+
+
+:root{
+  /* Aligned with the top of the page: brand pink #F868AA + navy #1E3163 on white. */
+  --pink:#F868AA; --purple:#8b6fe0; --ink:#1E3163; --muted:#8a8fa5;
+  --card:#cbc9f9; --card-line:#b9b5f2; --soft:#faf7ff; --tile:#f4f0fd;
+  --navy:#1E3163; --bg:#fff;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+*{box-sizing:border-box;margin:0}
+html{scroll-behavior:smooth;scroll-padding-top:80px}
+body{font-family:'Poppins',system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}
+a{text-decoration:none;color:inherit}
+
+/* NAV */
+header{position:sticky;top:0;z-index:20;background:var(--bg);height:78px;display:flex;align-items:center;justify-content:space-between;padding:0 26px;box-shadow:0 2px 8px rgba(120,80,200,.08)}
+.logo{color:var(--pink);font-weight:700;font-size:27px;letter-spacing:.2px}
+nav{display:flex;align-items:center;gap:32px}
+nav a{color:var(--pink);font-size:14px;font-weight:600;padding:4px 0;border-bottom:3px solid transparent}
+nav a.active{border-color:var(--purple);border-radius:2px}
+nav a.icon-link{display:grid;place-items:center;border:0;padding:0}
+nav a.icon-link svg{width:24px;height:24px}
+nav a.profile svg{width:32px;height:32px}
+nav a:hover{opacity:.8}
+
+/* HERO */
+.hero-wrap{padding:30px 28px 0;background:linear-gradient(180deg,#c3b6ee 0,#f6d3ee 55%,var(--bg) 100%)}
+.hero{border-radius:20px;border:1px solid rgba(255,255,255,.4);background:linear-gradient(115deg,#8e9be8 0%,#c88be8 55%,#c8bdf3 100%);padding:46px 60px;display:grid;grid-template-columns:1.1fr 1fr;gap:30px;align-items:center;min-height:407px}
+.hero h1{color:#fff;font-size:52px;line-height:1.05;font-weight:700;letter-spacing:-.5px}
+.hero p{color:#fff;font-size:16px;max-width:520px;margin-top:26px;line-height:1.7}
+.collage{display:grid;grid-template-columns:285px 1fr;grid-template-rows:150px 150px;gap:14px;justify-self:end;width:626px;max-width:100%}
+.collage .ph{border-radius:14px;overflow:hidden;position:relative}
+.collage .tall{grid-row:1 / 3;grid-column:2}
+.ph{background-size:cover;position:relative;overflow:hidden}
+.ph .wm{position:absolute;inset:auto 0 12px 0;text-align:center;color:rgba(255,255,255,.9);font-weight:700;font-size:22px;text-shadow:0 1px 4px rgba(0,0,0,.35)}
+.ph-notes{background:repeating-linear-gradient(90deg,#c9964a 0 18px,#b9843b 18px 20px)}
+.ph-notes::after{content:"";position:absolute;left:18%;right:18%;top:22%;bottom:22%;background:linear-gradient(90deg,#ff6b9a 0 20%,#ffd34d 20% 40%,#9be564 40% 60%,#5ec8ff 60% 80%,#7fb0ff 80%);border-radius:3px}
+.ph-pads{background:linear-gradient(135deg,#dfe8ec,#f4f7f8)}
+.ph-pads::after{content:"";position:absolute;inset:18% 8%;background:repeating-linear-gradient(90deg,#fff 0 40px,#cfdadf 40px 44px);border-radius:4px;box-shadow:0 6px 12px rgba(0,0,0,.12)}
+.ph-bags{background:linear-gradient(135deg,#9aa0a6,#c8ccd0)}
+.ph-bags::after{content:"";position:absolute;left:28%;right:28%;top:4%;bottom:20%;background:linear-gradient(#26282b,#3d4043);border-radius:10px}
+
+/* PRODUCTS */
+.section{padding:0 56px}
+.best{padding-top:54px;padding-bottom:58px}
+h2{font-size:22px;font-weight:700;letter-spacing:-.2px;text-transform:uppercase}
+.row-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:22px}
+.arrow{color:#4a2fa0;font-size:22px;font-weight:700;margin-right:6px;cursor:pointer;border:0;background:none}
+.products{display:grid;grid-template-columns:repeat(4,1fr);gap:22px}
+.product{background:var(--card);border:1px solid var(--card-line);border-radius:18px;padding:10px 10px 18px}
+.product .ph{height:210px;border-radius:12px}
+.product h3{font-size:18px;font-weight:600;margin:14px 0 0 8px;line-height:1.3}
+.product span{font-size:13px;font-weight:600;margin-left:8px;display:block}
+.p1{background:radial-gradient(circle at 25% 30%,#173a8f 0 12%,transparent 13%),radial-gradient(circle at 50% 55%,#1b45b0 0 11%,transparent 12%),radial-gradient(circle at 68% 45%,#f4c20d 0 11%,transparent 12%),radial-gradient(circle at 86% 25%,#f7d52a 0 10%,transparent 11%),linear-gradient(135deg,#9a9a9a,#c8c8c8 50%,#8e8e8e)}
+.p2{background:linear-gradient(180deg,#4cb3ea 0,#2f8fd6 55%,#9a55d8 100%)}
+.p2::after{content:"TAKBO…\A GUADALUPEÑO";white-space:pre;position:absolute;inset:24% 0 0;text-align:center;color:rgba(255,255,255,.8);font-weight:700;font-size:24px;line-height:1.1}
+.p3{background:repeating-linear-gradient(115deg,#0b2a9a 0 16px,#123fc8 16px 30px,#0a1f6b 30px 34px)}
+.p4{background:radial-gradient(ellipse at 28% 45%,#e9ebe9 0 35%,transparent 36%),radial-gradient(ellipse at 75% 45%,#d7dad8 0 35%,transparent 36%),#6f7573}
+
+/* ABOUT */
+.about{background:radial-gradient(farthest-corner at 0px 10px, #AABCEB, #FFB2E9, #ffffff, #FFB2E9);padding-top:60px;padding-bottom:58px}
+.about-grid{display:grid;grid-template-columns:1fr 593px;gap:54px;align-items:start}
+.sub{color:var(--muted);font-size:14px;margin-top:2px}
+.about p{margin-top:16px;font-size:16px;line-height:1.85;max-width:660px}
+.about p b{font-weight:600}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:28px;max-width:680px}
+.stat{background:#fff;border:1px solid rgba(248,104,170,.25);border-radius:14px;padding:14px 16px}
+.stat small{display:block;color:#F868AA;font-size:12px;font-weight:700;letter-spacing:.8px;text-transform:uppercase}
+.stat strong{font-size:24px;font-weight:600}
+.photo{height:339px;border:2px dashed #AABCEB;border-radius:22px;background:linear-gradient(135deg,#dCE3F7,#FFD7EF);display:grid;place-items:center;color:#1E3163;font-weight:600;font-size:16px}
+
+/* WHO WE SERVE */
+.who{padding-top:60px;padding-bottom:58px}
+.who .sub{margin-bottom:28px}
+.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
+.card{background:var(--tile);border:1px solid rgba(175, 150, 250, 0.18);border-radius:16px;padding:20px}
+.icon{width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,#AABCEB,#F868AA);margin-bottom:22px}
+.card h4{font-size:15px;font-weight:600}
+.card p{font-size:13px;color:var(--muted);margin-top:8px;line-height:1.55}
+
+/* CONTACT */
+.contact{background:linear-gradient(115deg,#AABCEB 0%,#FFB2E9 60%,#ffe0f3 100%);padding-top:58px;padding-bottom:58px}
+.contact-grid{display:grid;grid-template-columns:1fr 640px;gap:56px;align-items:start}
+.contact h2{color:#fff}
+.contact .lead{color:#fff;margin-top:6px;font-size:16px}
+.info{margin-top:6px}
+.info div{display:flex;align-items:center;gap:14px;margin-top:14px;color:#fff;font-size:16px}
+.info i{width:38px;height:38px;border-radius:10px;background:rgba(255,255,255,.35);flex:none}
+form{background:#fff;border-radius:22px;padding:28px;display:flex;flex-direction:column;gap:14px;box-shadow:0 10px 30px rgba(80,50,150,.12)}
+input,textarea{font:inherit;font-size:13px;width:100%;padding:12px 14px;border:1px solid #d7d0f1;border-radius:10px;background:#faf8fe;color:#1c2340;outline:0}
+input:focus-visible,textarea:focus-visible,button:focus-visible,a:focus-visible{outline:2px solid var(--purple);outline-offset:2px}
+textarea{height:108px;resize:vertical}
+form button{border:0;border-radius:10px;padding:13px;background:linear-gradient(90deg,#AABCEB,#F868AA);color:#fff;font:inherit;font-size:14px;font-weight:700;letter-spacing:.3px;cursor:pointer}
+form button:hover{filter:brightness(1.06)}
+#sent{font-size:13px;color:#4a2fa0;display:none;text-align:center}
+
+/* FOOTER */
+footer{background:var(--navy);color:#fff;font-size:12px;display:flex;justify-content:center;align-items:center;text-align:center;padding:0 56px;height:70px}
+footer nav a{color:#fff;font-weight:400;font-size:12px;border:0;padding:0 2px}
+
+/* RESPONSIVE */
+@media (max-width:1100px){
+  .hero,.about-grid,.contact-grid{grid-template-columns:1fr}
+  .collage{justify-self:start;width:100%}
+  .products,.cards{grid-template-columns:repeat(2,1fr)}
+  nav{gap:20px}
+}
+@media (max-width:700px){
+  header{padding:10px 16px;height:auto;min-height:64px;flex-wrap:wrap;gap:8px 0}
+  .logo{font-size:20px}
+  nav{gap:14px;flex-wrap:wrap}
+  nav a{font-size:12px}
+  nav a.icon-link svg{width:20px;height:20px}
+  nav a.profile svg{width:26px;height:26px}
+  .hero-wrap{padding:20px 14px 0}
+  .hero{padding:30px 24px}
+  .hero h1{font-size:38px}
+  .collage{grid-template-columns:1fr 1fr;grid-template-rows:120px 120px}
+  .section{padding-left:20px;padding-right:20px}
+  .products,.cards,.stats{grid-template-columns:1fr}
+}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}

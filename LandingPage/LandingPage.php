@@ -9,7 +9,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="LandingPage.css">
+    <link rel="stylesheet" href="LandingPage.css?v=4">
     <link rel="stylesheet" href="../CustomerNav.css">
 </head>
 
@@ -75,6 +75,70 @@
         </div>
 
     </div>
+
+
+
+<section class="section about" id="about">
+  <div class="about-grid">
+    <div>
+      <h2>About Us</h2>
+      <div class="sub">Your Vision, We Deliver</div>
+      <p style="margin-top:28px">R&amp;C Printing Services started in <b>2020</b> in <b>Kay-anlog, Calamba, Laguna</b> as R&amp;C Party Buddies, a small shop made to meet the growing demand for personalized party supplies. After officially registering with the BIR, it became R&amp;C Printing Services and is now based in <b>Cabuyao, Laguna</b>.</p>
+      <p style="margin-top:10px">We make custom mugs, tumblers, caps, t-shirts, jerseys, sublimation prints, pens, notepads, and souvenirs, for single pieces or bulk orders.</p>
+      <div class="stats">
+        <div class="stat"><small>Since</small><strong>2020</strong></div>
+        <div class="stat"><small>Years in business</small><strong>6+ years</strong></div>
+      </div>
+    </div>
+    <div class="photo">[ Photo of the shop or team ]</div>
+  </div>
+</section>
+
+<section class="section who" id="portfolio">
+  <h2>Who We Serve</h2>
+  <div class="sub">We create custom prints for all kinds of customers</div>
+  <div class="cards">
+    <div class="card"><h4>Businesses</h4><p>Branded merchandise, marketing materials, and promotional items.</p></div>
+    <div class="card"><h4>Schools</h4><p>Uniforms, event prints, and academic project materials.</p></div>
+    <div class="card"><h4>Organizations &amp; Events</h4><p>Custom tumblers, singlets, and giveaways for groups and events.</p></div>
+    <div class="card"><h4>Individuals</h4><p>Personalized gifts and one-of-a-kind prints for personal use.</p></div>
+  </div>
+</section>
+
+<section class="section contact" id="contact">
+  <div class="contact-grid">
+    <div>
+      <h2>Contact Us</h2>
+      <p class="lead">Have a question or want to place an order? Message us.</p>
+      <div class="info">
+        <div><i></i>Cabuyao, Laguna</div>
+        <div><i></i>[Phone number]</div>
+        <div><i></i>[Email address]</div>
+        <div><i></i>[Facebook page]</div>
+        <div><i></i>[Business hours]</div>
+      </div>
+    </div>
+    <form id="f" novalidate>
+      <input type="text" placeholder="Your Name" aria-label="Your Name" required>
+      <input type="email" placeholder="Email" aria-label="Email" required>
+      <textarea placeholder="Message" aria-label="Message" required></textarea>
+      <button type="submit">SEND MESSAGE</button>
+      <div id="sent" role="status">Thanks! Your message was received.</div>
+    </form>
+  </div>
+</section>
+
+<footer>
+  <span>© 2026 R&amp;C Printing Services. All rights reserved.</span>
+</footer>
+
+<script>
+document.getElementById('f').addEventListener('submit',function(e){
+  e.preventDefault();
+  document.getElementById('sent').style.display='block';
+  this.reset();
+});
+</script>
 
     <script>
     // Prevent showing cached page after logout (back button)
