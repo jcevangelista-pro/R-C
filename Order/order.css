@@ -1163,3 +1163,57 @@
 }
 
 .admin-chat-send-btn:hover { background: #db2777; }
+
+
+/* ── MOBILE RESPONSIVE: order review + detail modals ─────── */
+@media (max-width: 600px) {
+  /* Modals fill the screen and scroll fully so the APPROVE button at the
+     bottom is always reachable. */
+  .overlay { align-items: stretch; justify-content: stretch; padding: 0; }
+
+  .review-modal {
+    width: 100%;
+    max-width: 100%;
+    max-height: 100vh;
+    height: 100vh;
+    border-radius: 0;
+    border-width: 2px;
+    padding: 56px 16px 90px;      /* top room for back btn, bottom room for action bar */
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Step dots: scroll horizontally instead of overflowing/pushing content. */
+  .review-steps-bar {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    justify-content: flex-start;
+    gap: 8px;
+    margin-bottom: 16px;
+    padding-bottom: 6px;
+  }
+  .review-step-dot { flex: 0 0 auto; }
+
+  .review-verification-details { padding: 14px; }
+  .verif-discount-row { gap: 12px; }
+
+  /* Keep the APPROVE action visible: pin it to the bottom of the modal. */
+  .review-action-row {
+    position: sticky;
+    bottom: 0;
+    background: #fdf1f6;
+    padding: 12px 0;
+    margin: 8px 0 0;
+    border-top: 1px solid #f3c6dc;
+    z-index: 5;
+  }
+  .review-approve-btn { width: 100%; padding: 14px; font-size: 14px; }
+
+  /* Order Details modal (pending/history) fits the screen too. */
+  .order-detail-modal {
+    width: 100% !important;
+    max-width: 100%;
+    max-height: 100vh;
+    border-radius: 0;
+    overflow-y: auto;
+  }
+}

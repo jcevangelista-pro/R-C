@@ -375,9 +375,22 @@ function populateStepDates() {
     const PENDING = 'Pending';
     for (let n = 1; n <= 8; n++) {
         const pane = document.getElementById('step' + n);
-        if (pane) {
-            const dateEl = pane.querySelector('.status-history .status-history-item div p');
-            if (dateEl) dateEl.textContent = stepDateFor(n) || PENDING;
+        if (!pane) continue;
+        // Target only the LEFT status-card history line (Step 7/8 reuse
+        // .status-history elsewhere, so scope to .status-card to avoid those).
+        const item = pane.querySelector('.status-card .status-history .status-history-item');
+        if (!item) continue;
+        const dateEl = item.querySelector('p');
+        const labelEl = item.querySelector('strong');
+        const step = (orderSteps || []).find(s => parseInt(s.step_number) === n);
+        const status = step ? step.status : (n === 1 && orderData ? 'Completed' : null);
+        const dateText = stepDateFor(n);
+
+        if (dateEl) dateEl.textContent = dateText || PENDING;
+        if (labelEl) {
+            if (status === 'Completed' || status === 'Skipped') labelEl.textContent = (n >= 3 && n <= 5) ? 'Approved' : 'Completed';
+            else if (status === 'In Progress') labelEl.textContent = 'Submitted';
+            else labelEl.textContent = 'Pending';
         }
     }
 
@@ -598,7 +611,9 @@ function renderChatForStep(stepNumber) {
         const isSent = msg.sender_role === 'customer';
         const bubbleClass = isSent ? 'sent' : 'received';
         const senderLabel = isSent ? 'You' : (msg.sender_name || 'Admin');
-        const time = msg.created_at ? new Date(msg.created_at).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true }) : '';
+        const time = msg.created_at
+            ? new Date(String(msg.created_at).replace(' ', 'T')).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true })
+            : '';
 
         return `
         <div class="chat-bubble ${bubbleClass}">

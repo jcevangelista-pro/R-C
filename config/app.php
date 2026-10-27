@@ -1,6 +1,12 @@
 <?php
 declare(strict_types=1);
 
+// Align PHP's timezone with the database server's local time so timestamps
+// written by PHP (date()/NOW-in-PHP) match those written by MySQL NOW()/
+// CURRENT_TIMESTAMP. Without this, PHP defaults to UTC and produces times
+// that are offset (e.g. 8 hours behind for Philippine time).
+date_default_timezone_set(getenv('APP_TIMEZONE') ?: 'Asia/Manila');
+
 function load_local_environment(string $file): void
 {
     if (!is_file($file) || !is_readable($file)) return;

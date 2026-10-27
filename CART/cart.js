@@ -33,6 +33,26 @@ function prefillDeliveryInfo(){
   .catch(() => {});
 }
 prefillDeliveryInfo();
+
+// Restrict the Preferred Delivery / Pickup date pickers so the earliest
+// selectable day is tomorrow (a day after today).
+function setMinDeliveryDate(){
+  const tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  const y = tomorrow.getFullYear();
+  const m = String(tomorrow.getMonth() + 1).padStart(2, '0');
+  const d = String(tomorrow.getDate()).padStart(2, '0');
+  const minDate = `${y}-${m}-${d}`;
+  ['fldDeliveryDate', 'fldPickupDate'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) {
+      el.min = minDate;
+      // If an earlier value is somehow set, clear it.
+      if (el.value && el.value < minDate) el.value = '';
+    }
+  });
+}
+setMinDeliveryDate();
  
 let activeItemIndex = 0;
  
@@ -146,6 +166,7 @@ function openDeliveryModal(){
   closeOrderModal();
   closeSummaryModal();
   renderDeliverySelection();
+  setMinDeliveryDate();
 
   // Load saved delivery info from DB
   fetch('cart_api.php', {
