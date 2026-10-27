@@ -185,6 +185,8 @@ try {
                 echo json_encode(['success' => false, 'error' => 'Order ID, payment method, and payment type are required.']);
                 exit;
             }
+            if ($referenceNumber === '') api_error('A payment reference number is required.', 422);
+            if (!$proofPath) api_error('A payment screenshot is required.', 422);
 
             if (current_role() !== 'customer') api_error('Only the customer can submit payment.', 403);
             if (!in_array($paymentMethod, ['GCash','Bank'], true) || !in_array($paymentType, ['Full Payment','50% Down Payment'], true)) api_error('Invalid payment selection.', 422);
@@ -239,6 +241,8 @@ try {
                 echo json_encode(['success' => false, 'error' => 'Order ID required.']);
                 exit;
             }
+            if ($referenceNumber === '') api_error('A payment reference number is required.', 422);
+            if (!$proofPath) api_error('A payment screenshot is required.', 422);
 
             if (current_role() !== 'customer') api_error('Only the customer can submit payment.', 403);
             if (!in_array($paymentMethod, ['GCash','Bank'], true)) api_error('Select a valid payment method.', 422);

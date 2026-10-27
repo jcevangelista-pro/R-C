@@ -678,6 +678,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
             if (!paymentMethod) { alert('Please select a payment method (GCash or Bank).'); return; }
             if (!paymentType) { alert('Please select a payment type.'); return; }
+            if (!referenceNumber) { alert('Please enter the payment reference number.'); return; }
+            const proof = document.querySelector('#PaymentCard input[type="file"]');
+            if (!proof || !proof.files[0]) { alert('Please upload a screenshot of your payment.'); return; }
 
             try {
                 const form = new FormData();
@@ -686,8 +689,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 form.append('payment_method',paymentMethod);
                 form.append('payment_type',paymentType);
                 form.append('reference_number',referenceNumber);
-                const proof = document.querySelector('#PaymentCard input[type="file"]');
-                if (proof && proof.files[0]) form.append('proof', proof.files[0]);
+                form.append('proof', proof.files[0]);
                 const res = await fetch(ORDER_PROCESS_API, {method:'POST',body:form});
                 const data = await res.json();
                 if (data.success) {
@@ -717,6 +719,9 @@ document.addEventListener('DOMContentLoaded', function() {
             // Get reference number from final payment card
             const refInput = document.querySelector('#FinalPaymentCard input[placeholder="XXXX-XXX-XXXXXX"]');
             const referenceNumber = refInput ? refInput.value.trim() : '';
+            if (!referenceNumber) { alert('Please enter the payment reference number.'); return; }
+            const proof = document.querySelector('#FinalPaymentCard input[type="file"]');
+            if (!proof || !proof.files[0]) { alert('Please upload a screenshot of your payment.'); return; }
 
             try {
                 const form = new FormData();
@@ -724,8 +729,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 form.append('order_id',currentOrderId);
                 form.append('payment_method',paymentMethod);
                 form.append('reference_number',referenceNumber);
-                const proof = document.querySelector('#FinalPaymentCard input[type="file"]');
-                if (proof && proof.files[0]) form.append('proof', proof.files[0]);
+                form.append('proof', proof.files[0]);
                 const res = await fetch(ORDER_PROCESS_API, {method:'POST',body:form});
                 const data = await res.json();
                 if (data.success) {
