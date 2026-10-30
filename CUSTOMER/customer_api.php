@@ -10,10 +10,11 @@ require_role(['admin', 'owner']);
 try {
     // Get all customers with user info
     $stmt = $pdo->query("
-        SELECT 
+        SELECT
             c.customer_id,
             CONCAT(u.first_name, IFNULL(CONCAT(' ', u.middle_name), ''), ' ', u.last_name) AS name,
-            c.phone_num AS contact,
+            c.phone_num,
+            u.email,
             c.address
         FROM customers c
         JOIN users u ON u.user_id = c.user_id
@@ -24,10 +25,11 @@ try {
 
     // Also include customer-role users who haven't filled in the customers table yet
     $stmt2 = $pdo->query("
-        SELECT 
+        SELECT
             u.user_id,
             CONCAT(u.first_name, IFNULL(CONCAT(' ', u.middle_name), ''), ' ', u.last_name) AS name,
-            u.email AS contact,
+            '' AS phone_num,
+            u.email,
             '—' AS address
         FROM users u
         LEFT JOIN customers c ON c.user_id = u.user_id
@@ -41,7 +43,8 @@ try {
         return [
             'customer_id' => null,
             'name' => $u['name'],
-            'contact' => $u['contact'],
+            'phone_num' => $u['phone_num'],
+            'email' => $u['email'],
             'address' => $u['address']
         ];
     }, $unclaimed));

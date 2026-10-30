@@ -24,14 +24,21 @@ function renderRows(list){
     return;
   }
 
-  wrap.innerHTML = list.map((c, i) => `
+  wrap.innerHTML = list.map((c, i) => {
+    const phone = c.phone_num ? escapeHtml(c.phone_num) : '—';
+    const email = c.email ? escapeHtml(c.email) : '—';
+    return `
     <div class="row">
       <div class="name-cell"><span class="checkbox"></span> ${escapeHtml(c.name)}</div>
-      <div class="contact">${escapeHtml(c.contact)}</div>
+      <div class="contact">
+        <div>${phone}</div>
+        <div style="font-size:12px;color:#6b7280;margin-top:2px;">${email}</div>
+      </div>
       <div class="address">${escapeHtml(c.address)}</div>
       <div class="icon-cell" data-index="${i}" role="button" title="View order records">📋</div>
     </div>
-  `).join('');
+  `;
+  }).join('');
 
   // Attach click handlers to the icon in each row
   wrap.querySelectorAll('.icon-cell').forEach(el => {
@@ -58,7 +65,8 @@ function getVisibleCustomers() {
   const q = searchInput.value.toLowerCase();
   let list = customers.filter(c =>
     c.name.toLowerCase().includes(q) ||
-    String(c.contact).toLowerCase().includes(q) ||
+    String(c.phone_num).toLowerCase().includes(q) ||
+    String(c.email).toLowerCase().includes(q) ||
     String(c.address).toLowerCase().includes(q)
   );
 
@@ -134,7 +142,9 @@ function openOrderModal(customer){
 
   document.getElementById('modalCustomerName').textContent = customer.name;
   document.getElementById('modalCustomerAddress').textContent = customer.address;
-  document.getElementById('modalCustomerPhone').textContent = customer.contact;
+  const phone = customer.phone_num ? customer.phone_num : '—';
+  const email = customer.email ? customer.email : '—';
+  document.getElementById('modalCustomerPhone').innerHTML = `Phone: ${escapeHtml(phone)}<br>Email: ${escapeHtml(email)}`;
 
   const orders = customer.orders || [];
   const itemsWrap = document.getElementById('orderItemsWrap');
@@ -247,7 +257,9 @@ function openOrderSummary(customer, orderIndex){
 
   document.getElementById('summaryCustomerName').textContent = customer.name;
   document.getElementById('summaryCustomerAddress').textContent = customer.address;
-  document.getElementById('summaryCustomerPhone').textContent = customer.contact;
+  const phone = customer.phone_num ? customer.phone_num : '—';
+  const email = customer.email ? customer.email : '—';
+  document.getElementById('summaryCustomerPhone').innerHTML = `Phone: ${escapeHtml(phone)}<br>Email: ${escapeHtml(email)}`;
 
   document.getElementById('summaryItemName').textContent = order.name;
   document.getElementById('summaryItemCategory').textContent = order.category;

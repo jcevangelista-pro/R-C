@@ -52,6 +52,7 @@
 
                         <label for="email" class="Label">Email</label>
                         <input type="email" id="email" placeholder="Moiraine_Sanche40@gmail.com" required class="Input">
+                        <small style="color: #6b7280; font-size: 11px; margin-top: 2px; margin-bottom: 6px; display: block;">Use your personal email</small>
 
                         <label for="username" class="Label">Username</label>
                         <input type="text" id="username" placeholder="@JaydeeDamodred" minlength="8" required class="Input">
@@ -61,6 +62,12 @@
                             <input type="password" id="password" placeholder="1234Damodred_!" minlength="8" maxlength="30" required class="Input" pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^A-Za-z0-9]).{8,}$"
                             title="Password must be at least 8 characters long and contain an uppercase letter, a lowercase letter, a number, and a special character.">
                             <button type="button" class="password-toggle" aria-label="Show password" aria-pressed="false"><img src="../imgs/hidden.png" alt=""></button>
+                        </div>
+                        <div id="passwordChecklist" style="font-size: 11px; margin-top: 6px; margin-bottom: 10px; display: flex; flex-direction: column; gap: 3px;">
+                            <div id="checkLength" style="color: #9ca3af;">• Must be 8 characters long</div>
+                            <div id="checkCapital" style="color: #9ca3af;">• At least one capital letter</div>
+                            <div id="checkSpecial" style="color: #9ca3af;">• At least one special character</div>
+                            <div id="checkNumeric" style="color: #9ca3af;">• At least one numeric character</div>
                         </div>
 
                         <div class="TermsPolicy">
@@ -126,7 +133,103 @@ Please read these Terms and Conditions carefully before placing an order with R&
         </div>
     </div>
 
+    <!-- Email Verification Modal -->
+    <div class="terms-modal-overlay" id="verifyModalOverlay" hidden>
+        <div class="terms-modal" role="dialog" aria-modal="true" aria-labelledby="verifyModalTitle">
+            <button type="button" class="terms-modal-close" id="verifyModalClose" aria-label="Close">&times;</button>
+            <h2 class="terms-modal-title" id="verifyModalTitle">Verify Your Email</h2>
+            <div class="terms-modal-body" style="white-space: normal;">
+                <p id="verifyModalDesc" style="margin: 0 0 14px 0; color: #6b7280;">We sent a verification code to your email. Enter the 6-digit code below to create your account.</p>
+                <label for="verifyCode" class="Label">Verification Code</label>
+                <input type="text" id="verifyCode" maxlength="6" inputmode="numeric" autocomplete="one-time-code" placeholder="000000" class="Input" style="letter-spacing: 8px; text-align: center; font-size: 20px;">
+                <div id="verifyError" class="form-feedback form-feedback--error" role="alert" aria-live="assertive"></div>
+                <div id="verifySuccess" class="form-feedback form-feedback--success" role="status" aria-live="polite"></div>
+            </div>
+            <div class="terms-modal-actions" style="justify-content: space-between;">
+                <button type="button" class="terms-modal-btn" id="resendBtn" style="background: #3E43A0;">RESEND (<span id="resendTimer">120</span>s)</button>
+                <button type="button" class="terms-modal-btn" id="verifyBtn">VERIFY</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Feedback modal for unverified email -->
+    <div class="terms-modal-overlay" id="feedbackModalOverlay" hidden>
+        <div class="terms-modal" role="dialog" aria-modal="true" aria-labelledby="feedbackModalTitle">
+            <h2 class="terms-modal-title" id="feedbackModalTitle">Email Not Verified</h2>
+            <div class="terms-modal-body" style="white-space: normal;">
+                <p style="margin: 0; color: #374151;">Email is not verified. You used all 3 attempts, so the signup was cancelled. Please sign up again with a valid verification code.</p>
+            </div>
+            <div class="terms-modal-actions">
+                <button type="button" class="terms-modal-btn" id="feedbackModalOk">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Email Verification Modal -->
+    <div class="verify-modal-overlay" id="verifyModalOverlay" hidden>
+        <div class="terms-modal verify-modal" role="dialog" aria-modal="true" aria-labelledby="verifyModalTitle">
+            <button type="button" class="terms-modal-close" id="verifyModalClose" aria-label="Close">&times;</button>
+            <h2 class="terms-modal-title" id="verifyModalTitle">Verify Your Email</h2>
+            <p class="verify-modal-desc" id="verifyModalDesc"></p>
+            <div id="verifyError" class="form-feedback form-feedback--error" role="alert" aria-live="assertive"></div>
+            <input type="text" id="verifyCode" class="Input verify-code-input" inputmode="numeric" maxlength="6" placeholder="Enter 6-digit code" autocomplete="one-time-code">
+            <div class="verify-modal-actions">
+                <button type="button" class="terms-modal-btn verify-btn-secondary" id="verifyResend" disabled>Resend (120s)</button>
+                <button type="button" class="terms-modal-btn" id="verifySubmit">Verify</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Unverified feedback modal -->
+    <div class="terms-modal-overlay" id="unverifiedModalOverlay" hidden>
+        <div class="terms-modal" role="dialog" aria-modal="true" aria-labelledby="unverifiedModalTitle">
+            <h2 class="terms-modal-title" id="unverifiedModalTitle">Email Not Verified</h2>
+            <div class="terms-modal-body">Your email could not be verified after 3 incorrect attempts. Please sign up again to receive a new verification code.</div>
+            <div class="terms-modal-actions">
+                <button type="button" class="terms-modal-btn" id="unverifiedModalOk">OK</button>
+            </div>
+        </div>
+    </div>
+
     <style>
+        .verify-modal-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background: rgba(30, 49, 99, 0.5);
+        }
+        .verify-modal-overlay[hidden] { display: none; }
+        .verify-modal { width: min(420px, 100%); }
+        .verify-modal-desc {
+            margin: 0 0 14px;
+            font-size: 13px;
+            color: #374151;
+            line-height: 1.5;
+        }
+        .verify-code-input {
+            text-align: center;
+            letter-spacing: 8px;
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+        .verify-modal-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 18px;
+        }
+        .verify-btn-secondary {
+            background: #6b7280;
+        }
+        .verify-btn-secondary:hover { background: #4b5563; }
+        .verify-btn-secondary:disabled {
+            background: #d1d5db;
+            cursor: not-allowed;
+        }
         .terms-modal-overlay {
             position: fixed;
             inset: 0;
@@ -246,11 +349,19 @@ Please read these Terms and Conditions carefully before placing an order with R&
             const result = await res.json();
 
             if (result.success) {
-                signupSuccess.textContent = result.message + ' Redirecting...';
-                signupSuccess.style.display = 'block';
-                setTimeout(() => {
-                    window.location.href = '../LandingPage/LandingPage.php';
-                }, 1500);
+                if (result.pending_verification) {
+                    // Show the email verification modal.
+                    document.getElementById('verifyModalDesc').textContent =
+                        'We sent a verification code to ' + result.email + '. Enter the 6-digit code below to create your account.';
+                    openVerifyModal();
+                    startResendTimer(120);
+                } else {
+                    signupSuccess.textContent = result.message + ' Redirecting...';
+                    signupSuccess.style.display = 'block';
+                    setTimeout(() => {
+                        window.location.href = '../LandingPage/LandingPage.php';
+                    }, 1500);
+                }
             } else {
                 signupError.textContent = result.error;
                 signupError.style.display = 'block';
@@ -265,6 +376,152 @@ Please read these Terms and Conditions carefully before placing an order with R&
     document.getElementById('BBack').addEventListener('click', function() {
         window.history.back();
     });
+
+    // ── Email Verification Modal ────────────────────────────
+    const verifyOverlay = document.getElementById('verifyModalOverlay');
+    const verifyCodeInput = document.getElementById('verifyCode');
+    const verifyError = document.getElementById('verifyError');
+    const verifyResendBtn = document.getElementById('verifyResend');
+    const verifySubmitBtn = document.getElementById('verifySubmit');
+    const unverifiedOverlay = document.getElementById('unverifiedModalOverlay');
+    let resendTimerInterval = null;
+    let resendSecondsLeft = 0;
+
+    const openVerifyModal = () => {
+        verifyError.style.display = 'none';
+        verifyCodeInput.value = '';
+        verifyOverlay.hidden = false;
+        setTimeout(() => verifyCodeInput.focus(), 50);
+    };
+    const closeVerifyModal = () => {
+        verifyOverlay.hidden = true;
+        stopResendTimer();
+    };
+    const stopResendTimer = () => {
+        if (resendTimerInterval) { clearInterval(resendTimerInterval); resendTimerInterval = null; }
+    };
+    const startResendTimer = (seconds) => {
+        stopResendTimer();
+        resendSecondsLeft = seconds;
+        verifyResendBtn.disabled = true;
+        verifyResendBtn.textContent = 'Resend (' + resendSecondsLeft + 's)';
+        resendTimerInterval = setInterval(() => {
+            resendSecondsLeft--;
+            if (resendSecondsLeft <= 0) {
+                stopResendTimer();
+                verifyResendBtn.disabled = false;
+                verifyResendBtn.textContent = 'Resend';
+            } else {
+                verifyResendBtn.textContent = 'Resend (' + resendSecondsLeft + 's)';
+            }
+        }, 1000);
+    };
+
+    document.getElementById('verifyModalClose').addEventListener('click', closeVerifyModal);
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && !verifyOverlay.hidden) closeVerifyModal();
+    });
+
+    async function postAuth(payload) {
+        const res = await fetch('auth.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+        return res.json();
+    }
+
+    verifySubmitBtn.addEventListener('click', async function() {
+        const code = verifyCodeInput.value.trim();
+        verifyError.style.display = 'none';
+        if (!/^\d{6}$/.test(code)) {
+            verifyError.textContent = 'Please enter the 6-digit verification code.';
+            verifyError.style.display = 'block';
+            return;
+        }
+        try {
+            const result = await postAuth({ action: 'verify_code', code: code });
+            if (result.success) {
+                closeVerifyModal();
+                signupSuccess.textContent = result.message + ' Redirecting...';
+                signupSuccess.style.display = 'block';
+                setTimeout(() => {
+                    window.location.href = '../LandingPage/LandingPage.php';
+                }, 1500);
+            } else if (result.attempts_left === 0) {
+                // 3 wrong attempts (or expired) - show feedback modal on signup page.
+                closeVerifyModal();
+                signupForm.reset();
+                unverifiedOverlay.hidden = false;
+            } else {
+                verifyError.textContent = result.error + ' Attempts left: ' + result.attempts_left;
+                verifyError.style.display = 'block';
+                verifyCodeInput.value = '';
+                verifyCodeInput.focus();
+            }
+        } catch (err) {
+            verifyError.textContent = 'Something went wrong. Please try again.';
+            verifyError.style.display = 'block';
+        }
+    });
+
+    verifyResendBtn.addEventListener('click', async function() {
+        verifyError.style.display = 'none';
+        try {
+            const result = await postAuth({ action: 'resend_code' });
+            if (result.success) {
+                startResendTimer(120);
+                verifyCodeInput.value = '';
+                verifyCodeInput.focus();
+            } else {
+                verifyError.textContent = result.error;
+                verifyError.style.display = 'block';
+            }
+        } catch (err) {
+            verifyError.textContent = 'Something went wrong. Please try again.';
+            verifyError.style.display = 'block';
+        }
+    });
+
+    verifyCodeInput.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            verifySubmitBtn.click();
+        }
+    });
+
+    document.getElementById('unverifiedModalOk').addEventListener('click', function() {
+        unverifiedOverlay.hidden = true;
+    });
+
+    // Password strength live checklist
+    const passwordInput = document.getElementById('password');
+    const checkLength = document.getElementById('checkLength');
+    const checkCapital = document.getElementById('checkCapital');
+    const checkSpecial = document.getElementById('checkSpecial');
+    const checkNumeric = document.getElementById('checkNumeric');
+
+    if (passwordInput) {
+        passwordInput.addEventListener('input', function() {
+            const val = passwordInput.value;
+            const hasLen = val.length >= 8;
+            const hasUpper = /[A-Z]/.test(val);
+            const hasSpecial = /[^A-Za-z0-9]/.test(val);
+            const hasNumeric = /[0-9]/.test(val);
+
+            checkLength.textContent = (hasLen ? '✔ ' : '• ') + 'Must be 8 characters long';
+            checkLength.style.color = hasLen ? '#22c55e' : '#9ca3af';
+
+            checkCapital.textContent = (hasUpper ? '✔ ' : '• ') + 'At least one capital letter';
+            checkCapital.style.color = hasUpper ? '#22c55e' : '#9ca3af';
+
+            checkSpecial.textContent = (hasSpecial ? '✔ ' : '• ') + 'At least one special character';
+            checkSpecial.style.color = hasSpecial ? '#22c55e' : '#9ca3af';
+
+            checkNumeric.textContent = (hasNumeric ? '✔ ' : '• ') + 'At least one numeric character';
+            checkNumeric.style.color = hasNumeric ? '#22c55e' : '#9ca3af';
+        });
+    }
 
     // Mobile hamburger menu toggle
     (function(){

@@ -362,6 +362,42 @@ a.summary-tile:hover {
 .summary-tile.blue   .summary-value { color: #3b82f6; }
 .summary-tile.purple .summary-value { color: #a855f7; }
 
+/* ── REPORT BUTTONS ──────────────────────────────────────── */
+.report-btn-row {
+  display: flex;
+  gap: 12px;
+  margin: 0;
+}
+
+.report-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 22px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+  letter-spacing: 0.3px;
+  border: 2px solid transparent;
+  transition: background 0.15s, box-shadow 0.15s;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+}
+
+.report-btn-sales {
+  background: #ec4899;
+  color: #fff;
+  border-color: #ec4899;
+}
+.report-btn-sales:hover { background: #db2777; border-color: #db2777; }
+
+.report-btn-inventory {
+  background: #fff;
+  color: #1b1f4b;
+  border-color: #1b1f4b;
+}
+.report-btn-inventory:hover { background: #1b1f4b; color: #fff; }
+
 /* ── LOADING / ERROR ─────────────────────────────────────── */
 .loading-overlay {
   position: fixed;

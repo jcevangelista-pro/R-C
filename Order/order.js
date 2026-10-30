@@ -448,8 +448,22 @@ function renderVerificationDetails() {
     const discountInput = document.getElementById('verifDiscountInput');
     const currentDiscount = reviewOrderData ? parseFloat(reviewOrderData.discount_percent) : 0;
     discountInput.value = currentDiscount;
+    // Default quotation amount to total_amount (which already includes rush fee) if set, else fallback to productTotal
     document.getElementById('quotationAmountInput').value = reviewOrderData && reviewOrderData.quotation_amount !== null ? reviewOrderData.quotation_amount : productTotal;
     document.getElementById('quotationNotesInput').value = reviewOrderData ? (reviewOrderData.quotation_notes || '') : '';
+
+    // Show the rush fee field inside the verification box if this is a rush order
+    const rushFee = reviewOrderData ? parseFloat(reviewOrderData.rush_fee || 0) : 0;
+    const rushRow = document.getElementById('verifRushRow');
+    if (rushRow) {
+        if (rushFee > 0) {
+            document.getElementById('verifRushFee').textContent = 'P' + rushFee.toFixed(2);
+            rushRow.style.display = '';
+        } else {
+            rushRow.style.display = 'none';
+        }
+    }
+
     updateDiscountDisplay(currentDiscount, productTotal);
 }
 
@@ -457,8 +471,10 @@ function updateDiscountDisplay(discountPercent, productTotal) {
     if (!productTotal) {
         productTotal = reviewItems.reduce((sum, item) => sum + parseFloat(item.unit_price) * parseInt(item.quantity), 0);
     }
+    const rushFee = reviewOrderData ? parseFloat(reviewOrderData.rush_fee || 0) : 0;
     const deducted = productTotal * (discountPercent / 100);
-    const newTotal = productTotal - deducted;
+    // New total includes rush fee after discount is applied on product subtotal
+    const newTotal = (productTotal - deducted) + rushFee;
     document.getElementById('verifAmountDeducted').textContent = 'P' + deducted.toFixed(2);
     document.getElementById('verifNewTotal').textContent = 'P' + newTotal.toFixed(2);
 }
@@ -501,12 +517,23 @@ function renderStep3Details() {
     if (!reviewOrderData) return;
     const o = reviewOrderData;
     const productTotal = parseFloat(o.product_total) || 0;
+    const rushFee = parseFloat(o.rush_fee || 0);
     const discount = parseFloat(o.discount_percent) || 0;
     const deducted = parseFloat(o.amount_deducted) || 0;
-    const newTotal = productTotal - deducted;
+    // newTotal = (product subtotal - discount) + rush fee
+    const newTotal = (productTotal - deducted) + rushFee;
     const paymentType = o.payment_type || '—';
     const amountToPay = paymentType.includes('50%') ? newTotal * 0.5 : newTotal;
     const remaining = newTotal - amountToPay;
+
+    // Show/hide rush fee row
+    const rushFeeField = document.getElementById('s3RushFeeField');
+    if (rushFee > 0) {
+        rushFeeField.style.display = '';
+        document.getElementById('s3RushFee').textContent = 'P' + rushFee.toFixed(2);
+    } else {
+        rushFeeField.style.display = 'none';
+    }
 
     document.getElementById('s3PaymentMethod').textContent = o.payment_method || '—';
     document.getElementById('s3ProductTotal').textContent = 'P' + productTotal.toFixed(2);
@@ -524,8 +551,18 @@ function renderStep3Details() {
 function renderStep4Details() {
     if (!reviewOrderData) return;
     const o = reviewOrderData;
-    const productTotal = parseFloat(o.product_total) - parseFloat(o.amount_deducted || 0);
+    const rushFee = parseFloat(o.rush_fee || 0);
+    const discountedSubtotal = parseFloat(o.product_total) - parseFloat(o.amount_deducted || 0);
+    // Total shown = discounted subtotal + rush fee (delivery fee set here, not yet added)
+    const productTotal = discountedSubtotal + rushFee;
     document.getElementById('s4ProductTotal').textContent = 'P' + productTotal.toFixed(2);
+    const rushFeeField = document.getElementById('s4RushFeeField');
+    if (rushFee > 0) {
+        document.getElementById('s4RushFee').textContent = 'P' + rushFee.toFixed(2);
+        rushFeeField.style.display = '';
+    } else {
+        rushFeeField.style.display = 'none';
+    }
     document.getElementById('s4DeliveryFeeInput').value = parseFloat(o.delivery_fee || 0).toFixed(2);
 }
 
@@ -689,6 +726,195 @@ function applyOrderFilters() {
         if (input.value.trim()) filterOrderTable(input);
     });
 }
+
+
+// ── Create New Order Modal Flow ─────────────────────────────
+let createOrderProducts = [];
+let createOrderQuantities = {};
+
+document.getElementById('openCreateOrderModalBtn')?.addEventListener('click', () => {
+    document.getElementById('coCustomerName').value = '';
+    document.getElementById('coCustomerPhone').value = '';
+    document.getElementById('coCustomerAddress').value = '';
+    createOrderQuantities = {};
+    showCreateOrderStep(1);
+    document.getElementById('createOrderOverlay').classList.add('show');
+    loadAvailableProductsForCreateOrder();
+});
+
+document.getElementById('createOrderBackBtn')?.addEventListener('click', () => {
+    const s2 = document.getElementById('createOrderStep2');
+    const s3 = document.getElementById('createOrderStep3');
+    if (s3.style.display === 'block') {
+        showCreateOrderStep(2);
+    } else if (s2.style.display === 'block') {
+        showCreateOrderStep(1);
+    } else {
+        closeCreateOrderModal();
+    }
+});
+
+function closeCreateOrderModal() {
+    document.getElementById('createOrderOverlay').classList.remove('show');
+}
+
+function showCreateOrderStep(step) {
+    const s1 = document.getElementById('createOrderStep1');
+    const s2 = document.getElementById('createOrderStep2');
+    const s3 = document.getElementById('createOrderStep3');
+    const title = document.getElementById('createOrderModalTitle');
+    s1.style.display = step === 1 ? 'block' : 'none';
+    s2.style.display = step === 2 ? 'block' : 'none';
+    s3.style.display = step === 3 ? 'block' : 'none';
+
+    if (step === 1) title.textContent = 'Create New Order - Customer Details';
+    else if (step === 2) title.textContent = 'Create New Order - Select Products';
+    else if (step === 3) title.textContent = 'Create New Order - Review Summary';
+}
+
+async function loadAvailableProductsForCreateOrder() {
+    try {
+        const res = await fetch('../Products/product_api.php?view=admin');
+        const data = await res.json();
+        if (!data.success) throw new Error(data.error);
+        createOrderProducts = data.products || [];
+        renderCreateOrderProductList();
+    } catch (err) {
+        console.error('Error loading products for new order:', err);
+        alert('Could not load products.');
+    }
+}
+
+function renderCreateOrderProductList() {
+    const container = document.getElementById('createOrderProductList');
+    const q = (document.getElementById('createOrderSearch')?.value || '').trim().toLowerCase();
+    const filtered = createOrderProducts.filter(p =>
+        (p.name || '').toLowerCase().includes(q) || (p.type_of_product || '').toLowerCase().includes(q)
+    );
+
+    if (!filtered.length) {
+        container.innerHTML = '<div style="text-align:center;color:#9ca3af;padding:20px;">No available products found.</div>';
+        return;
+    }
+
+    container.innerHTML = filtered.map(p => {
+        const pid = p.id;
+        const qty = createOrderQuantities[pid] || 0;
+        const img = p.image_path ? htmlEscape(p.image_path) : '../imgs/image 2.png';
+        const price = parseFloat(p.price || 0);
+
+        return `
+            <div style="display:flex;align-items:center;gap:12px;padding:10px;background:#fff;border:1px solid #f3c6dc;border-radius:8px;">
+                <img src="${img}" style="width:50px;height:50px;object-fit:cover;border-radius:6px;border:1px solid #ec4899;" alt="">
+                <div style="flex:1;min-width:0;">
+                    <div style="font-size:14px;font-weight:700;color:#1b1f4b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${htmlEscape(p.name)}</div>
+                    <div style="font-size:12px;color:#ec4899;font-weight:600;">P${price.toFixed(2)}</div>
+                </div>
+                <div style="display:flex;align-items:center;border:2px solid #ec4899;border-radius:6px;overflow:hidden;">
+                    <button type="button" onclick="updateCoQty(${pid}, -1)" style="background:#fff;border:none;color:#ec4899;width:30px;height:30px;font-weight:bold;cursor:pointer;">-</button>
+                    <span id="coQty_${pid}" style="width:36px;text-align:center;font-weight:700;color:#1b1f4b;font-size:14px;">${qty}</span>
+                    <button type="button" onclick="updateCoQty(${pid}, 1)" style="background:#fff;border:none;color:#ec4899;width:30px;height:30px;font-weight:bold;cursor:pointer;">+</button>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+document.getElementById('createOrderSearch')?.addEventListener('input', () => {
+    renderCreateOrderProductList();
+});
+
+function updateCoQty(productId, delta) {
+    let current = createOrderQuantities[productId] || 0;
+    current += delta;
+    if (current < 0) current = 0;
+    if (current === 0) {
+        delete createOrderQuantities[productId];
+    } else {
+        createOrderQuantities[productId] = current;
+    }
+    const span = document.getElementById(`coQty_${productId}`);
+    if (span) span.textContent = current;
+}
+
+document.getElementById('createOrderNextBtn')?.addEventListener('click', () => {
+    const name = document.getElementById('coCustomerName').value.trim();
+    const phone = document.getElementById('coCustomerPhone').value.trim();
+    const address = document.getElementById('coCustomerAddress').value.trim();
+
+    if (!name || !phone || !address) {
+        alert('Please fill in customer name, phone number, and address.');
+        return;
+    }
+    showCreateOrderStep(2);
+});
+
+document.getElementById('createOrderReviewBtn')?.addEventListener('click', () => {
+    const selectedEntries = Object.entries(createOrderQuantities).filter(([id, qty]) => qty > 0);
+    if (!selectedEntries.length) {
+        alert('Please select at least one product with quantity greater than 0.');
+        return;
+    }
+
+    const name = document.getElementById('coCustomerName').value.trim();
+    const phone = document.getElementById('coCustomerPhone').value.trim();
+    const address = document.getElementById('coCustomerAddress').value.trim();
+
+    document.getElementById('summaryCustomerName').textContent = name;
+    document.getElementById('summaryCustomerPhone').textContent = phone;
+    document.getElementById('summaryCustomerAddress').textContent = address;
+
+    let total = 0;
+    const itemsHtml = selectedEntries.map(([pid, qty]) => {
+        const product = createOrderProducts.find(p => String(p.id) === String(pid));
+        if (!product) return '';
+        const subtotal = parseFloat(product.price || 0) * qty;
+        total += subtotal;
+        return `
+            <div style="display:flex;justify-content:space-between;font-size:13px;color:#1b1f4b;">
+                <span>${htmlEscape(product.name)} × ${qty}</span>
+                <span style="font-weight:700;">P${subtotal.toFixed(2)}</span>
+            </div>
+        `;
+    }).join('');
+
+    document.getElementById('summaryItemsList').innerHTML = itemsHtml;
+    document.getElementById('summaryTotalAmount').textContent = 'P' + total.toFixed(2);
+    showCreateOrderStep(3);
+});
+
+document.getElementById('createOrderSubmitBtn')?.addEventListener('click', async () => {
+    const name = document.getElementById('coCustomerName').value.trim();
+    const phone = document.getElementById('coCustomerPhone').value.trim();
+    const address = document.getElementById('coCustomerAddress').value.trim();
+    const selectedEntries = Object.entries(createOrderQuantities).filter(([id, qty]) => qty > 0);
+
+    const items = selectedEntries.map(([pid, qty]) => ({ product_id: parseInt(pid, 10), quantity: qty }));
+
+    try {
+        const res = await fetch(ORDER_API, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                action: 'create_admin_order',
+                customer_name: name,
+                phone_num: phone,
+                address: address,
+                items: items
+            })
+        });
+        const data = await res.json();
+        if (!data.success) throw new Error(data.error || 'Failed to create order');
+
+        alert('Order ' + data.order_id + ' created successfully! Reflected in Order Process (Step 2).');
+        closeCreateOrderModal();
+        loadOrders();
+    } catch (err) {
+        console.error('Error creating order:', err);
+        alert('Error: ' + err.message);
+    }
+});
+
 
 document.querySelectorAll('input[data-body]').forEach(input => {
     input.addEventListener('input', () => filterOrderTable(input));

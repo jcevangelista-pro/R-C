@@ -4,6 +4,7 @@ start_app_session();
 header('Content-Type: application/json');
 
 require_once __DIR__ . '/../database/connection.php';
+require_once __DIR__ . '/../config/mail.php';
 
 $method = $_SERVER['REQUEST_METHOD'];
 if ($method !== 'POST') {
@@ -63,34 +64,128 @@ switch ($action) {
         // Hash password
         $hash = password_hash($password, PASSWORD_BCRYPT);
 
-        $pdo->beginTransaction();
-        // Insert user (role defaults to 'customer')
-        $stmt = $pdo->prepare(
-            'INSERT INTO users (first_name, middle_name, last_name, email, username, password_hash, role)
-             VALUES (?, ?, ?, ?, ?, ?, ?)'
-        );
-        $stmt->execute([$firstName, $middleName ?: null, $lastName, $email, $username, $hash, 'customer']);
-        $userId = $pdo->lastInsertId();
-        $stmt = $pdo->prepare("INSERT INTO customers (user_id, phone_num, address) VALUES (?, '', '')");
-        $stmt->execute([$userId]);
-        $pdo->commit();
+        // Stage the signup: the account is only created after the emailed
+        // verification code is confirmed (see 'verify_code' below).
+        $code = str_pad((string)random_int(0, 999999), 6, '0', STR_PAD_LEFT);
+        $_SESSION['pending_signup'] = [
+            'first_name' => $firstName,
+            'middle_name' => $middleName ?: null,
+            'last_name' => $lastName,
+            'email' => $email,
+            'username' => $username,
+            'password_hash' => $hash,
+            'code' => $code,
+            'expires' => time() + 600,
+            'attempts' => 0
+        ];
 
-        // Set session
-        session_regenerate_id(true);
-        $_SESSION['user_id'] = $userId;
-        $_SESSION['username'] = $username;
-        $_SESSION['role'] = 'customer';
+        $subject = 'R&C Printing Services - Email Verification Code';
+        $message = "Hello {$firstName},\n\n"
+            . "Your email verification code is: {$code}\n\n"
+            . "This code expires in 10 minutes. If you did not request this, ignore this email.";
+        if (!send_application_mail($email, $subject, $message)) {
+            unset($_SESSION['pending_signup']);
+            echo json_encode(['success' => false, 'error' => 'Unable to send the verification email. Please try again.']);
+            exit;
+        }
 
         echo json_encode([
             'success' => true,
-            'message' => 'Account created successfully.',
-            'user' => [
-                'user_id' => (int)$userId,
-                'username' => $username,
-                'role' => 'customer'
-            ]
+            'message' => 'A verification code was sent to your email.',
+            'pending_verification' => true,
+            'email' => $email
         ]);
         break;
+
+    // ── VERIFY EMAIL CODE ───────────────────────────────────
+    case 'verify_code': {
+        $code = trim($input['code'] ?? '');
+        $pending = $_SESSION['pending_signup'] ?? null;
+
+        if (!$pending) {
+            echo json_encode(['success' => false, 'error' => 'No pending signup. Please sign up again.', 'attempts_left' => 0]);
+            exit;
+        }
+
+        if (time() > $pending['expires']) {
+            unset($_SESSION['pending_signup']);
+            echo json_encode(['success' => false, 'error' => 'The code has expired. Please sign up again.', 'attempts_left' => 0]);
+            exit;
+        }
+
+        if (hash_equals($pending['code'], $code)) {
+            // Code correct - create the account now.
+            $pdo->beginTransaction();
+            $stmt = $pdo->prepare(
+                'INSERT INTO users (first_name, middle_name, last_name, email, username, password_hash, role)
+                 VALUES (?, ?, ?, ?, ?, ?, ?)'
+            );
+            $stmt->execute([
+                $pending['first_name'], $pending['middle_name'], $pending['last_name'],
+                $pending['email'], $pending['username'], $pending['password_hash'], 'customer'
+            ]);
+            $userId = $pdo->lastInsertId();
+            $stmt = $pdo->prepare("INSERT INTO customers (user_id, phone_num, address) VALUES (?, '', '')");
+            $stmt->execute([$userId]);
+            $pdo->commit();
+
+            unset($_SESSION['pending_signup']);
+
+            session_regenerate_id(true);
+            $_SESSION['user_id'] = $userId;
+            $_SESSION['username'] = $pending['username'];
+            $_SESSION['role'] = 'customer';
+
+            echo json_encode([
+                'success' => true,
+                'message' => 'Email verified. Account created successfully.',
+                'user' => [
+                    'user_id' => (int)$userId,
+                    'username' => $pending['username'],
+                    'role' => 'customer'
+                ]
+            ]);
+            exit;
+        }
+
+        // Wrong code - count the attempt; after 3 failures the pending signup is dropped.
+        $pending['attempts']++;
+        $left = 3 - $pending['attempts'];
+        if ($left <= 0) {
+            unset($_SESSION['pending_signup']);
+            echo json_encode(['success' => false, 'error' => 'Email is not verified. Please sign up again.', 'attempts_left' => 0]);
+            exit;
+        }
+        $_SESSION['pending_signup'] = $pending;
+        echo json_encode(['success' => false, 'error' => 'Incorrect verification code.', 'attempts_left' => $left]);
+        break;
+    }
+
+    // ── RESEND VERIFICATION CODE ────────────────────────────
+    case 'resend_code': {
+        $pending = $_SESSION['pending_signup'] ?? null;
+        if (!$pending) {
+            echo json_encode(['success' => false, 'error' => 'No pending signup. Please sign up again.']);
+            exit;
+        }
+
+        $code = str_pad((string)random_int(0, 999999), 6, '0', STR_PAD_LEFT);
+        $pending['code'] = $code;
+        $pending['expires'] = time() + 600;
+        $_SESSION['pending_signup'] = $pending;
+
+        $subject = 'R&C Printing Services - Email Verification Code';
+        $message = "Hello {$pending['first_name']},\n\n"
+            . "Your email verification code is: {$code}\n\n"
+            . "This code expires in 10 minutes. If you did not request this, ignore this email.";
+        if (!send_application_mail($pending['email'], $subject, $message)) {
+            echo json_encode(['success' => false, 'error' => 'Unable to resend the verification email. Please try again.']);
+            exit;
+        }
+
+        echo json_encode(['success' => true, 'message' => 'A new verification code has been sent to your email.']);
+        break;
+    }
 
     // ── LOG IN ──────────────────────────────────────────────
     case 'login':

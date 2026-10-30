@@ -182,6 +182,101 @@ try {
             exit;
         }
 
+        if ($action === 'create_admin_order') {
+            if (!in_array(current_role(), ['admin', 'owner'], true)) api_error('Unauthorized', 403);
+            $userId = current_user_id();
+
+            $customerName = trim($body['customer_name'] ?? '');
+            $address = trim($body['address'] ?? '');
+            $phoneNum = trim($body['phone_num'] ?? '');
+            $items = $body['items'] ?? [];
+
+            if (!$customerName || !$address || !$phoneNum || empty($items)) {
+                api_error('Customer name, address, phone number, and at least one item are required.', 422);
+            }
+
+            $pdo->beginTransaction();
+
+            $email = 'cust_' . time() . '_' . rand(100,999) . '@rnc.local';
+            $username = 'cust_' . time() . '_' . rand(100,999);
+            $passwordHash = password_hash(bin2hex(random_bytes(8)), PASSWORD_BCRYPT);
+            $nameParts = explode(' ', $customerName, 2);
+            $firstName = $nameParts[0];
+            $lastName = $nameParts[1] ?? '';
+
+            $stmt = $pdo->prepare("INSERT INTO users (first_name, last_name, email, username, password_hash, role, is_active) VALUES (?, ?, ?, ?, ?, 'customer', 1)");
+            $stmt->execute([$firstName, $lastName, $email, $username, $passwordHash]);
+            $newUserId = $pdo->lastInsertId();
+
+            $stmt = $pdo->prepare("INSERT INTO customers (user_id, phone_num, address) VALUES (?, ?, ?)");
+            $stmt->execute([$newUserId, $phoneNum, $address]);
+            $customerId = $pdo->lastInsertId();
+
+            $orderId = 'ORD-' . date('Ymd') . '-' . rand(10000, 99999);
+
+            $productTotal = 0.00;
+            $validatedItems = [];
+            foreach ($items as $item) {
+                $productId = (int)($item['product_id'] ?? 0);
+                $qty = (int)($item['quantity'] ?? 0);
+                if ($productId <= 0 || $qty <= 0) continue;
+
+                $pStmt = $pdo->prepare("SELECT price FROM products WHERE product_id = ? AND is_archived = 0 AND is_active = 1");
+                $pStmt->execute([$productId]);
+                $price = $pStmt->fetchColumn();
+                if ($price === false) {
+                    $pdo->rollBack();
+                    api_error('Invalid or archived product selected.', 422);
+                }
+                $unitPrice = (float)$price;
+                $productTotal += $unitPrice * $qty;
+                $validatedItems[] = ['product_id' => $productId, 'quantity' => $qty, 'unit_price' => $unitPrice];
+            }
+
+            if (empty($validatedItems)) {
+                $pdo->rollBack();
+                api_error('No valid items selected.', 422);
+            }
+
+            $totalAmount = $productTotal;
+
+            $stmt = $pdo->prepare("
+                INSERT INTO orders (order_id, customer_id, accepted_by, order_status, date_requested, date_accepted, product_total, total_amount, remaining_balance, payment_status)
+                VALUES (?, ?, ?, 'In Progress', NOW(), NOW(), ?, ?, ?, 'Unpaid')
+            ");
+            $stmt->execute([$orderId, $customerId, $userId, $productTotal, $totalAmount, $totalAmount]);
+
+            $detStmt = $pdo->prepare("INSERT INTO order_details (order_id, product_id, quantity, unit_price) VALUES (?, ?, ?, ?)");
+            foreach ($validatedItems as $vi) {
+                $detStmt->execute([$orderId, $vi['product_id'], $vi['quantity'], $vi['unit_price']]);
+            }
+
+            $stmt = $pdo->prepare("SELECT process_step_id, step_number FROM process_steps ORDER BY step_number");
+            $stmt->execute();
+            $steps = $stmt->fetchAll();
+
+            foreach ($steps as $step) {
+                $stepNum = (int)$step['step_number'];
+                $stepId = $step['process_step_id'];
+                if ($stepNum === 1) {
+                    $pdo->prepare("INSERT INTO order_process (order_id, process_step_id, status, completed_by, completed_at, notes) VALUES (?, ?, 'Completed', ?, NOW(), 'Order created by admin.')")
+                        ->execute([$orderId, $stepId, $userId]);
+                } elseif ($stepNum === 2) {
+                    $pdo->prepare("INSERT INTO order_process (order_id, process_step_id, status) VALUES (?, ?, 'In Progress')")
+                        ->execute([$orderId, $stepId]);
+                } else {
+                    $pdo->prepare("INSERT INTO order_process (order_id, process_step_id, status) VALUES (?, ?, 'Pending')")
+                        ->execute([$orderId, $stepId]);
+                }
+            }
+
+            audit_event($pdo, 'order.created_by_admin', $orderId);
+            $pdo->commit();
+
+            echo json_encode(['success' => true, 'message' => 'Order created successfully.', 'order_id' => $orderId]);
+            exit;
+        }
+
         // Get process steps for an order
         if ($action === 'get_steps') {
             $orderId = $body['order_id'] ?? '';
@@ -450,9 +545,9 @@ try {
     http_response_code(405);
     echo json_encode(['success' => false, 'error' => 'Method not allowed.']);
 
-} catch (Exception $e) {
+} catch (Throwable $e) {
     if (isset($pdo) && $pdo->inTransaction()) $pdo->rollBack();
     error_log($e->__toString());
     http_response_code(500);
-    echo json_encode(['success' => false, 'error' => 'Unable to process the order request.']);
+    echo json_encode(['success' => false, 'error' => 'Error: ' . $e->getMessage()]);
 }
