@@ -11,6 +11,11 @@
 !/Products/uploads/.htaccess
 !/Products/uploads/.gitkeep
 
+# Security: Protect development credentials
+DEVELOPMENT_ACCOUNTS.md
+database/seeds/development_accounts.sql
+database/seeds/*.sql
+
 # Claude Code settings (personal configuration)
 .claude/settings.json
 .claude/memory/
