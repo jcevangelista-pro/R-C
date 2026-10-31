@@ -41,6 +41,13 @@
 
 .Navbar .user-dropdown a { font-size: 13px; line-height: 1.35; }
 
+/* Shared user dropdown & menu item styles */
+.user-menu-item { position: relative; }
+.user-dropdown { display: none; position: absolute; top: 100%; right: 0; background: #fff; border-radius: 10px; box-shadow: 0 10px 24px rgba(107,33,168,0.2); min-width: 150px; z-index: 1000; overflow: hidden; }
+.user-dropdown.show { display: flex; flex-direction: column; }
+.user-dropdown a { padding: 10px 16px; font-size: 13px; color: #1E3163 !important; text-decoration: none; font-weight: 600 !important; display: block; }
+.user-dropdown a:hover { background: #ffe4f0; }
+
 @media (max-width: 768px) {
     .Navbar { min-height: 56px; padding: 8px 12px; }
     .Navbar #BName { padding: 8px 6px; font-size: 16px !important; }
