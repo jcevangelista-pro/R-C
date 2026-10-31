@@ -5,8 +5,10 @@ let orderMessages = [];
 let orderSteps = [];
 let orderData = null;
 let orderItems = [];
+let orderPayments = [];
 let requestedStepNumber = null;
 let cancellableStep = null;
+let hasInitializedTab = false;
 function htmlEscape(value) { return String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -159,11 +161,23 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
 
-        // Show the current active step on load
-        const visibleStep = requestedStepNumber && requestedStepNumber <= maxAccessible
-            ? requestedStepNumber
-            : displayStep;
-        const activeIndex = visibleStep - 1;
+        // Show the current active step on load or preserve current active tab on reload
+        let targetStep = displayStep;
+        if (requestedStepNumber && requestedStepNumber <= maxAccessible) {
+            targetStep = requestedStepNumber;
+            requestedStepNumber = null;
+        } else if (hasInitializedTab) {
+            const activeTabEl = document.querySelector('.nav-tabs[role="tablist"] > li.active');
+            if (activeTabEl) {
+                const activeIdx = Array.from(tabs).indexOf(activeTabEl);
+                if (activeIdx >= 0 && (activeIdx + 1) <= maxAccessible) {
+                    targetStep = activeIdx + 1;
+                }
+            }
+        }
+        hasInitializedTab = true;
+
+        const activeIndex = targetStep - 1;
         tabs.forEach(function(t) { t.classList.remove('active'); });
         panes.forEach(function(p) { p.classList.remove('active'); });
         if (tabs[activeIndex]) tabs[activeIndex].classList.add('active');
@@ -219,6 +233,7 @@ async function loadOrderProcess() {
         orderSteps = data.steps || [];
         orderData = data.order || null;
         orderItems = data.items || [];
+        orderPayments = data.payments || [];
         cancellableStep = data.can_cancel ? Number(data.cancel_step) : null;
         updateCancellationButtons();
 
@@ -290,7 +305,7 @@ async function loadOrderProcess() {
             if (finalPaymentCard) {
                 const fpStatValues = finalPaymentCard.querySelectorAll('.od-inline-row .od-stat .stat-value');
                 // First od-inline-row has: Delivery Fee
-                // Second od-inline-row has: Product Balance, Amount to Pay
+                // Second od-inline-row has: Product Balance, Amount to Pay (Product Balance + Delivery Fee)
                 const allRows = finalPaymentCard.querySelectorAll('.od-inline-row');
                 if (allRows[0]) {
                     const vals = allRows[0].querySelectorAll('.stat-value');
@@ -299,7 +314,8 @@ async function loadOrderProcess() {
                 if (allRows[1]) {
                     const vals = allRows[1].querySelectorAll('.stat-value');
                     if (vals[0]) vals[0].textContent = 'P' + remaining.toFixed(2);
-                    if (vals[1]) vals[1].textContent = 'P' + remaining.toFixed(2);
+                    // Amount to Pay = Product Balance + Delivery Fee
+                    if (vals[1]) vals[1].textContent = 'P' + (remaining + deliveryFee).toFixed(2);
                 }
             }
         }
@@ -318,6 +334,9 @@ async function loadOrderProcess() {
         // Lock down interactive controls on steps that are already completed,
         // so (for example) a submitted & approved payment cannot be resubmitted.
         applyStepReadOnly();
+
+        // Populate and lock submitted payment steps (Step 3 & Step 5)
+        populatePayments();
 
         // Fill Step 7 (Order Received) with the real product and customer info.
         populateStep7();
@@ -428,6 +447,87 @@ function applyStepReadOnly() {
         } else {
             pane.classList.remove('step-readonly');
         }
+    }
+}
+
+// Populate and lock submitted payment steps (Step 3 and Step 5)
+function populatePayments() {
+    // ── Step 3 Initial Payment ──────────────────────────────
+    const initialPayment = (orderPayments || []).find(p =>
+        (p.payment_type === 'Full Payment' || p.payment_type === '50% Down Payment') &&
+        (p.status === 'Submitted' || p.status === 'Verified')
+    );
+
+    const paymentCard = document.getElementById('PaymentCard');
+    if (paymentCard && initialPayment) {
+        const refInput = paymentCard.querySelector('input[placeholder="XXXX-XXX-XXXXXX"]');
+        if (refInput) {
+            refInput.value = initialPayment.reference_number || '';
+            refInput.disabled = true;
+        }
+
+        const fileInput = paymentCard.querySelector('input[type="file"]');
+        if (fileInput) fileInput.disabled = true;
+
+        const uploadBox = paymentCard.querySelector('.photo-upload');
+        if (uploadBox) {
+            uploadBox.style.pointerEvents = 'none';
+            const img = uploadBox.querySelector('img');
+            const icon = uploadBox.querySelector('span');
+            if (img && initialPayment.proof_path) {
+                img.src = '../../OrderProcess/evidence.php?kind=payment&payment_type=' + encodeURIComponent(initialPayment.payment_type) + '&order_id=' + encodeURIComponent(currentOrderId);
+                img.style.display = 'block';
+                if (icon) icon.style.display = 'none';
+            }
+        }
+
+        paymentCard.querySelectorAll('.done-btn').forEach(btn => {
+            btn.disabled = true;
+            btn.textContent = initialPayment.status === 'Verified' ? 'VERIFIED' : 'SUBMITTED';
+        });
+
+        paymentCard.querySelectorAll('.checkbox-option').forEach(opt => {
+            opt.style.pointerEvents = 'none';
+        });
+    }
+
+    // ── Step 5 Final Payment ────────────────────────────────
+    const finalPayment = (orderPayments || []).find(p =>
+        p.payment_type === 'Final Payment' &&
+        (p.status === 'Submitted' || p.status === 'Verified')
+    );
+
+    const finalPaymentCard = document.getElementById('FinalPaymentCard');
+    if (finalPaymentCard && finalPayment) {
+        const refInput = finalPaymentCard.querySelector('.ScreenShot-RefNum-Row input[placeholder="XXXX-XXX-XXXXXX"]');
+        if (refInput) {
+            refInput.value = finalPayment.reference_number || '';
+            refInput.disabled = true;
+        }
+
+        const fileInput = finalPaymentCard.querySelector('.ScreenShot-RefNum-Row input[type="file"]');
+        if (fileInput) fileInput.disabled = true;
+
+        const uploadBox = finalPaymentCard.querySelector('.ScreenShot-RefNum-Row .photo-upload');
+        if (uploadBox) {
+            uploadBox.style.pointerEvents = 'none';
+            const img = uploadBox.querySelector('img');
+            const icon = uploadBox.querySelector('span');
+            if (img && finalPayment.proof_path) {
+                img.src = '../../OrderProcess/evidence.php?kind=payment&payment_type=Final+Payment&order_id=' + encodeURIComponent(currentOrderId);
+                img.style.display = 'block';
+                if (icon) icon.style.display = 'none';
+            }
+        }
+
+        finalPaymentCard.querySelectorAll('.done-btn').forEach(btn => {
+            btn.disabled = true;
+            btn.textContent = finalPayment.status === 'Verified' ? 'VERIFIED' : 'SUBMITTED';
+        });
+
+        finalPaymentCard.querySelectorAll('.checkbox-option').forEach(opt => {
+            opt.style.pointerEvents = 'none';
+        });
     }
 }
 

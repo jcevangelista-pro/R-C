@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>R&C Printing Services</title>
+    <link rel="icon" type="image/x-icon" href="../imgs/image 2.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
@@ -109,7 +110,7 @@
   <div class="contact-grid">
     <div>
       <h2>Contact Us</h2>
-      <p class="lead">Have a question or want to place an order? Message us.</p>
+      <p class="lead">Have a question? Message us.</p>
       <div class="info">
         <div><i class="ic-text">📍</i>Cabuyao, Laguna</div>
         <div><i><img src="../imgs/viber.png" alt="Viber"></i>0992-XXX-XXXX</div>

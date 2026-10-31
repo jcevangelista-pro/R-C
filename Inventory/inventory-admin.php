@@ -4,6 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <title>Inventory - R&C Printing Services</title>
+<link rel="icon" type="image/x-icon" href="../imgs/image 2.png">
 <link rel="stylesheet" href="inventory.css">
 <style>
   .owner-tag { position: relative; cursor: pointer; }

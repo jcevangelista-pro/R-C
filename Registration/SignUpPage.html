@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
     <title>R&C Printing Services</title>
+    <link rel="icon" type="image/x-icon" href="../imgs/image 2.png">
     <link rel="stylesheet" href="LogInPage.css?v=6">
     <link rel="stylesheet" href="SignUpPage.css">
     <link rel="stylesheet" href="../CustomerNav.css">
@@ -18,8 +19,7 @@
             <span></span><span></span><span></span>
         </button>
         <ul id="navMenu">
-            <li class="nav-icon-item"><a href=""><img src="../imgs/typing.png" alt="" class="Img"></a></li>
-            <li class="nav-icon-item"><a href=""><img src="../imgs/trolley.png" alt="" class="Img"></a></li>
+           
             <li class="nav-text-item"><a href="../LandingPage/LandingPage.html">HOME</a></li>
             <li class="nav-text-item"><a href="../Products/Prodbrowse.html">PRODUCTS</a></li>
             <li class="nav-text-item"><a href="../Portfolio/PortfolioPage.html">PORTFOLIO</a></li>
@@ -52,7 +52,7 @@
 
                         <label for="email" class="Label">Email</label>
                         <input type="email" id="email" placeholder="Moiraine_Sanche40@gmail.com" required class="Input">
-                        <small style="color: #6b7280; font-size: 11px; margin-top: 2px; margin-bottom: 6px; display: block;">Use your personal email</small>
+                        <small style="color: #6b7280; font-size: 11px; margin-top: 2px; margin-bottom: 6px; display: block;">* Use your personal email</small>
 
                         <label for="username" class="Label">Username</label>
                         <input type="text" id="username" placeholder="@JaydeeDamodred" minlength="8" required class="Input">
@@ -134,45 +134,13 @@ Please read these Terms and Conditions carefully before placing an order with R&
     </div>
 
     <!-- Email Verification Modal -->
-    <div class="terms-modal-overlay" id="verifyModalOverlay" hidden>
-        <div class="terms-modal" role="dialog" aria-modal="true" aria-labelledby="verifyModalTitle">
-            <button type="button" class="terms-modal-close" id="verifyModalClose" aria-label="Close">&times;</button>
-            <h2 class="terms-modal-title" id="verifyModalTitle">Verify Your Email</h2>
-            <div class="terms-modal-body" style="white-space: normal;">
-                <p id="verifyModalDesc" style="margin: 0 0 14px 0; color: #6b7280;">We sent a verification code to your email. Enter the 6-digit code below to create your account.</p>
-                <label for="verifyCode" class="Label">Verification Code</label>
-                <input type="text" id="verifyCode" maxlength="6" inputmode="numeric" autocomplete="one-time-code" placeholder="000000" class="Input" style="letter-spacing: 8px; text-align: center; font-size: 20px;">
-                <div id="verifyError" class="form-feedback form-feedback--error" role="alert" aria-live="assertive"></div>
-                <div id="verifySuccess" class="form-feedback form-feedback--success" role="status" aria-live="polite"></div>
-            </div>
-            <div class="terms-modal-actions" style="justify-content: space-between;">
-                <button type="button" class="terms-modal-btn" id="resendBtn" style="background: #3E43A0;">RESEND (<span id="resendTimer">120</span>s)</button>
-                <button type="button" class="terms-modal-btn" id="verifyBtn">VERIFY</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Feedback modal for unverified email -->
-    <div class="terms-modal-overlay" id="feedbackModalOverlay" hidden>
-        <div class="terms-modal" role="dialog" aria-modal="true" aria-labelledby="feedbackModalTitle">
-            <h2 class="terms-modal-title" id="feedbackModalTitle">Email Not Verified</h2>
-            <div class="terms-modal-body" style="white-space: normal;">
-                <p style="margin: 0; color: #374151;">Email is not verified. You used all 3 attempts, so the signup was cancelled. Please sign up again with a valid verification code.</p>
-            </div>
-            <div class="terms-modal-actions">
-                <button type="button" class="terms-modal-btn" id="feedbackModalOk">OK</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Email Verification Modal -->
     <div class="verify-modal-overlay" id="verifyModalOverlay" hidden>
         <div class="terms-modal verify-modal" role="dialog" aria-modal="true" aria-labelledby="verifyModalTitle">
             <button type="button" class="terms-modal-close" id="verifyModalClose" aria-label="Close">&times;</button>
             <h2 class="terms-modal-title" id="verifyModalTitle">Verify Your Email</h2>
             <p class="verify-modal-desc" id="verifyModalDesc"></p>
             <div id="verifyError" class="form-feedback form-feedback--error" role="alert" aria-live="assertive"></div>
-            <input type="text" id="verifyCode" class="Input verify-code-input" inputmode="numeric" maxlength="6" placeholder="Enter 6-digit code" autocomplete="one-time-code">
+            <input type="text" id="verifyCode" class="Input verify-code-input" inputmode="numeric" maxlength="6" placeholder="- - - - - - " autocomplete="one-time-code">
             <div class="verify-modal-actions">
                 <button type="button" class="terms-modal-btn verify-btn-secondary" id="verifyResend" disabled>Resend (120s)</button>
                 <button type="button" class="terms-modal-btn" id="verifySubmit">Verify</button>

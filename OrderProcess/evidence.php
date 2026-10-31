@@ -6,8 +6,14 @@ $orderId = trim($_GET['order_id'] ?? '');
 $kind = $_GET['kind'] ?? 'payment';
 require_order_access($pdo, $orderId);
 if ($kind === 'payment') {
-    $stmt = $pdo->prepare("SELECT proof_path FROM payments WHERE order_id=? AND proof_path IS NOT NULL ORDER BY created_at DESC LIMIT 1");
-    $stmt->execute([$orderId]);
+    $paymentType = $_GET['payment_type'] ?? '';
+    if ($paymentType) {
+        $stmt = $pdo->prepare("SELECT proof_path FROM payments WHERE order_id=? AND payment_type=? AND proof_path IS NOT NULL LIMIT 1");
+        $stmt->execute([$orderId, $paymentType]);
+    } else {
+        $stmt = $pdo->prepare("SELECT proof_path FROM payments WHERE order_id=? AND proof_path IS NOT NULL ORDER BY created_at DESC LIMIT 1");
+        $stmt->execute([$orderId]);
+    }
 } elseif ($kind === 'process') {
     $step = (int)($_GET['step'] ?? 0);
     $stmt = $pdo->prepare("SELECT op.image FROM order_process op JOIN process_steps ps ON ps.process_step_id=op.process_step_id WHERE op.order_id=? AND ps.step_number=?");

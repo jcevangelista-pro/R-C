@@ -100,12 +100,17 @@ try {
         $stmt->execute([$orderId]);
         $messages = $stmt->fetchAll();
 
+        $stmt = $pdo->prepare("SELECT * FROM payments WHERE order_id = ? ORDER BY created_at ASC");
+        $stmt->execute([$orderId]);
+        $payments = $stmt->fetchAll();
+
         echo json_encode([
             'success' => true,
             'order' => $order,
             'items' => $items,
             'steps' => $steps,
             'messages' => $messages,
+            'payments' => $payments,
             'can_cancel' => $canCancel,
             'cancel_step' => $canCancel ? $cancelStep : null
         ]);
