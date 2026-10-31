@@ -509,6 +509,38 @@ body {
 }
 
 
+/* CANCEL */
+
+.CancelButton {
+    border: none;
+
+    border-radius: 10px;
+
+    padding: 11px 20px;
+
+    background: #e2e8f0;
+
+    color: #475569;
+
+    font-family: Arial, sans-serif;
+
+    font-size: 0.85rem;
+
+    font-weight: bold;
+
+    cursor: pointer;
+
+    transition: 0.2s ease;
+}
+
+
+.CancelButton:hover {
+    background: #cbd5e1;
+
+    transform: translateY(-2px);
+}
+
+
 /* SAVE */
 
 .SaveButton {

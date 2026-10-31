@@ -756,14 +756,23 @@ body .Navbar a#BName {
 
 .OrdSum-Receipt-Container {
     display: flex;
-    gap: 10px;
+    flex-wrap: wrap;
+    gap: 20px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.OrdSum-Receipt-Container > .bs-calltoaction {
+    flex: 1;
+    min-width: 280px;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .ORstatus-card {
-    grid-template-columns: 1fr 180px;
-    align-items: center;
-    gap: 30px;
-    padding: 18px 22px;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 15px;
     background: #fff;
     border-radius: 10px;
     color: var(--navy);
@@ -771,16 +780,19 @@ body .Navbar a#BName {
 
 .HeaderRowType {
     font-weight: 500;
-    font-size: 30px;
+    font-size: 24px;
     color: #1e3263;
     text-align: center;
     border-bottom: 2px solid #cfcfe0;
-    width: 485px;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    padding: 10px 0;
 }
 
 .OrdStatRowContainer,
-.OrderStatInfoContainer 
-.OrdTimelineRowContainer, 
+.OrderStatInfoContainer,
+.OrdTimelineRowContainer,
 .OrdReceiptRowContainer,
 .OrdCustRowContainer,
 .OrdProdRowContainer,
@@ -789,8 +801,16 @@ body .Navbar a#BName {
     font-weight: 500;
     color: #1e3263;
     border-bottom: 2px solid #cfcfe0;
-    width: 485px;
-    padding-top: 10px;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    padding: 10px 0;
+}
+
+@media (max-width: 991px) {
+    .OrdSum-Receipt-Container {
+        flex-direction: column;
+    }
 }
 
 .OrderStatInfoContainer {

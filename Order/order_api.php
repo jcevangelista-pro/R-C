@@ -19,7 +19,7 @@ try {
 
         // Pending orders (non-rush)
         $pending = $pdo->query("
-            SELECT o.order_id, 
+            SELECT o.order_id,
                    CONCAT(u.first_name, ' ', u.last_name) AS customer_name,
                    (SELECT p.name FROM order_details od JOIN products p ON p.product_id = od.product_id WHERE od.order_id = o.order_id LIMIT 1) AS product_name,
                    (SELECT p.image_path FROM order_details od JOIN products p ON p.product_id = od.product_id WHERE od.order_id = o.order_id LIMIT 1) AS product_image,
@@ -27,6 +27,8 @@ try {
                    o.total_amount,
                    o.is_rush,
                    o.order_status,
+                   o.delivery_method,
+                   DATE_FORMAT(o.delivery_date, '%b %d, %Y') AS delivery_date_fmt,
                    DATE_FORMAT(o.date_requested, '%b %d, %Y') AS date_requested_fmt,
                    DATE_FORMAT(o.date_requested, '%h:%i %p') AS time_requested
             FROM orders o
@@ -38,7 +40,7 @@ try {
 
         // Pending orders (rush)
         $pendingRush = $pdo->query("
-            SELECT o.order_id, 
+            SELECT o.order_id,
                    CONCAT(u.first_name, ' ', u.last_name) AS customer_name,
                    (SELECT p.name FROM order_details od JOIN products p ON p.product_id = od.product_id WHERE od.order_id = o.order_id LIMIT 1) AS product_name,
                    (SELECT p.image_path FROM order_details od JOIN products p ON p.product_id = od.product_id WHERE od.order_id = o.order_id LIMIT 1) AS product_image,
@@ -46,6 +48,8 @@ try {
                    o.total_amount,
                    o.is_rush,
                    o.order_status,
+                   o.delivery_method,
+                   DATE_FORMAT(o.delivery_date, '%b %d, %Y') AS delivery_date_fmt,
                    DATE_FORMAT(o.date_requested, '%b %d, %Y') AS date_requested_fmt,
                    DATE_FORMAT(o.date_requested, '%h:%i %p') AS time_requested
             FROM orders o
@@ -65,6 +69,8 @@ try {
                    (SELECT COALESCE(SUM(od.quantity), 0) FROM order_details od WHERE od.order_id = o.order_id) AS total_quantity,
                    o.total_amount,
                    o.order_status,
+                   o.delivery_method,
+                   DATE_FORMAT(o.delivery_date, '%b %d, %Y') AS delivery_date_fmt,
                    CONCAT(a.first_name, ' ', a.last_name) AS accepted_by_name,
                    DATE_FORMAT(o.date_requested, '%b %d, %Y') AS date_requested_fmt,
                    DATE_FORMAT(o.date_requested, '%h:%i %p') AS time_requested,
@@ -321,7 +327,12 @@ try {
             $stmt->execute([$orderId]);
             $items = $stmt->fetchAll();
 
-            echo json_encode(['success' => true, 'steps' => $steps, 'order' => $order, 'items' => $items]);
+            // Get payments
+            $stmt = $pdo->prepare("SELECT * FROM payments WHERE order_id = ? ORDER BY created_at ASC");
+            $stmt->execute([$orderId]);
+            $payments = $stmt->fetchAll();
+
+            echo json_encode(['success' => true, 'steps' => $steps, 'order' => $order, 'items' => $items, 'payments' => $payments]);
             exit;
         }
 
@@ -434,6 +445,11 @@ try {
                 $deliveryFee = filter_var($body['delivery_fee'] ?? null, FILTER_VALIDATE_FLOAT);
                 if ($deliveryFee === false || $deliveryFee < 0 || $deliveryFee > 99999999.99) {
                     $pdo->rollBack(); api_error('A valid delivery fee is required.', 422);
+                }
+                $methodStmt = $pdo->prepare("SELECT delivery_method FROM orders WHERE order_id=?");
+                $methodStmt->execute([$orderId]);
+                if ($methodStmt->fetchColumn() === 'Pickup') {
+                    $deliveryFee = 0.00;
                 }
                 $pdo->prepare("UPDATE orders SET delivery_fee=? WHERE order_id=?")->execute([round($deliveryFee, 2), $orderId]);
                 calculate_order_totals($pdo, $orderId);

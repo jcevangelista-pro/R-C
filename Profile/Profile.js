@@ -4,6 +4,9 @@ const PROFILE_API = 'profile_api.php';
    LOAD PROFILE FROM DB
 ========================== */
 
+let originalProfile = {};
+let selectedPhotoFile = null;
+
 async function loadProfile() {
     try {
         const res = await fetch(PROFILE_API);
@@ -11,6 +14,13 @@ async function loadProfile() {
         if (!data.success) throw new Error(data.error);
 
         const p = data.profile;
+        originalProfile = {
+            first_name: p.first_name || '',
+            last_name: p.last_name || '',
+            email: p.email || '',
+            phone_num: p.phone_num || '',
+            photo_url: p.profile_photo_url || '../imgs/user.png'
+        };
 
         // Fill form fields
         document.getElementById('firstName').value = p.first_name || '';
@@ -40,6 +50,7 @@ async function loadProfile() {
 
 const editButton = document.getElementById('editButton');
 const saveButton = document.getElementById('saveButton');
+const cancelButton = document.getElementById('cancelButton');
 const profileInputs = document.querySelectorAll('#profileForm input');
 
 editButton.addEventListener('click', function() {
@@ -48,7 +59,29 @@ editButton.addEventListener('click', function() {
     });
     editButton.style.display = 'none';
     saveButton.disabled = false;
+    if (cancelButton) cancelButton.style.display = 'inline-block';
 });
+
+if (cancelButton) {
+    cancelButton.addEventListener('click', function() {
+        document.getElementById('firstName').value = originalProfile.first_name;
+        document.getElementById('lastName').value = originalProfile.last_name;
+        document.getElementById('email').value = originalProfile.email;
+        document.getElementById('phone').value = originalProfile.phone_num;
+
+        selectedPhotoFile = null;
+        document.getElementById('profilePicture').src = originalProfile.photo_url || '../imgs/user.png';
+        const photoInputEl = document.getElementById('photoInput');
+        if (photoInputEl) photoInputEl.value = '';
+
+        profileInputs.forEach(function(input) {
+            input.disabled = true;
+        });
+        cancelButton.style.display = 'none';
+        saveButton.disabled = true;
+        editButton.style.display = 'inline-block';
+    });
+}
 
 /* =========================
    SAVE PROFILE
@@ -68,20 +101,33 @@ document.getElementById('profileForm').addEventListener('submit', async function
     }
 
     try {
+        const formData = new FormData();
+        formData.append('action', 'update_info');
+        formData.append('first_name', firstName);
+        formData.append('last_name', lastName);
+        formData.append('email', email);
+        formData.append('phone', phone);
+        if (selectedPhotoFile) {
+            formData.append('photo', selectedPhotoFile);
+        }
+
         const res = await fetch(PROFILE_API, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                action: 'update_info',
-                first_name: firstName,
-                last_name: lastName,
-                email: email,
-                phone: phone
-            })
+            body: formData
         });
         const data = await res.json();
 
         if (data.success) {
+            selectedPhotoFile = null;
+            if (data.photo_url) {
+                originalProfile.photo_url = data.photo_url;
+                document.getElementById('profilePicture').src = data.photo_url;
+            }
+            originalProfile.first_name = firstName;
+            originalProfile.last_name = lastName;
+            originalProfile.email = email;
+            originalProfile.phone_num = phone;
+
             // Update header
             document.getElementById('displayName').textContent = firstName + ' ' + lastName;
             document.getElementById('displayEmail').textContent = email;
@@ -89,6 +135,7 @@ document.getElementById('profileForm').addEventListener('submit', async function
             // Disable inputs
             profileInputs.forEach(function(input) { input.disabled = true; });
             saveButton.disabled = true;
+            if (cancelButton) cancelButton.style.display = 'none';
             editButton.style.display = 'inline-block';
 
             alert('Your information has been updated!');
@@ -158,7 +205,7 @@ document.getElementById('passwordForm').addEventListener('submit', async functio
    PROFILE PHOTO
 ========================== */
 
-document.getElementById('photoInput').addEventListener('change', async function(event) {
+document.getElementById('photoInput').addEventListener('change', function(event) {
     const file = event.target.files[0];
     if (!file) return;
     if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type) || file.size > 5 * 1024 * 1024) {
@@ -167,32 +214,9 @@ document.getElementById('photoInput').addEventListener('change', async function(
         return;
     }
 
+    selectedPhotoFile = file;
     const picture = document.getElementById('profilePicture');
-    const changeButton = document.querySelector('.ChangePhoto');
-    const previousSource = picture.src;
-    const previewUrl = URL.createObjectURL(file);
-    picture.src = previewUrl;
-    changeButton.disabled = true;
-    changeButton.textContent = 'Uploading...';
-
-    try {
-        const formData = new FormData();
-        formData.append('action', 'upload_photo');
-        formData.append('photo', file);
-        const response = await fetch(PROFILE_API, {method: 'POST', body: formData});
-        const data = await response.json();
-        if (!response.ok || !data.success) throw new Error(data.error || 'Unable to upload profile photo.');
-        picture.src = data.photo_url;
-        alert('Profile photo updated successfully!');
-    } catch (error) {
-        picture.src = previousSource;
-        alert(error.message || 'Unable to upload profile photo.');
-    } finally {
-        URL.revokeObjectURL(previewUrl);
-        changeButton.disabled = false;
-        changeButton.textContent = 'Change Photo';
-        event.target.value = '';
-    }
+    picture.src = URL.createObjectURL(file);
 });
 
 /* =========================

@@ -81,12 +81,32 @@ try {
                 exit;
             }
 
-            // Update users table
-            $stmt = $pdo->prepare("UPDATE users SET first_name = ?, last_name = ?, email = ? WHERE user_id = ?");
-            $stmt->execute([$firstName, $lastName, $email, $userId]);
+            $photoPath = null;
+            if (isset($_FILES['photo']) && $_FILES['photo']['error'] === UPLOAD_ERR_OK) {
+                $photoPath = store_image_upload($_FILES['photo'], 'profiles');
+                $stmt = $pdo->prepare("SELECT profile_image_path FROM users WHERE user_id=?");
+                $stmt->execute([$userId]);
+                $oldPath = $stmt->fetchColumn();
+
+                $stmt = $pdo->prepare("UPDATE users SET first_name = ?, last_name = ?, email = ?, profile_image_path = ? WHERE user_id = ?");
+                $stmt->execute([$firstName, $lastName, $email, $photoPath, $userId]);
+
+                if ($oldPath && $oldPath !== $photoPath) {
+                    $storageRoot = realpath(dirname(__DIR__) . '/OrderProcess/private_uploads');
+                    $oldFile = realpath(dirname(__DIR__) . '/' . ltrim((string)$oldPath, '/'));
+                    if ($storageRoot && $oldFile && str_starts_with($oldFile, $storageRoot . DIRECTORY_SEPARATOR) && is_file($oldFile)) {
+                        @unlink($oldFile);
+                    }
+                }
+                audit_event($pdo, 'profile.updated_with_photo', null);
+            } else {
+                $stmt = $pdo->prepare("UPDATE users SET first_name = ?, last_name = ?, email = ? WHERE user_id = ?");
+                $stmt->execute([$firstName, $lastName, $email, $userId]);
+                audit_event($pdo, 'profile.updated', null);
+            }
 
             // Update or create customer record for phone
-            if ($phone) {
+            if ($phone !== null) {
                 $stmt = $pdo->prepare("SELECT customer_id FROM customers WHERE user_id = ?");
                 $stmt->execute([$userId]);
                 if ($stmt->fetch()) {
@@ -98,7 +118,7 @@ try {
                 }
             }
 
-            echo json_encode(['success' => true, 'message' => 'Profile updated.']);
+            echo json_encode(['success' => true, 'message' => 'Profile updated.', 'photo_url' => $photoPath ? ('profile_photo.php?v=' . time()) : null]);
             exit;
         }
 

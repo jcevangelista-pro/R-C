@@ -175,6 +175,7 @@ let reviewOrderId = null;
 let reviewSteps = [];
 let reviewOrderData = null;
 let reviewItems = [];
+let reviewPayments = [];
 let reviewViewingStep = 0;
 let adminMessages = [];
 
@@ -194,6 +195,7 @@ function openOrderReviewModal(orderId) {
         reviewSteps = data.steps;
         reviewOrderData = data.order;
         reviewItems = data.items || [];
+        reviewPayments = data.payments || [];
 
         document.getElementById('reviewOrderId').textContent = reviewOrderId;
         document.getElementById('reviewCustomerName').textContent = data.order ? data.order.customer_name : '—';
@@ -573,15 +575,31 @@ function renderStep5Details() {
     const productTotal = parseFloat(o.product_total) - parseFloat(o.amount_deducted || 0);
     const deliveryFee = parseFloat(o.delivery_fee || 0);
     const remaining = parseFloat(o.remaining_balance || 0);
-    const amountToPay = remaining;
+    const amountToPay = remaining + deliveryFee;
 
     document.getElementById('s5PaymentMethod').textContent = o.payment_method || '—';
     document.getElementById('s5ProductBalance').textContent = 'P' + remaining.toFixed(2);
     document.getElementById('s5DeliveryFee').textContent = 'P' + deliveryFee.toFixed(2);
     document.getElementById('s5AmountToPay').textContent = 'P' + amountToPay.toFixed(2);
-    document.getElementById('s5PaymentType').textContent = o.payment_type || '—';
-    document.getElementById('s5RefNumber').textContent = o.reference_number || '—';
-    document.getElementById('s5Screenshot').innerHTML = o.payment_screenshot ? `<a target="_blank" rel="noopener" href="../OrderProcess/evidence.php?kind=payment&order_id=${encodeURIComponent(reviewOrderId)}">View Photo</a>` : '-';
+
+    const isStep3FiftyPercent = (o.payment_type || '').includes('50%');
+    const finalPayment = (reviewPayments || []).find(p => p.payment_type === 'Final Payment' && (p.status === 'Submitted' || p.status === 'Verified'));
+
+    if (isStep3FiftyPercent) {
+        if (finalPayment) {
+            document.getElementById('s5PaymentType').textContent = finalPayment.payment_type || 'Final Payment';
+            document.getElementById('s5RefNumber').textContent = finalPayment.reference_number || '—';
+            document.getElementById('s5Screenshot').innerHTML = finalPayment.proof_path ? `<a target="_blank" rel="noopener" href="../OrderProcess/evidence.php?kind=payment&payment_type=Final+Payment&order_id=${encodeURIComponent(reviewOrderId)}">View Photo</a>` : '-';
+        } else {
+            document.getElementById('s5PaymentType').textContent = '—';
+            document.getElementById('s5RefNumber').textContent = '—';
+            document.getElementById('s5Screenshot').textContent = '—';
+        }
+    } else {
+        document.getElementById('s5PaymentType').textContent = o.payment_type || '—';
+        document.getElementById('s5RefNumber').textContent = o.reference_number || '—';
+        document.getElementById('s5Screenshot').innerHTML = o.payment_screenshot ? `<a target="_blank" rel="noopener" href="../OrderProcess/evidence.php?kind=payment&order_id=${encodeURIComponent(reviewOrderId)}">View Photo</a>` : '-';
+    }
 }
 
 // ── Step 6: Out for Delivery ────────────────────────────────

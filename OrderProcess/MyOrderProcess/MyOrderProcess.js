@@ -460,7 +460,7 @@ function populatePayments() {
 
     const paymentCard = document.getElementById('PaymentCard');
     if (paymentCard && initialPayment) {
-        const refInput = paymentCard.querySelector('input[placeholder="XXXX-XXX-XXXXXX"]');
+        const refInput = document.getElementById('step3RefInput');
         if (refInput) {
             refInput.value = initialPayment.reference_number || '';
             refInput.disabled = true;
@@ -499,7 +499,7 @@ function populatePayments() {
 
     const finalPaymentCard = document.getElementById('FinalPaymentCard');
     if (finalPaymentCard && finalPayment) {
-        const refInput = finalPaymentCard.querySelector('.ScreenShot-RefNum-Row input[placeholder="XXXX-XXX-XXXXXX"]');
+        const refInput = document.getElementById('step5RefInput');
         if (refInput) {
             refInput.value = finalPayment.reference_number || '';
             refInput.disabled = true;
@@ -788,7 +788,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (ptBoxes[1] && ptBoxes[1].classList.contains('active')) paymentType = '50% Down Payment';
 
             // Get reference number
-            const refInput = document.querySelector('#PaymentCard input[placeholder="XXXX-XXX-XXXXXX"]');
+            const refInput = document.getElementById('step3RefInput');
             const referenceNumber = refInput ? refInput.value.trim() : '';
 
             if (!paymentMethod) { alert('Please select a payment method (GCash or Bank).'); return; }
@@ -832,7 +832,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (!paymentMethod) { alert('Please select a payment method (GCash or Bank).'); return; }
 
             // Get reference number from final payment card
-            const refInput = document.querySelector('#FinalPaymentCard input[placeholder="XXXX-XXX-XXXXXX"]');
+            const refInput = document.getElementById('step5RefInput');
             const referenceNumber = refInput ? refInput.value.trim() : '';
             if (!referenceNumber) { alert('Please enter the payment reference number.'); return; }
             const proof = document.querySelector('#FinalPaymentCard input[type="file"]');
@@ -881,6 +881,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     const accountNumber = document.getElementById('initialPaymentAccountNumber');
                     const isGCash = method === 'GCash';
 
+                    const step3Ref = document.getElementById('step3RefInput');
+                    if (step3Ref) step3Ref.placeholder = isGCash ? '0000123456789' : 'XXXXXXXXXXXXXXXXXXXXXX';
+
                     if (qrImage) {
                         qrImage.src = isGCash
                             ? '../OrderProcessImgs/GcashQR.jfif'
@@ -914,6 +917,10 @@ document.addEventListener('DOMContentLoaded', function() {
                     const logo = document.getElementById('finalPaymentLogo');
                     const accountName = document.getElementById('finalPaymentAccountName');
                     const accountNumber = document.getElementById('finalPaymentAccountNumber');
+
+                    const step5Ref = document.getElementById('step5RefInput');
+                    if (step5Ref) step5Ref.placeholder = isGCash ? '0000123456789' : 'XXXXXXXXXXXXXXXXXXXXXX';
+
                     if (qrImage) {
                         qrImage.src = isGCash
                             ? '../OrderProcessImgs/GcashQR.jfif'
