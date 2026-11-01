@@ -239,12 +239,10 @@ async function loadOrderProcess() {
 
         // Show the Step 4 delivery-fee evidence in the Final Payment card.
         const deliveryFeeEvidence = orderSteps.find(step => Number(step.step_number) === 4 && step.image);
-        const deliveryFeeLabel = Array.from(document.querySelectorAll('#FinalPaymentCard .field > .stat-label'))
-            .find(label => label.textContent.trim() === 'DELIVERY FEE IMAGE:');
-        const deliveryFeeBox = deliveryFeeLabel ? deliveryFeeLabel.parentElement.querySelector('.photo-upload') : null;
+        const deliveryFeeBox = document.getElementById('deliveryFeeBox');
         if (deliveryFeeBox) {
-            const evidenceImage = deliveryFeeBox.querySelector('img');
-            const evidencePlaceholder = deliveryFeeBox.querySelector('span');
+            const evidenceImage = document.getElementById('deliveryFeeImg');
+            const evidencePlaceholder = document.getElementById('deliveryFeeIcon');
             deliveryFeeBox.classList.add('delivery-fee-image-link');
             deliveryFeeBox.removeAttribute('for');
             if (deliveryFeeEvidence && evidenceImage) {
@@ -270,7 +268,7 @@ async function loadOrderProcess() {
                     evidenceImage.style.display = 'none';
                 }
                 if (evidencePlaceholder) {
-                    evidencePlaceholder.textContent = 'No image uploaded';
+                    evidencePlaceholder.textContent = '📷';
                     evidencePlaceholder.style.display = '';
                 }
                 deliveryFeeBox.removeAttribute('tabindex');
@@ -289,7 +287,7 @@ async function loadOrderProcess() {
             const rushFee = parseFloat(order.rush_fee) || 0;
             const newTotal = productTotal - amountDeducted + rushFee;
             const deliveryFee = parseFloat(order.delivery_fee) || 0;
-            const remaining = parseFloat(order.remaining_balance) || 0;
+            const isFullPayment = (order.payment_type || '').includes('Full Payment');
 
             // Update ALL .stat-value elements inside PaymentCard with the correct values
             const paymentCard = document.getElementById('PaymentCard');
@@ -303,9 +301,14 @@ async function loadOrderProcess() {
             // Update FinalPaymentCard
             const finalPaymentCard = document.getElementById('FinalPaymentCard');
             if (finalPaymentCard) {
-                const fpStatValues = finalPaymentCard.querySelectorAll('.od-inline-row .od-stat .stat-value');
-                // First od-inline-row has: Delivery Fee
-                // Second od-inline-row has: Product Balance, Amount to Pay (Product Balance + Delivery Fee)
+                const downpaymentOpt = document.getElementById('step5DownpaymentOption');
+                if (downpaymentOpt) {
+                    downpaymentOpt.style.display = isFullPayment ? 'none' : '';
+                }
+
+                const productBalance = isFullPayment ? 0 : Math.max(0, newTotal - parseFloat(order.amount_paid || 0));
+                const amountToPay = productBalance + deliveryFee;
+
                 const allRows = finalPaymentCard.querySelectorAll('.od-inline-row');
                 if (allRows[0]) {
                     const vals = allRows[0].querySelectorAll('.stat-value');
@@ -313,9 +316,9 @@ async function loadOrderProcess() {
                 }
                 if (allRows[1]) {
                     const vals = allRows[1].querySelectorAll('.stat-value');
-                    if (vals[0]) vals[0].textContent = 'P' + remaining.toFixed(2);
+                    if (vals[0]) vals[0].textContent = 'P' + productBalance.toFixed(2);
                     // Amount to Pay = Product Balance + Delivery Fee
-                    if (vals[1]) vals[1].textContent = 'P' + (remaining + deliveryFee).toFixed(2);
+                    if (vals[1]) vals[1].textContent = 'P' + amountToPay.toFixed(2);
                 }
             }
         }
@@ -781,7 +784,6 @@ document.addEventListener('DOMContentLoaded', function() {
             if (bankBox && bankBox.classList.contains('active')) paymentMethod = 'Bank';
 
             // Detect payment type
-            const fullBox = document.querySelectorAll('#PaymentCard .MoP-PT-Row')[0];
             const ptBoxes = document.querySelectorAll('#PaymentCard .MoP-PT-Row div:nth-child(2) .checkbox-option .box');
             let paymentType = '';
             if (ptBoxes[0] && ptBoxes[0].classList.contains('active')) paymentType = 'Full Payment';

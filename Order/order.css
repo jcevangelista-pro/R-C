@@ -464,6 +464,39 @@
     padding: 22px 26px;
     position: relative;
   }
+
+  .order-detail-modal.wide-modal {
+    width: 780px;
+    max-width: 95vw;
+  }
+
+  .order-detail-container {
+    display: flex;
+    gap: 24px;
+    align-items: flex-start;
+  }
+
+  .order-detail-container .order-detail-image-wrap {
+    flex: 0 0 130px;
+    margin-bottom: 0;
+  }
+
+  .order-detail-grid-3col {
+    flex: 1;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+
+  @media(max-width: 768px) {
+    .order-detail-container {
+      flex-direction: column;
+      align-items: center;
+    }
+    .order-detail-grid-3col {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
  
   .order-detail-modal .back-btn {
     position: absolute;

@@ -420,12 +420,12 @@
 
                                                     <div>
                                                         <span class="stat-label">PAYMENT TYPE:</span>
-                                                        <div class="option-row">
-                                                            <label class="checkbox-option">
-                                                                <span class="box" id="boxUpload"></span> Full Payment
+                                                        <div class="option-row" id="step5PaymentTypeRow">
+                                                            <label class="checkbox-option" data-payment-type="Full Payment">
+                                                                <span class="box"></span> Full Payment
                                                             </label>
-                                                            <label class="checkbox-option">
-                                                                <span class="box" id="boxRequest"></span> 50% Downpayment
+                                                            <label class="checkbox-option" data-payment-type="50% Down Payment" id="step5DownpaymentOption">
+                                                                <span class="box"></span> 50% Downpayment
                                                             </label>
                                                         </div>
                                                     </div>
@@ -438,9 +438,9 @@
                                                     </div>
                                                     <div class="field">
                                                         <label class="stat-label">DELIVERY FEE IMAGE:</label>
-                                                        <label class="photo-upload" id="photoUploadBox" for="orderPhotoInput">
-                                                            <img id="photoPreview" style="display:none;">
-                                                            <span id="photoUploadIcon">📷</span>
+                                                        <label class="photo-upload" id="deliveryFeeBox" for="">
+                                                            <img id="deliveryFeeImg" style="display:none;">
+                                                            <span id="deliveryFeeIcon">📷</span>
                                                         </label>
                                                     </div>
                                                 </div>

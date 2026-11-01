@@ -327,7 +327,9 @@ Please read these Terms and Conditions carefully before placing an order with R&
                     signupSuccess.textContent = result.message + ' Redirecting...';
                     signupSuccess.style.display = 'block';
                     setTimeout(() => {
-                        window.location.href = '../LandingPage/LandingPage.php';
+                        const redirectUrl = sessionStorage.getItem('redirect_after_auth') || '../LandingPage/LandingPage.php';
+                        sessionStorage.removeItem('redirect_after_auth');
+                        window.location.href = redirectUrl;
                     }, 1500);
                 }
             } else {
@@ -414,7 +416,9 @@ Please read these Terms and Conditions carefully before placing an order with R&
                 signupSuccess.textContent = result.message + ' Redirecting...';
                 signupSuccess.style.display = 'block';
                 setTimeout(() => {
-                    window.location.href = '../LandingPage/LandingPage.php';
+                    const redirectUrl = sessionStorage.getItem('redirect_after_auth') || '../LandingPage/LandingPage.php';
+                    sessionStorage.removeItem('redirect_after_auth');
+                    window.location.href = redirectUrl;
                 }, 1500);
             } else if (result.attempts_left === 0) {
                 // 3 wrong attempts (or expired) - show feedback modal on signup page.

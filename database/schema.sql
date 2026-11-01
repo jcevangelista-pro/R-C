@@ -173,6 +173,7 @@ CREATE TABLE orders (
     delivery_method     ENUM('Pickup','Delivery') NOT NULL DEFAULT 'Pickup',
     delivery_address    TEXT,
     delivery_date       DATETIME,
+    delivery_note       VARCHAR(255) NULL,
 
     -- Payment (FR-29)
     payment_method      ENUM('GCash','Bank') DEFAULT NULL,

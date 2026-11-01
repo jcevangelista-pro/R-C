@@ -26,6 +26,10 @@
     function rootUrl(path) { return SITE_ROOT + String(path).replace(/^\/+/, ''); }
 
     function showGuestPrompt() {
+        try {
+            sessionStorage.setItem('redirect_after_auth', window.location.href);
+        } catch (e) {}
+
         var existing = document.getElementById('guestAccessPrompt');
         if (existing) {
             existing.hidden = false;
@@ -155,7 +159,7 @@
         .guest-access-close { position: absolute; top: 9px; right: 14px; border: 0; color: #64748b; background: transparent; font-size: 28px; cursor: pointer; }
         .guest-access-icon { display: grid; place-items: center; width: 48px; height: 48px; margin: 0 auto 14px; border-radius: 50%; color: #b45309; background: #fef3c7; font: 800 24px Poppins, sans-serif; }
         .guest-access-actions { display: flex; justify-content: center; gap: 10px; margin-top: 24px; }
-        .guest-access-actions a { min-width: 120px; padding: 10px 18px; border-radius: 9px; font: 700 13px Poppins, sans-serif; text-decoration: none; }
+        .guest-access-actions a { min-width: 120px; padding: 10px 18px; border-radius: 9px; font: 700 13px Poppins, sans-serif; text-decoration: none; box-sizing: border-box; text-align: center; display: inline-block; }
         .guest-access-login { border: 1px solid #cbd5e1; color: #334155; background: #fff; }
         .guest-access-signup { border: 1px solid #ec4899; color: #fff; background: #ec4899; }
 
@@ -176,8 +180,8 @@
             .Img { width: 18px !important; height: 18px !important; }
             .mobile-hide-text { display: none !important; }
             .guest-access-dialog { padding: 28px 18px 20px; }
-            .guest-access-actions { flex-direction: column-reverse; }
-            .guest-access-actions a { width: 100%; }
+            .guest-access-actions { flex-direction: column; gap: 10px; }
+            .guest-access-actions a { width: 100%; min-width: 0; box-sizing: border-box; text-align: center; display: block; }
         }
     `;
     document.head.appendChild(style);

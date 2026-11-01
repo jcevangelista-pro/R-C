@@ -102,7 +102,9 @@
                 loginSuccess.textContent = result.message + ' Redirecting...';
                 loginSuccess.style.display = 'block';
                 setTimeout(() => {
-                    window.location.href = result.redirect;
+                    const redirectUrl = sessionStorage.getItem('redirect_after_auth') || result.redirect;
+                    sessionStorage.removeItem('redirect_after_auth');
+                    window.location.href = redirectUrl;
                 }, 1000);
             } else {
                 loginError.textContent = result.error;

@@ -5,6 +5,9 @@ require_role(['admin', 'owner']);
 $method = $_SERVER['REQUEST_METHOD'];
 
 try {
+    try {
+        $pdo->exec("ALTER TABLE orders ADD COLUMN delivery_note VARCHAR(255) NULL");
+    } catch (Throwable $e) {}
 
     // ── GET: return all order data for admin panel ──────────
     if ($method === 'GET') {
@@ -27,13 +30,22 @@ try {
                    o.total_amount,
                    o.is_rush,
                    o.order_status,
-                   o.delivery_method,
-                   DATE_FORMAT(o.delivery_date, '%b %d, %Y') AS delivery_date_fmt,
-                   DATE_FORMAT(o.date_requested, '%b %d, %Y') AS date_requested_fmt,
-                   DATE_FORMAT(o.date_requested, '%h:%i %p') AS time_requested
+                   COALESCE(o.delivery_method, 'Pickup') AS delivery_method,
+                   COALESCE(o.delivery_address, '') AS delivery_address,
+                   COALESCE(o.delivery_note, '') AS delivery_note,
+                   COALESCE(o.design_description, '') AS design_description,
+                   COALESCE(DATE_FORMAT(o.delivery_date, '%b %d, %Y'), '') AS delivery_date_fmt,
+                   COALESCE(CONCAT(a.first_name, ' ', a.last_name), '-') AS accepted_by_name,
+                   COALESCE(DATE_FORMAT(o.date_requested, '%b %d, %Y'), '') AS date_requested_fmt,
+                   COALESCE(DATE_FORMAT(o.date_requested, '%h:%i %p'), '') AS time_requested,
+                   COALESCE(DATE_FORMAT(o.date_accepted, '%b %d, %Y'), '') AS date_accepted_fmt,
+                   COALESCE(DATE_FORMAT(o.date_accepted, '%h:%i %p'), '') AS time_accepted,
+                   COALESCE(DATE_FORMAT(o.date_finished, '%b %d, %Y'), '') AS date_finished_fmt,
+                   COALESCE(DATE_FORMAT(o.date_finished, '%h:%i %p'), '') AS time_finished
             FROM orders o
             JOIN customers c ON o.customer_id = c.customer_id
             JOIN users u ON c.user_id = u.user_id
+            LEFT JOIN users a ON o.accepted_by = a.user_id
             WHERE o.order_status = 'Pending' AND o.is_rush = 0
             ORDER BY o.date_requested DESC
         ")->fetchAll();
@@ -48,13 +60,22 @@ try {
                    o.total_amount,
                    o.is_rush,
                    o.order_status,
-                   o.delivery_method,
-                   DATE_FORMAT(o.delivery_date, '%b %d, %Y') AS delivery_date_fmt,
-                   DATE_FORMAT(o.date_requested, '%b %d, %Y') AS date_requested_fmt,
-                   DATE_FORMAT(o.date_requested, '%h:%i %p') AS time_requested
+                   COALESCE(o.delivery_method, 'Pickup') AS delivery_method,
+                   COALESCE(o.delivery_address, '') AS delivery_address,
+                   COALESCE(o.delivery_note, '') AS delivery_note,
+                   COALESCE(o.design_description, '') AS design_description,
+                   COALESCE(DATE_FORMAT(o.delivery_date, '%b %d, %Y'), '') AS delivery_date_fmt,
+                   COALESCE(CONCAT(a.first_name, ' ', a.last_name), '-') AS accepted_by_name,
+                   COALESCE(DATE_FORMAT(o.date_requested, '%b %d, %Y'), '') AS date_requested_fmt,
+                   COALESCE(DATE_FORMAT(o.date_requested, '%h:%i %p'), '') AS time_requested,
+                   COALESCE(DATE_FORMAT(o.date_accepted, '%b %d, %Y'), '') AS date_accepted_fmt,
+                   COALESCE(DATE_FORMAT(o.date_accepted, '%h:%i %p'), '') AS time_accepted,
+                   COALESCE(DATE_FORMAT(o.date_finished, '%b %d, %Y'), '') AS date_finished_fmt,
+                   COALESCE(DATE_FORMAT(o.date_finished, '%h:%i %p'), '') AS time_finished
             FROM orders o
             JOIN customers c ON o.customer_id = c.customer_id
             JOIN users u ON c.user_id = u.user_id
+            LEFT JOIN users a ON o.accepted_by = a.user_id
             WHERE o.order_status = 'Pending' AND o.is_rush = 1
             ORDER BY o.date_requested DESC
         ")->fetchAll();
@@ -62,22 +83,25 @@ try {
         // Orders history (completed + cancelled)
         $history = $pdo->query("
             SELECT o.order_id,
-                   DATE_FORMAT(o.date_requested, '%Y-%m-%d') AS date_requested,
+                   COALESCE(DATE_FORMAT(o.date_requested, '%Y-%m-%d'), '') AS date_requested,
                    CONCAT(u.first_name, ' ', u.last_name) AS customer_name,
                    (SELECT p.name FROM order_details od JOIN products p ON p.product_id = od.product_id WHERE od.order_id = o.order_id LIMIT 1) AS product_name,
                    (SELECT p.image_path FROM order_details od JOIN products p ON p.product_id = od.product_id WHERE od.order_id = o.order_id LIMIT 1) AS product_image,
                    (SELECT COALESCE(SUM(od.quantity), 0) FROM order_details od WHERE od.order_id = o.order_id) AS total_quantity,
                    o.total_amount,
                    o.order_status,
-                   o.delivery_method,
-                   DATE_FORMAT(o.delivery_date, '%b %d, %Y') AS delivery_date_fmt,
-                   CONCAT(a.first_name, ' ', a.last_name) AS accepted_by_name,
-                   DATE_FORMAT(o.date_requested, '%b %d, %Y') AS date_requested_fmt,
-                   DATE_FORMAT(o.date_requested, '%h:%i %p') AS time_requested,
-                   DATE_FORMAT(o.date_accepted, '%b %d, %Y') AS date_accepted_fmt,
-                   DATE_FORMAT(o.date_accepted, '%h:%i %p') AS time_accepted,
-                   DATE_FORMAT(o.date_finished, '%b %d, %Y') AS date_finished_fmt,
-                   DATE_FORMAT(o.date_finished, '%h:%i %p') AS time_finished
+                   COALESCE(o.delivery_method, 'Pickup') AS delivery_method,
+                   COALESCE(o.delivery_address, '') AS delivery_address,
+                   COALESCE(o.delivery_note, '') AS delivery_note,
+                   COALESCE(o.design_description, '') AS design_description,
+                   COALESCE(DATE_FORMAT(o.delivery_date, '%b %d, %Y'), '') AS delivery_date_fmt,
+                   COALESCE(CONCAT(a.first_name, ' ', a.last_name), '-') AS accepted_by_name,
+                   COALESCE(DATE_FORMAT(o.date_requested, '%b %d, %Y'), '') AS date_requested_fmt,
+                   COALESCE(DATE_FORMAT(o.date_requested, '%h:%i %p'), '') AS time_requested,
+                   COALESCE(DATE_FORMAT(o.date_accepted, '%b %d, %Y'), '') AS date_accepted_fmt,
+                   COALESCE(DATE_FORMAT(o.date_accepted, '%h:%i %p'), '') AS time_accepted,
+                   COALESCE(DATE_FORMAT(o.date_finished, '%b %d, %Y'), '') AS date_finished_fmt,
+                   COALESCE(DATE_FORMAT(o.date_finished, '%h:%i %p'), '') AS time_finished
             FROM orders o
             JOIN customers c ON o.customer_id = c.customer_id
             JOIN users u ON c.user_id = u.user_id

@@ -212,6 +212,8 @@ try {
             $cartIds = $body['cart_ids'] ?? [];
             $deliveryMethod = $body['delivery_method'] ?? 'Pickup';
             $deliveryAddress = trim($body['delivery_address'] ?? '');
+            $deliveryDate = !empty($body['delivery_date']) ? $body['delivery_date'] : null;
+            $deliveryNote = trim($body['delivery_note'] ?? '');
             $isRush = !empty($body['is_rush']) ? 1 : 0;
             $customizationType = trim($body['customization_type'] ?? '');
             $designDescription = trim($body['design_description'] ?? '');
@@ -264,16 +266,26 @@ try {
 
             // Create order
             $stmt = $pdo->prepare("
-                INSERT INTO orders (order_id, customer_id, is_rush, rush_fee, product_total, total_amount, remaining_balance, delivery_method, delivery_address, customization_type, design_description, order_status, payment_status)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Pending', 'Unpaid')
+                INSERT INTO orders (order_id, customer_id, is_rush, rush_fee, product_total, total_amount, remaining_balance, delivery_method, delivery_address, delivery_date, delivery_note, customization_type, design_description, order_status, payment_status)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Pending', 'Unpaid')
             ");
-            $stmt->execute([$orderId, $customerId, $isRush, $rushFee, $productTotal, $totalAmount, $totalAmount, $deliveryMethod, $deliveryAddress ?: null, $customizationType ?: null, $designDescription ?: null]);
+            $stmt->execute([$orderId, $customerId, $isRush, $rushFee, $productTotal, $totalAmount, $totalAmount, $deliveryMethod, $deliveryAddress ?: null, $deliveryDate, $deliveryNote ?: null, $customizationType ?: null, $designDescription ?: null]);
 
             // Create order details
             $stmtDetail = $pdo->prepare("INSERT INTO order_details (order_id, product_id, quantity, unit_price) VALUES (?, ?, ?, ?)");
             foreach ($items as $item) {
                 $stmtDetail->execute([$orderId, $item['product_id'], $item['quantity'], $item['price']]);
             }
+
+            // Create order_process entry for Step 1 (Order Details) with status 'In Progress'
+            $stmtStep1 = $pdo->prepare("
+                INSERT INTO order_process (order_id, process_step_id, status)
+                SELECT o.order_id, sp.process_step_id, 'In Progress'
+                FROM orders o
+                CROSS JOIN process_steps sp ON sp.step_number = 1
+                WHERE o.order_id = ?
+            ");
+            $stmtStep1->execute([$orderId]);
 
             // Remove checked-out items from cart
             $stmt = $pdo->prepare("DELETE FROM cart WHERE cart_id IN ($placeholders) AND customer_id = ?");

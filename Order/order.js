@@ -33,7 +33,7 @@ function money(val) {
     return 'P' + parseFloat(val).toFixed(2);
 }
 
-function esc(s) { return String(s).replace(/'/g, "\\'").replace(/"/g, '&quot;'); }
+function esc(s) { return String(s ?? '').replace(/'/g, "\\'").replace(/"/g, '&quot;'); }
 function htmlEscape(s) { return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 
 // ── Render Pending Orders ───────────────────────────────────
@@ -53,7 +53,7 @@ function renderPendingTable(orders, tbodyId) {
                 <div class="order-actions">
                     <button class="btn-accept" onclick="acceptOrder('${o.order_id}')">Accept</button>
                     <button class="btn-reject" onclick="rejectOrder('${o.order_id}')">Reject</button>
-                    <button type="button" class="order-arrow pending-detail-btn" aria-label="View details for order ${htmlEscape(o.order_id)}" title="View order details" onclick="openOrderDetailModal('${o.order_id}','${esc(o.product_name || '-')}','${esc(o.customer_name)}','${money(o.total_amount)}','PENDING','-','${o.date_requested_fmt || '-'}','${o.time_requested || ''}','-','','-','','${o.total_quantity || 0}','${esc(o.product_image || '')}')">&gt;</button>
+                    <button type="button" class="order-arrow pending-detail-btn" aria-label="View details for order ${htmlEscape(o.order_id)}" title="View order details" onclick="openOrderDetailModal('${o.order_id}','${esc(o.product_name || '-')}','${esc(o.customer_name)}','${money(o.total_amount)}','PENDING','${esc(o.accepted_by_name || '-')}','${o.date_requested_fmt || '-'}','${o.time_requested || ''}','${o.date_accepted_fmt || '-'}','${o.time_accepted || ''}','-','','${o.total_quantity || 0}','${esc(o.product_image || '')}','${esc(o.delivery_method || 'Pickup')}','${o.delivery_date_fmt || '-'}','${esc(o.design_description || '-')}','${esc(o.delivery_note || '-')}')">&gt;</button>
                 </div>
             </td>
         </tr>
@@ -78,7 +78,7 @@ function renderHistoryTable(orders) {
             <td>${money(o.total_amount)}</td>
             <td><span class="order-status-badge ${statusClass}">${o.order_status.toUpperCase()}</span></td>
             <td>
-                <span class="order-arrow" onclick="openOrderDetailModal('${o.order_id}','${esc(o.product_name||'')}','${esc(o.customer_name)}','${money(o.total_amount)}','${o.order_status.toUpperCase()}','${esc(o.accepted_by_name||'-')}','${o.date_requested_fmt||'-'}','${o.time_requested||''}','${o.date_accepted_fmt||'-'}','${o.time_accepted||''}','${o.date_finished_fmt||'-'}','${o.time_finished||''}','${o.total_quantity || 0}','${esc(o.product_image||'')}')">&gt;</span>
+                <span class="order-arrow" onclick="openOrderDetailModal('${o.order_id}','${esc(o.product_name||'')}','${esc(o.customer_name)}','${money(o.total_amount)}','${o.order_status.toUpperCase()}','${esc(o.accepted_by_name||'-')}','${o.date_requested_fmt||'-'}','${o.time_requested||''}','${o.date_accepted_fmt||'-'}','${o.time_accepted||''}','${o.date_finished_fmt||'-'}','${o.time_finished||''}','${o.total_quantity || 0}','${esc(o.product_image||'')}','${esc(o.delivery_method || 'Pickup')}','${o.delivery_date_fmt || '-'}','${esc(o.design_description || '-')}','${esc(o.delivery_note || '-')}')">&gt;</span>
             </td>
         </tr>`;
     }).join('');
@@ -127,7 +127,8 @@ async function rejectOrder(orderId) {
 // ── Order Detail Modal ──────────────────────────────────────
 function openOrderDetailModal(orderId, product, customer, total, status, acceptedBy,
                                dateRequested, timeRequested, dateAccepted, timeAccepted,
-                               dateFinished, timeFinished, quantity, image) {
+                               dateFinished, timeFinished, quantity, image,
+                               deliveryMethod, deliveryDate, designDescription, deliveryNote) {
     document.getElementById('orderDetailId').textContent = orderId;
     document.getElementById('orderDetailProduct').textContent = product;
     document.getElementById('orderDetailQuantity').textContent = quantity;
@@ -150,6 +151,10 @@ function openOrderDetailModal(orderId, product, customer, total, status, accepte
         detailImgPlaceholder.style.display = 'flex';
     }
     document.getElementById('orderDetailAcceptedBy').textContent = acceptedBy;
+    document.getElementById('orderDetailDeliveryMethod').textContent = deliveryMethod || 'Pickup';
+    document.getElementById('orderDetailDeliveryDate').textContent = deliveryDate || '—';
+    document.getElementById('orderDetailDescription').textContent = designDescription || '—';
+    document.getElementById('orderDetailDeliveryNote').textContent = deliveryNote || '—';
     document.getElementById('orderDetailDateRequested').textContent = dateRequested;
     document.getElementById('orderDetailTimeRequested').textContent = timeRequested;
     document.getElementById('orderDetailDateAccepted').textContent = dateAccepted;
@@ -395,9 +400,18 @@ document.getElementById('reviewAdvanceBtn').addEventListener('click', async func
 
 async function saveCurrentStepEvidence() {
     const form = new FormData();
-    form.append('action','save_evidence'); form.append('order_id',reviewOrderId);
-    form.append('step_number',reviewViewingStep);
-    form.append('notes',document.getElementById('reviewStepNotes').value.trim());
+    form.append('action','save_evidence');
+    form.append('order_id', reviewOrderId);
+    form.append('step_number', reviewViewingStep);
+    form.append('notes', document.getElementById('reviewStepNotes').value.trim());
+
+    if (reviewViewingStep === 4) {
+        const fileInput = document.getElementById('s4DeliveryFeeImageInput');
+        if (fileInput && fileInput.files[0]) {
+            form.append('evidence', fileInput.files[0]);
+        }
+    }
+
     const response = await fetch(ORDER_API,{method:'POST',body:form});
     const data = await response.json();
     if (!data.success) { alert(data.error); return false; }
@@ -566,19 +580,31 @@ function renderStep4Details() {
         rushFeeField.style.display = 'none';
     }
     document.getElementById('s4DeliveryFeeInput').value = parseFloat(o.delivery_fee || 0).toFixed(2);
+
+    const stepData = reviewSteps.find(s => parseInt(s.step_number) === 4);
+    const previewEl = document.getElementById('s4DeliveryFeeImgPreview');
+    if (previewEl) {
+        if (stepData && stepData.image) {
+            previewEl.innerHTML = `<a href="../OrderProcess/evidence.php?kind=process&step=4&order_id=${encodeURIComponent(reviewOrderId)}" target="_blank" rel="noopener">View Uploaded Delivery Fee Image</a>`;
+        } else {
+            previewEl.innerHTML = '';
+        }
+    }
 }
 
 // ── Step 5: Final Payment ───────────────────────────────────
 function renderStep5Details() {
     if (!reviewOrderData) return;
     const o = reviewOrderData;
-    const productTotal = parseFloat(o.product_total) - parseFloat(o.amount_deducted || 0);
+    const productNet = parseFloat(o.product_total || 0) - parseFloat(o.amount_deducted || 0) + parseFloat(o.rush_fee || 0);
     const deliveryFee = parseFloat(o.delivery_fee || 0);
-    const remaining = parseFloat(o.remaining_balance || 0);
-    const amountToPay = remaining + deliveryFee;
+    const isFullPayment = (o.payment_type || '').includes('Full Payment');
+    const amountPaid = parseFloat(o.amount_paid || 0);
+    const productBalance = isFullPayment ? 0 : Math.max(0, productNet - amountPaid);
+    const amountToPay = productBalance + deliveryFee;
 
     document.getElementById('s5PaymentMethod').textContent = o.payment_method || '—';
-    document.getElementById('s5ProductBalance').textContent = 'P' + remaining.toFixed(2);
+    document.getElementById('s5ProductBalance').textContent = 'P' + productBalance.toFixed(2);
     document.getElementById('s5DeliveryFee').textContent = 'P' + deliveryFee.toFixed(2);
     document.getElementById('s5AmountToPay').textContent = 'P' + amountToPay.toFixed(2);
 

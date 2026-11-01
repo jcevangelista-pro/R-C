@@ -175,83 +175,84 @@
   </div>
 
     <div class="overlay" id="orderDetailOverlay">
-    <div class="order-detail-modal">
+    <div class="order-detail-modal wide-modal">
       <button class="back-btn" onclick="closeOrderDetailModal()">&lt;</button>
       <div class="modal-title">Order Details</div>
       <hr>
 
-      <div class="order-detail-image-wrap">
-        <img id="orderDetailImage" class="order-detail-image" alt="Product image">
-        <div id="orderDetailImagePlaceholder" class="order-detail-image-placeholder">No image</div>
-      </div>
- 
-      <div class="order-detail-row">
-        <div>
-          <div class="order-detail-label">Order ID:</div>
-          <div class="order-detail-value" id="orderDetailId">ORD-2026-00124</div>
+      <div class="order-detail-container">
+        <div class="order-detail-image-wrap">
+          <img id="orderDetailImage" class="order-detail-image" alt="Product image">
+          <div id="orderDetailImagePlaceholder" class="order-detail-image-placeholder">No image</div>
         </div>
-        <div>
-          <div class="order-detail-label">Product Name:</div>
-          <div class="order-detail-value" id="orderDetailProduct">Tumbler (360 ml)</div>
-        </div>
-        <div>
-          <div class="order-detail-label">Quantity:</div>
-          <div class="order-detail-value" id="orderDetailQuantity">1</div>
-        </div>
-      </div>
- 
-      <div class="order-detail-row">
-        <div>
-          <div class="order-detail-label">Customer Name:</div>
-          <div class="order-detail-value" id="orderDetailCustomer">Jane Doe</div>
-        </div>
-        <div>
-          <div class="order-detail-label">Total:</div>
-          <div class="order-detail-value" id="orderDetailTotal">P90.00</div>
-        </div>
-      </div>
- 
-      <div class="order-detail-section">
-        <div class="order-detail-label">Order Status</div>
-        <div class="order-status-row">
-          <span class="order-status-badge order-status-delivered" id="orderDetailStatus">DELIVERED</span>
-          <span class="order-status-flag"></span>
-        </div>
-      </div>
- 
-      <div class="order-detail-section">
-        <div class="order-detail-label">Accepted By</div>
-        <div class="order-detail-value" id="orderDetailAcceptedBy">Damored, Moiraine</div>
-      </div>
- 
-      <div class="order-detail-row">
-        <div>
-          <div class="order-detail-label">Delivery Method</div>
-          <div class="order-detail-value" id="orderDetailDeliveryMethod">Pickup</div>
-        </div>
-        <div>
-          <div class="order-detail-label">Delivery / Pickup Date</div>
-          <div class="order-detail-value" id="orderDetailDeliveryDate">—</div>
-        </div>
-      </div>
 
-      <div class="order-detail-row">
-        <div>
-          <div class="order-detail-label">Date Requested</div>
-          <div class="order-detail-value" id="orderDetailDateRequested">MAY 26, 2026</div>
-          <div class="order-detail-date-small" id="orderDetailTimeRequested">3:52 PM</div>
+        <div class="order-detail-grid-3col">
+          <div>
+            <div class="order-detail-label">Order ID</div>
+            <div class="order-detail-value" id="orderDetailId">ORD-2026-00124</div>
+          </div>
+          <div>
+            <div class="order-detail-label">Product Name</div>
+            <div class="order-detail-value" id="orderDetailProduct">Tumbler (360 ml)</div>
+          </div>
+          <div>
+            <div class="order-detail-label">Quantity</div>
+            <div class="order-detail-value" id="orderDetailQuantity">1</div>
+          </div>
+
+          <div>
+            <div class="order-detail-label">Customer Name</div>
+            <div class="order-detail-value" id="orderDetailCustomer">Jane Doe</div>
+          </div>
+          <div>
+            <div class="order-detail-label">Total</div>
+            <div class="order-detail-value" id="orderDetailTotal">P90.00</div>
+          </div>
+          <div>
+            <div class="order-detail-label">Order Status</div>
+            <div class="order-status-row">
+              <span class="order-status-badge order-status-delivered" id="orderDetailStatus">DELIVERED</span>
+            </div>
+          </div>
+
+          <div>
+            <div class="order-detail-label">Accepted By</div>
+            <div class="order-detail-value" id="orderDetailAcceptedBy">Damored, Moiraine</div>
+          </div>
+          <div>
+            <div class="order-detail-label">Delivery Method</div>
+            <div class="order-detail-value" id="orderDetailDeliveryMethod">Pickup</div>
+          </div>
+          <div>
+            <div class="order-detail-label">Delivery / Pickup Date</div>
+            <div class="order-detail-value" id="orderDetailDeliveryDate">—</div>
+          </div>
+
+          <div>
+            <div class="order-detail-label">Date Requested</div>
+            <div class="order-detail-value" id="orderDetailDateRequested">MAY 26, 2026</div>
+            <div class="order-detail-date-small" id="orderDetailTimeRequested">3:52 PM</div>
+          </div>
+          <div>
+            <div class="order-detail-label">Date Accepted</div>
+            <div class="order-detail-value" id="orderDetailDateAccepted">MAY 26, 2026</div>
+            <div class="order-detail-date-small" id="orderDetailTimeAccepted">3:52 PM</div>
+          </div>
+          <div>
+            <div class="order-detail-label">Date Finished</div>
+            <div class="order-detail-value" id="orderDetailDateFinished">MAY 26, 2026</div>
+            <div class="order-detail-date-small" id="orderDetailTimeFinished">3:52 PM</div>
+          </div>
+
+          <div style="grid-column: span 2;">
+            <div class="order-detail-label">Order Description</div>
+            <div class="order-detail-value" id="orderDetailDescription" style="font-weight: normal; font-size: 14px;">—</div>
+          </div>
+          <div>
+            <div class="order-detail-label">Delivery Note</div>
+            <div class="order-detail-value" id="orderDetailDeliveryNote" style="font-weight: normal; font-size: 14px;">—</div>
+          </div>
         </div>
-        <div>
-          <div class="order-detail-label">Date Accepted</div>
-          <div class="order-detail-value" id="orderDetailDateAccepted">MAY 26, 2026</div>
-          <div class="order-detail-date-small" id="orderDetailTimeAccepted">3:52 PM</div>
-        </div>
-      </div>
- 
-      <div class="order-detail-section">
-        <div class="order-detail-label">Date Finished</div>
-        <div class="order-detail-value" id="orderDetailDateFinished">MAY 26, 2026</div>
-        <div class="order-detail-date-small" id="orderDetailTimeFinished">3:52 PM</div>
       </div>
     </div>
   </div>
@@ -400,6 +401,7 @@
           <div class="verif-field">
             <label class="verif-label" for="s4DeliveryFeeImageInput">DELIVERY FEE IMAGE</label>
             <input type="file" id="s4DeliveryFeeImageInput" accept="image/*" style="width:100%;box-sizing:border-box;padding:6px;border:1px solid #ddd;border-radius:6px;">
+            <div id="s4DeliveryFeeImgPreview" style="margin-top:6px;font-size:13px;"></div>
           </div>
         </div>
         <p style="color:#6b7280;font-size:13px;margin-top:12px;">Done processing raw materials into desired product? Press APPROVE to advance.</p>

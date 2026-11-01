@@ -221,9 +221,11 @@ function val(id){
 deliveryDoneBtn.addEventListener('click', () => {
   deliverySaved = true;
   deliveryToggleLabel.textContent = "EDIT DELIVERY DETAILS";
- 
+
   deliveryInfo.method = deliveryMethod;
- 
+  deliveryInfo.deliveryDate = deliveryMethod === 'delivery' ? val('fldDeliveryDate') : val('fldPickupDate');
+  deliveryInfo.deliveryNote = deliveryMethod === 'delivery' ? val('fldDeliveryNote') : val('fldPickupNote');
+
   if (deliveryMethod === 'delivery'){
     const fullName = [val('fldFirstName'), val('fldMiddleName'), val('fldLastName')].filter(Boolean).join(' ');
     const addressParts = [val('fldAddress'), val('fldBarangay'), val('fldCity'), val('fldProvince')].filter(Boolean).join(', ');
@@ -592,6 +594,9 @@ summaryCheckoutBtn.addEventListener('click', async () => {
 
   // Determine delivery and rush info
   const isRush = checkoutIndexes.some(idx => cartItems[idx] && cartItems[idx].orderType === 'rush');
+  const currentMethod = deliveryInfo.method || 'delivery';
+  const finalDeliveryDate = (currentMethod === 'pickup' ? val('fldPickupDate') : val('fldDeliveryDate')) || deliveryInfo.deliveryDate || null;
+  const finalDeliveryNote = (currentMethod === 'pickup' ? val('fldPickupNote') : val('fldDeliveryNote')) || deliveryInfo.deliveryNote || '';
   const customizationTypes = [...new Set(checkoutIndexes.map(idx => cartItems[idx] && cartItems[idx].designSelection).filter(Boolean))];
   const customizationNotes = checkoutIndexes.map(idx => {
     const item = cartItems[idx];
@@ -611,8 +616,10 @@ summaryCheckoutBtn.addEventListener('click', async () => {
       body: JSON.stringify({
         action: 'checkout',
         cart_ids: selectedCartIds,
-        delivery_method: deliveryInfo.method === 'pickup' ? 'Pickup' : 'Delivery',
+        delivery_method: currentMethod === 'pickup' ? 'Pickup' : 'Delivery',
         delivery_address: deliveryInfo.address || '',
+        delivery_date: finalDeliveryDate,
+        delivery_note: finalDeliveryNote,
         is_rush: isRush,
         customization_type: customizationTypes.join(', '),
         design_description: customizationNotes
