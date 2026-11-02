@@ -197,6 +197,7 @@ document.getElementById('f').addEventListener('submit',function(e){
                 const productQuery = new URLSearchParams({
                     id: p.id,
                     name: p.name,
+                    desc: p.description || '',
                     type: p.type_of_product || '',
                     price: price,
                     img: p.image_path || '',

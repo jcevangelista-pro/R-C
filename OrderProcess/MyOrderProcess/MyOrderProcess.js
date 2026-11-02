@@ -905,6 +905,39 @@ document.addEventListener('DOMContentLoaded', function() {
                 const paymentMethodGroup = paymentGroups[0];
                 const paymentTypeGroup = paymentGroups[1];
 
+                let selectedMethod = '';
+                if (paymentMethodGroup) {
+                    const methodLabels = paymentMethodGroup.querySelectorAll('.checkbox-option');
+                    methodLabels.forEach(lbl => {
+                        if (lbl.querySelector('.box').classList.contains('active')) {
+                            selectedMethod = lbl.dataset.paymentMethod || (lbl.textContent.includes('GCash') ? 'GCash' : 'Bank');
+                        }
+                    });
+                }
+
+                let selectedType = '';
+                if (paymentTypeGroup) {
+                    const typeLabels = paymentTypeGroup.querySelectorAll('.checkbox-option');
+                    typeLabels.forEach(lbl => {
+                        if (lbl.querySelector('.box').classList.contains('active')) {
+                            selectedType = lbl.textContent.includes('50%') ? '50% Down Payment' : 'Full Payment';
+                        }
+                    });
+                }
+
+                if (currentOrderId && (selectedMethod || selectedType)) {
+                    fetch(ORDER_PROCESS_API, {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({
+                            action: 'save_payment_selection',
+                            order_id: currentOrderId,
+                            payment_method: selectedMethod,
+                            payment_type: selectedType
+                        })
+                    }).catch(() => {});
+                }
+
                 if (paymentMethodGroup && paymentMethodGroup.contains(this)) {
                     const method = this.dataset.paymentMethod;
                     const qrImage = document.getElementById('initialPaymentQr');

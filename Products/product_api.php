@@ -30,7 +30,7 @@ try {
         // Best sellers: products with most orders, fallback to front_page_visible
         if ($view === 'bestsellers') {
             $stmt = $pdo->query("
-                SELECT p.product_id AS id, p.name, p.type_of_product,
+                SELECT p.product_id AS id, p.name, p.description, p.type_of_product,
                        (p.price + COALESCE((SELECT SUM(pm.quantity_required * i.unit_cost)
                                             FROM product_materials pm
                                             JOIN inventory i ON i.inventory_id = pm.inventory_id
@@ -52,7 +52,7 @@ try {
         // Portfolio view: all front-page products grouped by type_of_product
         if ($view === 'portfolio') {
             $stmt = $pdo->query("
-                SELECT product_id AS id, name, type_of_product,
+                SELECT product_id AS id, name, description, type_of_product,
                        (price + COALESCE((SELECT SUM(pm.quantity_required * i.unit_cost)
                                           FROM product_materials pm
                                           JOIN inventory i ON i.inventory_id = pm.inventory_id
@@ -170,6 +170,7 @@ try {
 
         if ($action === 'add') {
             $name = trim($_POST['name'] ?? '');
+            $description = trim($_POST['description'] ?? '');
             $material = trim($_POST['material_used'] ?? '');
             $type = trim($_POST['type_of_product'] ?? '');
             $price = (float)($_POST['price'] ?? 0);
@@ -206,10 +207,10 @@ try {
             }
 
             $stmt = $pdo->prepare("
-                INSERT INTO products (name, material_used, type_of_product, price, image_path, created_by)
-                VALUES (?, ?, ?, ?, ?, ?)
+                INSERT INTO products (name, description, material_used, type_of_product, price, image_path, created_by)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
             ");
-            $stmt->execute([$name, $material ?: null, $type ?: null, $price, $imagePath, $userId]);
+            $stmt->execute([$name, $description ?: null, $material ?: null, $type ?: null, $price, $imagePath, $userId]);
             $productId = (int)$pdo->lastInsertId();
             audit_event($pdo, 'product.created', null, ['product_id'=>$productId]);
 
@@ -220,6 +221,7 @@ try {
         if ($action === 'update') {
             $id = (int)($_POST['id'] ?? 0);
             $name = trim($_POST['name'] ?? '');
+            $description = trim($_POST['description'] ?? '');
             $material = trim($_POST['material_used'] ?? '');
             $type = trim($_POST['type_of_product'] ?? '');
             $price = (float)($_POST['price'] ?? 0);
@@ -242,15 +244,15 @@ try {
                     move_uploaded_file($_FILES['image']['tmp_name'], $dest);
                     $imagePath = 'uploads/' . $filename;
 
-                    $stmt = $pdo->prepare("UPDATE products SET name=?, material_used=?, type_of_product=?, price=?, image_path=?, front_page_visible=? WHERE product_id=?");
-                    $stmt->execute([$name, $material ?: null, $type ?: null, $price, $imagePath, $frontPage, $id]);
+                    $stmt = $pdo->prepare("UPDATE products SET name=?, description=?, material_used=?, type_of_product=?, price=?, image_path=?, front_page_visible=? WHERE product_id=?");
+                    $stmt->execute([$name, $description ?: null, $material ?: null, $type ?: null, $price, $imagePath, $frontPage, $id]);
                     echo json_encode(['success' => true, 'message' => 'Product updated.']);
                     exit;
                 }
             }
 
-            $stmt = $pdo->prepare("UPDATE products SET name=?, material_used=?, type_of_product=?, price=?, front_page_visible=? WHERE product_id=?");
-            $stmt->execute([$name, $material ?: null, $type ?: null, $price, $frontPage, $id]);
+            $stmt = $pdo->prepare("UPDATE products SET name=?, description=?, material_used=?, type_of_product=?, price=?, front_page_visible=? WHERE product_id=?");
+            $stmt->execute([$name, $description ?: null, $material ?: null, $type ?: null, $price, $frontPage, $id]);
             echo json_encode(['success' => true, 'message' => 'Product updated.']);
             exit;
         }

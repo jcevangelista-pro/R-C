@@ -52,6 +52,7 @@ const escapeHtml = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'
       PRODUCTS = data.products.map(p => ({
         id: 'p' + p.id,
         name: p.name,
+        description: p.description || '',
         category: p.type_of_product || 'Other',
         type: p.material_used || p.type_of_product || 'Other',
         price: parseFloat(p.price),
@@ -222,6 +223,7 @@ const escapeHtml = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'
       const query = new URLSearchParams({
         id: product.id.replace(/^p/, ''),
         name: product.name,
+        desc: product.description || '',
         type: product.category,
         price: 'P' + product.price.toFixed(2),
         img: product.image || '',

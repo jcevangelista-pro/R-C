@@ -2,8 +2,10 @@ const ORDER_API = 'order_api.php';
 
 let processOrdersData = [];
 let walkInProcessOrdersData = [];
+let historyOrdersData = [];
 let processCurrentPage = 1;
 let walkInProcessCurrentPage = 1;
+let historyCurrentPage = 1;
 const ORDERS_PER_PAGE = 10;
 
 // ── Load all order data ─────────────────────────────────────
@@ -69,12 +71,39 @@ function renderPendingTable(orders, tbodyId) {
 
 // ── Render History Table ────────────────────────────────────
 function renderHistoryTable(orders) {
+    if (orders && orders !== historyOrdersData) {
+        historyOrdersData = orders;
+    }
+
+    const currentOrders = historyOrdersData;
     const tbody = document.getElementById('historyBody');
-    if (!orders.length) {
+    const searchInput = document.getElementById('searchHistory');
+    const query = searchInput ? searchInput.value.trim().toLowerCase() : '';
+
+    let filtered = currentOrders || [];
+    if (query) {
+        filtered = filtered.filter(o => {
+            const text = `${o.order_id} ${o.date_requested} ${o.customer_name} ${o.product_name || ''} ${o.total_amount} ${o.order_status}`.toLowerCase();
+            return text.includes(query);
+        });
+    }
+
+    const totalItems = filtered.length;
+    const totalPages = Math.ceil(totalItems / ORDERS_PER_PAGE) || 1;
+
+    if (historyCurrentPage > totalPages) historyCurrentPage = totalPages;
+    if (historyCurrentPage < 1) historyCurrentPage = 1;
+
+    const start = (historyCurrentPage - 1) * ORDERS_PER_PAGE;
+    const pageOrders = filtered.slice(start, start + ORDERS_PER_PAGE);
+
+    updateHistoryPaginationUI(historyCurrentPage, totalPages, totalItems, start, pageOrders.length);
+
+    if (!pageOrders.length) {
         tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:#9ca3af;padding:20px;">No order history.</td></tr>';
         return;
     }
-    tbody.innerHTML = orders.map(o => {
+    tbody.innerHTML = pageOrders.map(o => {
         const statusClass = o.order_status === 'Completed' ? 'order-status-delivered' : 'order-status-cancelled';
         return `
         <tr>
@@ -89,6 +118,43 @@ function renderHistoryTable(orders) {
             </td>
         </tr>`;
     }).join('');
+}
+
+function updateHistoryPaginationUI(page, totalPages, totalItems, start, count) {
+    const infoEl = document.getElementById('historyPageInfo');
+    const prevBtn = document.getElementById('historyPrevBtn');
+    const nextBtn = document.getElementById('historyNextBtn');
+
+    if (!infoEl || !prevBtn || !nextBtn) return;
+
+    if (totalItems === 0) {
+        infoEl.textContent = 'Showing 0 orders';
+        prevBtn.disabled = true;
+        nextBtn.disabled = true;
+        return;
+    }
+
+    const end = start + count;
+    infoEl.textContent = `Showing ${start + 1}-${end} of ${totalItems} orders (Page ${page} of ${totalPages})`;
+    prevBtn.disabled = page <= 1;
+    nextBtn.disabled = page >= totalPages;
+}
+
+function changeHistoryPage(direction) {
+    const searchInput = document.getElementById('searchHistory');
+    const query = searchInput ? searchInput.value.trim().toLowerCase() : '';
+    let filtered = historyOrdersData;
+    if (query) {
+        filtered = historyOrdersData.filter(o => {
+            const text = `${o.order_id} ${o.date_requested} ${o.customer_name} ${o.product_name || ''} ${o.total_amount} ${o.order_status}`.toLowerCase();
+            return text.includes(query);
+        });
+    }
+    const totalPages = Math.ceil(filtered.length / ORDERS_PER_PAGE) || 1;
+    historyCurrentPage += direction;
+    if (historyCurrentPage < 1) historyCurrentPage = 1;
+    if (historyCurrentPage > totalPages) historyCurrentPage = totalPages;
+    renderHistoryTable(historyOrdersData);
 }
 
 // ── Render Order Process (In Progress) ──────────────────────

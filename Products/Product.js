@@ -6,6 +6,7 @@ const productType = params.get('type');
 const productPrice = params.get('price');
 const productImg = params.get('img');
 const productId = params.get('id');
+const productDesc = params.get('desc');
 
 // Display one-time feedback after the successful add-to-cart reload.
 try {
@@ -42,6 +43,10 @@ if (productName) {
     document.getElementById('ProductName').textContent = productName;
     document.getElementById('ProductType').textContent = productType || '';
     document.getElementById('ProductPrice').textContent = productPrice || '';
+    if (productDesc) {
+        const descEl = document.getElementById('ProductDescription');
+        if (descEl) descEl.textContent = productDesc;
+    }
 
     const mainImg = document.querySelector('.RContainer .ProductImage');
     if (mainImg && productImg) {
@@ -53,10 +58,12 @@ if (productName) {
     const modalType = document.querySelector('.modal-card .product-type');
     const modalPrice = document.querySelector('.modal-card .product-price');
     const modalImg = document.querySelector('.modal-card .ProductImage');
+    const modalDesc = document.querySelector('.modal-card .product-desc');
 
     if (modalName) modalName.textContent = productName;
     if (modalType) modalType.textContent = productType || '';
     if (modalPrice) modalPrice.textContent = productPrice || '';
+    if (productDesc && modalDesc) modalDesc.textContent = productDesc;
     if (modalImg && productImg) {
         modalImg.src = resolveImgPath(productImg);
         modalImg.alt = productName;

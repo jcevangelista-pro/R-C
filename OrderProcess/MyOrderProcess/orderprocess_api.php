@@ -179,6 +179,35 @@ try {
             exit;
         }
 
+        // Save payment selection (method & type)
+        if ($action === 'save_payment_selection') {
+            if (current_role() !== 'customer') api_error('Only the customer can update payment selection.', 403);
+            $paymentMethod = $body['payment_method'] ?? null;
+            $paymentType = $body['payment_type'] ?? null;
+
+            $updates = [];
+            $params = [];
+            if ($paymentMethod && in_array($paymentMethod, ['GCash', 'Bank'], true)) {
+                $updates[] = "payment_method = ?";
+                $params[] = $paymentMethod;
+            }
+            if ($paymentType && in_array($paymentType, ['Full Payment', '50% Down Payment'], true)) {
+                $updates[] = "payment_type = ?";
+                $params[] = $paymentType;
+            }
+            if (empty($updates)) {
+                echo json_encode(['success' => true]);
+                exit;
+            }
+            $sql = "UPDATE orders SET " . implode(', ', $updates) . " WHERE order_id = ?";
+            $params[] = $orderId;
+
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute($params);
+            echo json_encode(['success' => true]);
+            exit;
+        }
+
         // Submit initial payment (Step 3)
         if ($action === 'submit_payment') {
             $paymentMethod = $body['payment_method'] ?? '';

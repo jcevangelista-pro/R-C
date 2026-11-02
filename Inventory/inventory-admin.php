@@ -70,8 +70,14 @@
           <tr><td colspan="6" style="text-align:center;color:#9ca3af;padding:24px;">Loading...</td></tr>
         </tbody>
       </table>
-      <div id="invSeeAllWrap" style="display:none;text-align:center;margin-top:14px;">
-        <button type="button" id="invSeeAllBtn" style="background:#ec4899;color:#fff;border:none;border-radius:8px;padding:10px 24px;font-weight:700;font-size:14px;cursor:pointer;">See All Items</button>
+      <div id="invPaginationWrap" style="display:none;text-align:center;margin-top:14px;">
+        <div class="table-pagination">
+          <span id="invPageInfo" class="table-pagination-info">Showing 0 items</span>
+          <div class="table-pagination-buttons">
+            <button type="button" id="invPrevBtn" class="pagination-btn" onclick="changeInvPage(-1)" disabled>Previous</button>
+            <button type="button" id="invNextBtn" class="pagination-btn" onclick="changeInvPage(1)" disabled>Next Page</button>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -94,6 +100,15 @@
           <tr><td colspan="5" style="text-align:center;color:#9ca3af;padding:16px;">Loading...</td></tr>
         </tbody>
       </table>
+      <div id="archivePaginationWrap" style="display:none;text-align:center;margin-top:14px;">
+        <div class="table-pagination">
+          <span id="archivePageInfo" class="table-pagination-info">Showing 0 items</span>
+          <div class="table-pagination-buttons">
+            <button type="button" id="archivePrevBtn" class="pagination-btn" onclick="changeArchivePage(-1)" disabled>Previous</button>
+            <button type="button" id="archiveNextBtn" class="pagination-btn" onclick="changeArchivePage(1)" disabled>Next Page</button>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- Update history table -->
@@ -116,6 +131,15 @@
           <tr><td colspan="6" style="text-align:center;color:#9ca3af;padding:16px;">Loading...</td></tr>
         </tbody>
       </table>
+      <div id="historyPaginationWrap" style="display:none;text-align:center;margin-top:14px;">
+        <div class="table-pagination">
+          <span id="historyPageInfo" class="table-pagination-info">Showing 0 items</span>
+          <div class="table-pagination-buttons">
+            <button type="button" id="historyPrevBtn" class="pagination-btn" onclick="changeHistoryPage(-1)" disabled>Previous</button>
+            <button type="button" id="historyNextBtn" class="pagination-btn" onclick="changeHistoryPage(1)" disabled>Next Page</button>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -352,10 +376,21 @@
 <script>
 const API = 'inventory_api.php';
 let inventoryItems = [];
+let inventoryData = []; // Original unfiltered data
+let archiveItems = [];
+let archiveData = [];
+let historyItems = [];
+let historyData = [];
 let activeItemId = null;
 let stockMode = 'add';
 let stockQuantity = 10;
 let stockCurrentStock = 0;
+
+// Pagination variables
+const INVENTORY_PER_PAGE = 10;
+let inventoryCurrentPage = 1;
+let archiveCurrentPage = 1;
+let historyCurrentPage = 1;
 
 // ── Show/hide size row based on category ────────────────────
 function toggleModalSize(category, rowId) {
@@ -369,8 +404,15 @@ async function loadInventory() {
     const data = await res.json();
     if (!data.success) throw new Error(data.error);
     inventoryItems = data.items;
+    inventoryData = data.items;
+    inventoryCurrentPage = 1;
+
+    historyItems = data.history;
+    historyData = data.history;
+    historyCurrentPage = 1;
+    refreshHistoryView();
+
     refreshInventoryView();
-    renderHistory(data.history);
     loadArchived();
   } catch (err) {
     document.getElementById('inventoryBody').innerHTML = `<tr><td colspan="6" style="text-align:center;color:#ef4444;padding:24px;">${err.message}</td></tr>`;
@@ -378,9 +420,22 @@ async function loadInventory() {
 }
 
 async function loadArchived() {
-  const res = await fetch(API + '?type=archived');
-  const data = await res.json();
-  if (data.success) renderArchived(data.items);
+  try {
+    const res = await fetch(API + '?type=archived');
+    const data = await res.json();
+    if (data.success) {
+      archiveItems = data.items;
+      archiveData = data.items;
+      archiveCurrentPage = 1;
+      refreshArchivedView();
+    }
+  } catch (err) {
+    console.error('Failed to load archived items:', err);
+  }
+}
+
+async function loadHistory() {
+  loadInventory();
 }
 
 function statusBadgeClass(status) {
@@ -440,6 +495,117 @@ function renderHistory(history) {
   `).join('');
 }
 
+// ── Pagination functions ───────────────────────────────────────
+function updatePaginationUI(tbodyId, page, totalPages, totalItems, start, count) {
+  if (tbodyId === 'inventoryBody') {
+    const infoEl = document.getElementById('invPageInfo');
+    const prevBtn = document.getElementById('invPrevBtn');
+    const nextBtn = document.getElementById('invNextBtn');
+    const wrap = document.getElementById('invPaginationWrap');
+
+    if (infoEl && prevBtn && nextBtn) {
+      if (totalItems === 0) {
+        infoEl.textContent = 'Showing 0 items';
+        prevBtn.disabled = true;
+        nextBtn.disabled = true;
+        wrap.style.display = 'none';
+        return;
+      }
+
+      const end = start + count;
+      infoEl.textContent = `Showing ${start + 1}-${end} of ${totalItems} items (Page ${page} of ${totalPages})`;
+      prevBtn.disabled = page <= 1;
+      nextBtn.disabled = page >= totalPages;
+      wrap.style.display = '';
+    }
+  } else if (tbodyId === 'archiveBody') {
+    const infoEl = document.getElementById('archivePageInfo');
+    const prevBtn = document.getElementById('archivePrevBtn');
+    const nextBtn = document.getElementById('archiveNextBtn');
+    const wrap = document.getElementById('archivePaginationWrap');
+
+    if (infoEl && prevBtn && nextBtn) {
+      if (totalItems === 0) {
+        infoEl.textContent = 'Showing 0 items';
+        prevBtn.disabled = true;
+        nextBtn.disabled = true;
+        wrap.style.display = 'none';
+        return;
+      }
+
+      const end = start + count;
+      infoEl.textContent = `Showing ${start + 1}-${end} of ${totalItems} items (Page ${page} of ${totalPages})`;
+      prevBtn.disabled = page <= 1;
+      nextBtn.disabled = page >= totalPages;
+      wrap.style.display = '';
+    }
+  } else if (tbodyId === 'historyBody') {
+    const infoEl = document.getElementById('historyPageInfo');
+    const prevBtn = document.getElementById('historyPrevBtn');
+    const nextBtn = document.getElementById('historyNextBtn');
+    const wrap = document.getElementById('historyPaginationWrap');
+
+    if (infoEl && prevBtn && nextBtn) {
+      if (totalItems === 0) {
+        infoEl.textContent = 'Showing 0 items';
+        prevBtn.disabled = true;
+        nextBtn.disabled = true;
+        wrap.style.display = 'none';
+        return;
+      }
+
+      const end = start + count;
+      infoEl.textContent = `Showing ${start + 1}-${end} of ${totalItems} items (Page ${page} of ${totalPages})`;
+      prevBtn.disabled = page <= 1;
+      nextBtn.disabled = page >= totalPages;
+      wrap.style.display = '';
+    }
+  }
+}
+
+function changeInvPage(direction) {
+  const q = document.getElementById('searchInput')?.value.toLowerCase() ?? '';
+  let filtered = inventoryData.filter(i =>
+    i.item_name.toLowerCase().includes(q) || i.category.toLowerCase().includes(q)
+  );
+  if (currentFilters.category) {
+    filtered = filtered.filter(i => i.category === currentFilters.category);
+  }
+  if (currentFilters.status) {
+    filtered = filtered.filter(i => i.status === currentFilters.status);
+  }
+  if (currentFilters.sort === 'az') {
+    filtered = filtered.slice().sort((a, b) => a.item_name.localeCompare(b.item_name));
+  } else if (currentFilters.sort === 'za') {
+    filtered = filtered.slice().sort((a, b) => b.item_name.localeCompare(a.item_name));
+  }
+
+  const totalPages = Math.ceil(filtered.length / INVENTORY_PER_PAGE) || 1;
+  inventoryCurrentPage += direction;
+  if (inventoryCurrentPage < 1) inventoryCurrentPage = 1;
+  if (inventoryCurrentPage > totalPages) inventoryCurrentPage = totalPages;
+
+  refreshInventoryView();
+}
+
+function changeArchivePage(direction) {
+  const totalPages = Math.ceil(archiveData.length / 10) || 1;
+  archiveCurrentPage += direction;
+  if (archiveCurrentPage < 1) archiveCurrentPage = 1;
+  if (archiveCurrentPage > totalPages) archiveCurrentPage = totalPages;
+
+  refreshArchivedView();
+}
+
+function changeHistoryPage(direction) {
+  const totalPages = Math.ceil(historyData.length / 10) || 1;
+  historyCurrentPage += direction;
+  if (historyCurrentPage < 1) historyCurrentPage = 1;
+  if (historyCurrentPage > totalPages) historyCurrentPage = totalPages;
+
+  refreshHistoryView();
+}
+
 function esc(s) { return String(s).replace(/'/g, "\\'").replace(/"/g, '&quot;'); }
 
 // ── Search + Filter ─────────────────────────────────────────
@@ -447,7 +613,7 @@ let currentFilters = { category: '', status: '', sort: '' };
 
 function getVisibleInventory() {
   const q = document.getElementById('searchInput').value.toLowerCase();
-  let list = inventoryItems.filter(i =>
+  let list = inventoryData.filter(i =>
     i.item_name.toLowerCase().includes(q) || i.category.toLowerCase().includes(q)
   );
 
@@ -485,6 +651,29 @@ function refreshInventoryView() {
       wrap.style.display = 'none';
     }
   }
+
+  // Apply pagination to the viewed items
+  const start = (inventoryCurrentPage - 1) * INVENTORY_PER_PAGE;
+  const paginated = list.slice(start, start + INVENTORY_PER_PAGE);
+  renderInventory(paginated);
+
+  updatePaginationUI('inventoryBody', inventoryCurrentPage, Math.ceil(list.length / INVENTORY_PER_PAGE), list.length, start, paginated.length);
+}
+
+function refreshArchivedView() {
+  const start = (archiveCurrentPage - 1) * 10;
+  const paginated = archiveData.slice(start, start + 10);
+  renderArchived(paginated);
+
+  updatePaginationUI('archiveBody', archiveCurrentPage, Math.ceil(archiveData.length / 10), archiveData.length, start, paginated.length);
+}
+
+function refreshHistoryView() {
+  const start = (historyCurrentPage - 1) * 10;
+  const paginated = historyData.slice(start, start + 10);
+  renderHistory(paginated);
+
+  updatePaginationUI('historyBody', historyCurrentPage, Math.ceil(historyData.length / 10), historyData.length, start, paginated.length);
 }
 
 document.getElementById('searchInput').addEventListener('input', function() {
@@ -688,6 +877,8 @@ if (addMaterialBtn) { addMaterialBtn.addEventListener('click', openAddMaterialMo
 
 // ── Init ────────────────────────────────────────────────────
 loadInventory();
+loadHistory();
+loadArchived();
 </script>
 </body>
 </html>
