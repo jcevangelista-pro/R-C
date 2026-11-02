@@ -28,6 +28,10 @@ try {
             PDO::ATTR_EMULATE_PREPARES => false,
         ]
     );
+
+    // Sync MySQL session timezone with PHP's timezone offset
+    $timezoneOffset = (new DateTime('now', new DateTimeZone(date_default_timezone_get())))->format('P');
+    $pdo->exec("SET time_zone = " . $pdo->quote($timezoneOffset));
 } catch (PDOException $e) {
     error_log($e->__toString());
     http_response_code(500);

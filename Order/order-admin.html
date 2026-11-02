@@ -170,6 +170,45 @@
           <tr><td colspan="6" style="text-align:center;color:#9ca3af;padding:20px;">Loading...</td></tr>
         </tbody>
       </table>
+      <div class="table-pagination">
+        <span id="processPageInfo" class="table-pagination-info">Showing 0 orders</span>
+        <div class="table-pagination-buttons">
+          <button type="button" id="processPrevBtn" class="pagination-btn" onclick="changeProcessPage(-1)" disabled>Previous</button>
+          <button type="button" id="processNextBtn" class="pagination-btn" onclick="changeProcessPage(1)" disabled>Next Page</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Order Process (Walk-in) -->
+     <div class="history-panel" style="margin-top: 20px;">
+      <div class="history-header">
+        <h2>Order process (walk-in)</h2>
+        <div class="history-search">
+          <img src="../imgs/Search.png" alt=""> <input type="text" id="searchWalkInProcess" data-body="walkInProcessBody" placeholder="Search orders…">
+        </div>
+      </div>
+      <table class="history-table">
+        <thead>
+          <tr>
+            <th>ORDER-ID</th>
+            <th>CUSTOMER</th>
+            <th>PRODUCT</th>
+            <th>TOTAL</th>
+            <th>STATUS</th>
+            <th> </th>
+          </tr>
+        </thead>
+        <tbody id="walkInProcessBody">
+          <tr><td colspan="6" style="text-align:center;color:#9ca3af;padding:20px;">Loading...</td></tr>
+        </tbody>
+      </table>
+      <div class="table-pagination">
+        <span id="walkInProcessPageInfo" class="table-pagination-info">Showing 0 orders</span>
+        <div class="table-pagination-buttons">
+          <button type="button" id="walkInProcessPrevBtn" class="pagination-btn" onclick="changeWalkInProcessPage(-1)" disabled>Previous</button>
+          <button type="button" id="walkInProcessNextBtn" class="pagination-btn" onclick="changeWalkInProcessPage(1)" disabled>Next Page</button>
+        </div>
+      </div>
     </div>
 
   </div>

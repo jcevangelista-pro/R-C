@@ -373,6 +373,9 @@ function formatStepDate(value) {
 //   - In Progress       -> created_at (when the step became active)
 //   - otherwise         -> null (not reached yet)
 function stepDateFor(stepNumber) {
+    if (stepNumber === 8 && orderData && orderData.date_finished) {
+        return formatStepDate(orderData.date_finished);
+    }
     const step = (orderSteps || []).find(s => parseInt(s.step_number) === stepNumber);
     if (step) {
         if ((step.status === 'Completed' || step.status === 'Skipped') && step.completed_at) {
@@ -491,6 +494,33 @@ function populatePayments() {
 
         paymentCard.querySelectorAll('.checkbox-option').forEach(opt => {
             opt.style.pointerEvents = 'none';
+        });
+
+        // Highlight correct payment method and payment type boxes
+        const methodBoxes = paymentCard.querySelectorAll('.MoP-PT-Row > div:first-child .checkbox-option');
+        methodBoxes.forEach(opt => {
+            const box = opt.querySelector('.box');
+            if (box) {
+                if (initialPayment.payment_method && opt.textContent.trim().includes(initialPayment.payment_method)) {
+                    box.classList.add('active');
+                } else {
+                    box.classList.remove('active');
+                }
+            }
+        });
+
+        const typeBoxes = paymentCard.querySelectorAll('.MoP-PT-Row > div:nth-child(2) .checkbox-option');
+        typeBoxes.forEach(opt => {
+            const box = opt.querySelector('.box');
+            if (box) {
+                const optText = opt.textContent.trim();
+                const payType = initialPayment.payment_type;
+                if (payType && (optText.includes(payType) || optText.includes(payType.replace('Down Payment', 'Downpayment')))) {
+                    box.classList.add('active');
+                } else {
+                    box.classList.remove('active');
+                }
+            }
         });
     }
 

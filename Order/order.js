@@ -1,5 +1,11 @@
 const ORDER_API = 'order_api.php';
 
+let processOrdersData = [];
+let walkInProcessOrdersData = [];
+let processCurrentPage = 1;
+let walkInProcessCurrentPage = 1;
+const ORDERS_PER_PAGE = 10;
+
 // ── Load all order data ─────────────────────────────────────
 async function loadOrders() {
     try {
@@ -19,7 +25,8 @@ async function loadOrders() {
         renderPendingTable(data.pending, 'pendingBody');
         renderPendingTable(data.pending_rush, 'pendingRushBody');
         renderHistoryTable(data.history);
-        renderProcessTable(data.in_progress);
+        renderProcessTable(data.in_progress, 'processBody');
+        renderProcessTable(data.walk_in_in_progress, 'walkInProcessBody');
         applyOrderFilters();   // keep any active search applied after re-render
         return true;
     } catch (err) {
@@ -85,13 +92,51 @@ function renderHistoryTable(orders) {
 }
 
 // ── Render Order Process (In Progress) ──────────────────────
-function renderProcessTable(orders) {
-    const tbody = document.getElementById('processBody');
-    if (!orders.length) {
+function renderProcessTable(orders, tbodyId = 'processBody') {
+    if (tbodyId === 'processBody' && orders && orders !== processOrdersData) {
+        processOrdersData = orders;
+    }
+    if (tbodyId === 'walkInProcessBody' && orders && orders !== walkInProcessOrdersData) {
+        walkInProcessOrdersData = orders;
+    }
+
+    const currentOrders = tbodyId === 'processBody' ? processOrdersData : walkInProcessOrdersData;
+    const tbody = document.getElementById(tbodyId);
+    const searchInputId = tbodyId === 'processBody' ? 'searchProcess' : 'searchWalkInProcess';
+    const searchInput = document.getElementById(searchInputId);
+    const query = searchInput ? searchInput.value.trim().toLowerCase() : '';
+
+    let filtered = currentOrders || [];
+    if (query) {
+        filtered = filtered.filter(o => {
+            const text = `${o.order_id} ${o.customer_name} ${o.product_name || ''} ${o.total_amount} ${o.current_step || ''}`.toLowerCase();
+            return text.includes(query);
+        });
+    }
+
+    const currentPage = tbodyId === 'processBody' ? processCurrentPage : walkInProcessCurrentPage;
+    const totalItems = filtered.length;
+    const totalPages = Math.ceil(totalItems / ORDERS_PER_PAGE) || 1;
+
+    if (tbodyId === 'processBody') {
+        if (processCurrentPage > totalPages) processCurrentPage = totalPages;
+        if (processCurrentPage < 1) processCurrentPage = 1;
+    } else {
+        if (walkInProcessCurrentPage > totalPages) walkInProcessCurrentPage = totalPages;
+        if (walkInProcessCurrentPage < 1) walkInProcessCurrentPage = 1;
+    }
+
+    const activePage = tbodyId === 'processBody' ? processCurrentPage : walkInProcessCurrentPage;
+    const start = (activePage - 1) * ORDERS_PER_PAGE;
+    const pageOrders = filtered.slice(start, start + ORDERS_PER_PAGE);
+
+    updatePaginationUI(tbodyId, activePage, totalPages, totalItems, start, pageOrders.length);
+
+    if (!pageOrders.length) {
         tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#9ca3af;padding:20px;">No orders in progress.</td></tr>';
         return;
     }
-    tbody.innerHTML = orders.map(o => `
+    tbody.innerHTML = pageOrders.map(o => `
         <tr>
             <td>${o.order_id}</td>
             <td>${o.customer_name}</td>
@@ -101,6 +146,61 @@ function renderProcessTable(orders) {
             <td><span class="order-arrow" onclick="openOrderReviewModal('${o.order_id}')">&gt;</span></td>
         </tr>
     `).join('');
+}
+
+function updatePaginationUI(tbodyId, page, totalPages, totalItems, start, count) {
+    const isProcess = tbodyId === 'processBody';
+    const infoEl = document.getElementById(isProcess ? 'processPageInfo' : 'walkInProcessPageInfo');
+    const prevBtn = document.getElementById(isProcess ? 'processPrevBtn' : 'walkInProcessPrevBtn');
+    const nextBtn = document.getElementById(isProcess ? 'processNextBtn' : 'walkInProcessNextBtn');
+
+    if (!infoEl || !prevBtn || !nextBtn) return;
+
+    if (totalItems === 0) {
+        infoEl.textContent = 'Showing 0 orders';
+        prevBtn.disabled = true;
+        nextBtn.disabled = true;
+        return;
+    }
+
+    const end = start + count;
+    infoEl.textContent = `Showing ${start + 1}-${end} of ${totalItems} orders (Page ${page} of ${totalPages})`;
+    prevBtn.disabled = page <= 1;
+    nextBtn.disabled = page >= totalPages;
+}
+
+function changeProcessPage(direction) {
+    const searchInput = document.getElementById('searchProcess');
+    const query = searchInput ? searchInput.value.trim().toLowerCase() : '';
+    let filtered = processOrdersData;
+    if (query) {
+        filtered = processOrdersData.filter(o => {
+            const text = `${o.order_id} ${o.customer_name} ${o.product_name || ''} ${o.total_amount} ${o.current_step || ''}`.toLowerCase();
+            return text.includes(query);
+        });
+    }
+    const totalPages = Math.ceil(filtered.length / ORDERS_PER_PAGE) || 1;
+    processCurrentPage += direction;
+    if (processCurrentPage < 1) processCurrentPage = 1;
+    if (processCurrentPage > totalPages) processCurrentPage = totalPages;
+    renderProcessTable(processOrdersData, 'processBody');
+}
+
+function changeWalkInProcessPage(direction) {
+    const searchInput = document.getElementById('searchWalkInProcess');
+    const query = searchInput ? searchInput.value.trim().toLowerCase() : '';
+    let filtered = walkInProcessOrdersData;
+    if (query) {
+        filtered = walkInProcessOrdersData.filter(o => {
+            const text = `${o.order_id} ${o.customer_name} ${o.product_name || ''} ${o.total_amount} ${o.current_step || ''}`.toLowerCase();
+            return text.includes(query);
+        });
+    }
+    const totalPages = Math.ceil(filtered.length / ORDERS_PER_PAGE) || 1;
+    walkInProcessCurrentPage += direction;
+    if (walkInProcessCurrentPage < 1) walkInProcessCurrentPage = 1;
+    if (walkInProcessCurrentPage > totalPages) walkInProcessCurrentPage = totalPages;
+    renderProcessTable(walkInProcessOrdersData, 'walkInProcessBody');
 }
 
 // ── Accept / Reject actions ─────────────────────────────────
@@ -733,6 +833,18 @@ async function sendAdminMessage() {
 // table's rows by matching the row's visible text (Order ID / customer /
 // product / status / date). Re-applied after loadOrders() re-renders.
 function filterOrderTable(input) {
+    const bodyId = input.dataset.body;
+    if (bodyId === 'processBody') {
+        processCurrentPage = 1;
+        renderProcessTable(processOrdersData, 'processBody');
+        return;
+    }
+    if (bodyId === 'walkInProcessBody') {
+        walkInProcessCurrentPage = 1;
+        renderProcessTable(walkInProcessOrdersData, 'walkInProcessBody');
+        return;
+    }
+
     const tbody = document.getElementById(input.dataset.body);
     if (!tbody) return;
     const q = input.value.trim().toLowerCase();
@@ -764,6 +876,16 @@ function filterOrderTable(input) {
         note.style.display = 'none';
     }
 }
+
+document.getElementById('searchProcess')?.addEventListener('input', function() {
+    processCurrentPage = 1;
+    renderProcessTable(processOrdersData, 'processBody');
+});
+
+document.getElementById('searchWalkInProcess')?.addEventListener('input', function() {
+    walkInProcessCurrentPage = 1;
+    renderProcessTable(walkInProcessOrdersData, 'walkInProcessBody');
+});
 
 function applyOrderFilters() {
     document.querySelectorAll('input[data-body]').forEach(input => {

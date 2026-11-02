@@ -5,9 +5,16 @@ require_role(['admin', 'owner']);
 $method = $_SERVER['REQUEST_METHOD'];
 
 try {
-    try {
+try {
+    $colCheck = $pdo->query("SHOW COLUMNS FROM orders LIKE 'delivery_note'")->fetch();
+    if (!$colCheck) {
         $pdo->exec("ALTER TABLE orders ADD COLUMN delivery_note VARCHAR(255) NULL");
-    } catch (Throwable $e) {}
+    }
+    $colCheckWalkin = $pdo->query("SHOW COLUMNS FROM orders LIKE 'is_walkin'")->fetch();
+    if (!$colCheckWalkin) {
+        $pdo->exec("ALTER TABLE orders ADD COLUMN is_walkin TINYINT(1) NOT NULL DEFAULT 0");
+    }
+} catch (Throwable $e) {}
 
     // ── GET: return all order data for admin panel ──────────
     if ($method === 'GET') {
@@ -111,7 +118,7 @@ try {
             LIMIT 50
         ")->fetchAll();
 
-        // In-progress orders (for Order Process section)
+        // In-progress orders (online)
         $inProgress = $pdo->query("
             SELECT o.order_id,
                    CONCAT(u.first_name, ' ', u.last_name) AS customer_name,
@@ -124,7 +131,24 @@ try {
             FROM orders o
             JOIN customers c ON o.customer_id = c.customer_id
             JOIN users u ON c.user_id = u.user_id
-            WHERE o.order_status = 'In Progress'
+            WHERE o.order_status = 'In Progress' AND o.is_walkin = 0
+            ORDER BY o.date_accepted DESC
+        ")->fetchAll();
+
+        // In-progress orders (walk-in)
+        $walkInInProgress = $pdo->query("
+            SELECT o.order_id,
+                   CONCAT(u.first_name, ' ', u.last_name) AS customer_name,
+                   (SELECT p.name FROM order_details od JOIN products p ON p.product_id = od.product_id WHERE od.order_id = o.order_id LIMIT 1) AS product_name,
+                   (SELECT p.image_path FROM order_details od JOIN products p ON p.product_id = od.product_id WHERE od.order_id = o.order_id LIMIT 1) AS product_image,
+                   o.total_amount,
+                   o.order_status,
+                   (SELECT ps.step_name FROM order_process op JOIN process_steps ps ON ps.process_step_id = op.process_step_id WHERE op.order_id = o.order_id AND op.status = 'In Progress' ORDER BY ps.step_number LIMIT 1) AS current_step,
+                   (SELECT ps.step_number FROM order_process op JOIN process_steps ps ON ps.process_step_id = op.process_step_id WHERE op.order_id = o.order_id AND op.status = 'In Progress' ORDER BY ps.step_number LIMIT 1) AS current_step_number
+            FROM orders o
+            JOIN customers c ON o.customer_id = c.customer_id
+            JOIN users u ON c.user_id = u.user_id
+            WHERE o.order_status = 'In Progress' AND o.is_walkin = 1
             ORDER BY o.date_accepted DESC
         ")->fetchAll();
 
@@ -141,7 +165,8 @@ try {
             'pending' => $pending,
             'pending_rush' => $pendingRush,
             'history' => $history,
-            'in_progress' => $inProgress
+            'in_progress' => $inProgress,
+            'walk_in_in_progress' => $walkInInProgress
         ]);
         exit;
     }
@@ -271,8 +296,8 @@ try {
             $totalAmount = $productTotal;
 
             $stmt = $pdo->prepare("
-                INSERT INTO orders (order_id, customer_id, accepted_by, order_status, date_requested, date_accepted, product_total, total_amount, remaining_balance, payment_status)
-                VALUES (?, ?, ?, 'In Progress', NOW(), NOW(), ?, ?, ?, 'Unpaid')
+                INSERT INTO orders (order_id, customer_id, accepted_by, is_walkin, order_status, date_requested, date_accepted, product_total, total_amount, remaining_balance, payment_status)
+                VALUES (?, ?, ?, 1, 'In Progress', NOW(), NOW(), ?, ?, ?, 'Unpaid')
             ");
             $stmt->execute([$orderId, $customerId, $userId, $productTotal, $totalAmount, $totalAmount]);
 
@@ -424,7 +449,7 @@ try {
 
             require_order_access($pdo, $orderId, true);
             $pdo->beginTransaction();
-            $lock = $pdo->prepare("SELECT o.order_status, o.inventory_deducted_at, o.payment_type, o.remaining_balance, op.status FROM orders o JOIN order_process op ON op.order_id=o.order_id JOIN process_steps ps ON ps.process_step_id=op.process_step_id WHERE o.order_id=? AND ps.step_number=? FOR UPDATE");
+            $lock = $pdo->prepare("SELECT o.order_status, o.inventory_deducted_at, o.payment_type, o.remaining_balance, o.is_walkin, op.status FROM orders o JOIN order_process op ON op.order_id=o.order_id JOIN process_steps ps ON ps.process_step_id=op.process_step_id WHERE o.order_id=? AND ps.step_number=? FOR UPDATE");
             $lock->execute([$orderId, $stepNumber]);
             $state = $lock->fetch();
             if (!$state || $state['order_status'] !== 'In Progress' || $state['status'] !== 'In Progress') {
@@ -436,8 +461,9 @@ try {
             // Step 4 keeps a balance due even after a full Step 3 payment, so
             // the final payment must still be collected in that case.
             $skipFinalPayment = $stepNumber === 5 && round((float)$state['remaining_balance'], 2) <= 0;
+            $isWalkIn = (bool)($state['is_walkin'] ?? false);
 
-            if (in_array($stepNumber, [3, 5], true) && !$skipFinalPayment) {
+            if (in_array($stepNumber, [3, 5], true) && !$skipFinalPayment && !$isWalkIn) {
                 $paymentType = $stepNumber === 3 ? ['Full Payment','50% Down Payment'] : ['Final Payment'];
                 $marks = implode(',', array_fill(0, count($paymentType), '?'));
                 $params = array_merge([$userId], $paymentType, [$orderId]);
