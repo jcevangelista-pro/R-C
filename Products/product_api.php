@@ -107,6 +107,15 @@ try {
 
         $totalProducts = (int) $pdo->query("SELECT COUNT(*) FROM products WHERE is_archived = 0 AND is_active = 1")->fetchColumn();
 
+        // Total sold: sum of all quantities sold for active products in completed orders
+        $totalSold = (int) $pdo->query("
+            SELECT COALESCE(SUM(od.quantity), 0) AS total_sold
+            FROM order_details od
+            JOIN products p ON od.product_id = p.product_id
+            JOIN orders o ON od.order_id = o.order_id
+            WHERE p.is_archived = 0 AND p.is_active = 1 AND o.order_status = 'Completed'
+        ")->fetchColumn();
+
         // Top category
         $topCategory = $pdo->query("
             SELECT type_of_product, COUNT(*) AS cnt FROM products
@@ -120,6 +129,7 @@ try {
             'inventory_options' => $inventoryOptions,
             'stats' => [
                 'total' => $totalProducts,
+                'total_sold' => $totalSold,
                 'top_category' => $topCategory ?: '—'
             ]
         ]);

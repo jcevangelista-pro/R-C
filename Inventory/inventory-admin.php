@@ -295,6 +295,27 @@
     </div>
   </div>
 
+  <!-- Item Details Modal -->
+  <div class="overlay" id="itemDetailOverlay">
+    <div class="modal" style="max-width: 400px; width: 90%; background: #fff; border: 2px solid #ec4899; border-radius: 12px; padding: 24px; box-shadow: 0 4px 20px rgba(0,0,0,0.15);">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+        <h3 style="color:#1b1f4b; font-size:18px; font-weight:800;">Item Details</h3>
+        <button type="button" onclick="closeItemDetailModal()" style="background:none; border:none; font-size:22px; font-weight:700; color:#6b7280; cursor:pointer;">&times;</button>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:12px; margin-bottom:20px; font-size:14px; color:#374151;">
+        <div><strong>ITEM:</strong> <span id="detailItemNameVal" style="font-weight:600; color:#1b1f4b;">—</span></div>
+        <div><strong>CATEGORY:</strong> <span id="detailCategoryVal">—</span></div>
+        <div><strong>STOCK:</strong> <span id="detailStockVal">—</span></div>
+        <div><strong>UNIT:</strong> <span id="detailUnitVal">—</span></div>
+        <div><strong>STATUS:</strong> <span id="detailStatusVal">—</span></div>
+      </div>
+      <div style="display:flex; gap:10px; justify-content:flex-end;">
+        <button type="button" id="detailUpdateBtn" style="background:#2563eb; color:#fff; border:none; border-radius:6px; padding:8px 16px; font-weight:700; font-size:13px; cursor:pointer;">Update</button>
+        <button type="button" id="detailArchiveBtn" style="background:#ef4444; color:#fff; border:none; border-radius:6px; padding:8px 16px; font-weight:700; font-size:13px; cursor:pointer;">Archive</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Add Material Modal (Owner only) -->
   <?php if ($loggedInRole === 'Owner'): ?>
   <div class="overlay" id="addMaterialOverlay">
@@ -457,9 +478,10 @@ function renderInventory(items) {
       <td>${i.unit}</td>
       <td><span class="status-badge ${statusBadgeClass(i.status)}">${i.status}</span></td>
       <td>
-        <div class="action-icons">
-          <button class="icon-btn" onclick="openModal(${i.id}, '${esc(i.item_name)}', ${i.stock}, '${esc(i.category)}', '${esc(i.size||'')}', ${Number(i.unit_cost) || 0})">&#9998;</button>
-          <button class="icon-btn" onclick="openArchiveModal(${i.id}, '${esc(i.item_name)}')">&#128451;</button>
+        <div class="action-icons" style="align-items:center;">
+          <button type="button" class="icon-btn ellipsis-action-btn" onclick="openItemDetailModal(${i.id}, '${esc(i.item_name)}', '${esc(i.category)}', ${i.stock}, '${esc(i.unit)}', '${esc(i.status)}', ${Number(i.unit_cost) || 0}, '${esc(i.size||'')}')" style="font-weight:900;font-size:16px;padding:2px 8px;background:#f3f4f6;border-radius:4px;border:1px solid #d1d5db;cursor:pointer;" title="View Details">...</button>
+          <button class="icon-btn desktop-action-btn" onclick="openModal(${i.id}, '${esc(i.item_name)}', ${i.stock}, '${esc(i.category)}', '${esc(i.size||'')}', ${Number(i.unit_cost) || 0})">&#9998;</button>
+          <button class="icon-btn desktop-action-btn" onclick="openArchiveModal(${i.id}, '${esc(i.item_name)}')">&#128451;</button>
         </div>
       </td>
     </tr>
@@ -787,7 +809,28 @@ async function submitUpdate() {
   loadInventory();
 }
 
-// ── Archive Modal ───────────────────────────────────────────
+// ── Item Details Modal ──────────────────────────────────────
+function openItemDetailModal(id, itemName, category, stock, unit, status, unitCost, size) {
+  document.getElementById('detailItemNameVal').textContent = itemName;
+  document.getElementById('detailCategoryVal').textContent = category;
+  document.getElementById('detailStockVal').textContent = stock;
+  document.getElementById('detailUnitVal').textContent = unit;
+  document.getElementById('detailStatusVal').innerHTML = `<span class="status-badge ${statusBadgeClass(status)}">${status}</span>`;
+
+  document.getElementById('detailUpdateBtn').onclick = function() {
+    closeItemDetailModal();
+    openModal(id, itemName, stock, category, size, unitCost);
+  };
+  document.getElementById('detailArchiveBtn').onclick = function() {
+    closeItemDetailModal();
+    openArchiveModal(id, itemName);
+  };
+
+  document.getElementById('itemDetailOverlay').classList.add('show');
+}
+function closeItemDetailModal() {
+  document.getElementById('itemDetailOverlay').classList.remove('show');
+}
 let archiveItemId = null;
 function openArchiveModal(id, name) { archiveItemId = id; document.getElementById('archiveItemName').textContent = name; document.getElementById('archiveOverlay').classList.add('show'); }
 function closeArchiveModal() { document.getElementById('archiveOverlay').classList.remove('show'); }
@@ -880,5 +923,6 @@ loadInventory();
 loadHistory();
 loadArchived();
 </script>
+<script src="../Registration/admin_session.js"></script>
 </body>
 </html>

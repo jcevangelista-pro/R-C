@@ -631,7 +631,8 @@ function renderVerificationDetails() {
     const currentDiscount = reviewOrderData ? parseFloat(reviewOrderData.discount_percent) : 0;
     discountInput.value = currentDiscount;
     // Default quotation amount to total_amount (which already includes rush fee) if set, else fallback to productTotal
-    document.getElementById('quotationAmountInput').value = reviewOrderData && reviewOrderData.quotation_amount !== null ? reviewOrderData.quotation_amount : productTotal;
+    const quoteAmount = reviewOrderData && reviewOrderData.quotation_amount !== null ? reviewOrderData.quotation_amount : productTotal;
+    document.getElementById('quotationAmountDisplay').textContent = 'P' + quoteAmount.toFixed(2);
     document.getElementById('quotationNotesInput').value = reviewOrderData ? (reviewOrderData.quotation_notes || '') : '';
 
     // Show the rush fee field inside the verification box if this is a rush order
@@ -678,8 +679,9 @@ async function saveVerificationAndQuotation() {
         });
         const discountData = await discountRes.json();
         if (!discountData.success) { alert(discountData.error); return false; }
-        const quotationAmount = parseFloat(document.getElementById('quotationAmountInput').value);
-        if (!Number.isFinite(quotationAmount) || quotationAmount < 0) { alert('Enter a valid quotation amount.'); return false; }
+        // Quotation amount is now read-only and calculated automatically
+        const quotationAmount = parseFloat(document.getElementById('quotationAmountDisplay').textContent.replace('P', ''));
+        if (!Number.isFinite(quotationAmount) || quotationAmount < 0) { alert('Invalid quotation amount.'); return false; }
         const quotationNotes = document.getElementById('quotationNotesInput').value.trim();
         const quotationRes = await fetch(ORDER_API, {
             method:'POST', headers:{'Content-Type':'application/json'},

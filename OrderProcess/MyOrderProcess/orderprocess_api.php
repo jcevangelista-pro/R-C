@@ -434,13 +434,13 @@ try {
                 WHERE process_id = ?
             ")->execute([$userId, $imagePath, $step7['process_id']]);
 
-            // Advance to the final step (Step 8 — Order Completed).
+            // Advance to the final step (Step 8 — Order Completed) and mark it Completed.
             $pdo->prepare("
                 UPDATE order_process op
                 JOIN process_steps ps ON ps.process_step_id = op.process_step_id
-                SET op.status = 'In Progress'
+                SET op.status = 'Completed', op.completed_by = ?, op.completed_at = NOW(), op.process_date = CURDATE()
                 WHERE op.order_id = ? AND ps.step_number = 8
-            ")->execute([$orderId]);
+            ")->execute([$userId, $orderId]);
 
             // The order is now complete.
             $pdo->prepare("UPDATE orders SET order_status = 'Completed', date_finished = NOW() WHERE order_id = ?")

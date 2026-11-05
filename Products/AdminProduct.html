@@ -669,7 +669,7 @@ async function loadProducts() {
     inventoryOptions = data.inventory_options || [];
 
     document.getElementById('TTopCategory1').textContent = data.stats.total;
-    document.getElementById('TTopCategory2').textContent = '—';
+    document.getElementById('TTopCategory2').textContent = data.stats.total_sold.toLocaleString();
     document.getElementById('TTopCategory3').textContent = data.stats.top_category;
 
     renderProducts(data.products);
