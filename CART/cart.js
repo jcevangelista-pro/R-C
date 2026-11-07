@@ -221,6 +221,7 @@ function val(id){
 deliveryDoneBtn.addEventListener('click', () => {
   deliverySaved = true;
   deliveryToggleLabel.textContent = "EDIT DELIVERY DETAILS";
+  deliveryToggleLabel.innerHTML = '&#10003; DELIVERY DETAILS SAVED';
 
   deliveryInfo.method = deliveryMethod;
   deliveryInfo.deliveryDate = deliveryMethod === 'delivery' ? val('fldDeliveryDate') : val('fldPickupDate');
@@ -472,6 +473,28 @@ document.getElementById('orderPhotoInput').addEventListener('change', (e) => {
   reader.readAsDataURL(file);
 });
  
+/* ================= WARNING MODAL ================= */
+const warningModal = document.getElementById('warningModalOverlay');
+const warningMessage = document.getElementById('warningMessage');
+const warningOkBtn = document.getElementById('warningOkBtn');
+const warningBackBtn = document.getElementById('warningBackBtn');
+
+function openWarningModal(message) {
+    warningMessage.textContent = message;
+    warningModal.classList.add('open');
+}
+
+function closeWarningModal() {
+    warningModal.classList.remove('open');
+}
+
+warningOkBtn.addEventListener('click', closeWarningModal);
+warningBackBtn.addEventListener('click', closeWarningModal);
+
+warningModal.addEventListener('click', (e) => {
+    if (e.target === warningModal) closeWarningModal();
+});
+
 /* ================= ORDER SUMMARY MODAL (Check Out) ================= */
 const summaryModal = document.getElementById('summaryOverlay');
 const summaryBackBtn = document.getElementById('summaryBackBtn');
@@ -590,6 +613,43 @@ summaryCheckoutBtn.addEventListener('click', async () => {
   if (selectedCartIds.length === 0) {
     alert('No valid items to checkout.');
     return;
+  }
+
+  // Validation 1: Check delivery details
+  if (deliveryMethod === 'delivery') {
+    const firstName = val('fldFirstName');
+    const lastName = val('fldLastName');
+    const address = val('fldAddress');
+    const city = val('fldCity');
+    const province = val('fldProvince');
+
+    if (!firstName || !lastName) {
+      openWarningModal('Please complete the delivery details inorder to proceed to checkout.');
+      return;
+    }
+
+    if (!address || !city || !province) {
+      openWarningModal('Please complete the delivery details inorder to proceed to checkout.');
+      return;
+    }
+
+    // Check if address contains minimum required parts
+    const addressParts = [address, val('fldBarangay'), city, province].filter(Boolean).join(', ');
+    if (addressParts.length < 10) {
+      openWarningModal('Please complete the delivery details inorder to proceed to checkout.');
+      return;
+    }
+  }
+
+  // Validation 2: Check size selection for products that require it
+  for (const idx of checkoutIndexes) {
+    const item = cartItems[idx];
+    if (item.needsSize === true) {
+      if (!item.size) {
+        openWarningModal(`Please select a size for "${item.name}" to proceed to checkout.`);
+        return;
+      }
+    }
   }
 
   // Determine delivery and rush info

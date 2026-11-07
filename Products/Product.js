@@ -85,6 +85,8 @@ function normalizeModalQuantity() {
 if (qtyDisplay) {
     qtyDisplay.value = modalQty;
     qtyDisplay.addEventListener('input', () => {
+        // Strip any non-digit characters immediately
+        qtyDisplay.value = qtyDisplay.value.replace(/\D/g, '');
         const parsed = Number.parseInt(qtyDisplay.value, 10);
         if (Number.isInteger(parsed) && parsed >= 1) modalQty = parsed;
     });

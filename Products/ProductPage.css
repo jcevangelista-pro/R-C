@@ -353,6 +353,10 @@ body {
 .ButtonDA:hover { color: #F868AA; }
 
 /* ── MOBILE SIDEBAR (hidden on desktop) ──────────────────── */
+.mobile-menu-item {
+    display: none;
+}
+
 .mobile-sidebar {
     display: none;
 }

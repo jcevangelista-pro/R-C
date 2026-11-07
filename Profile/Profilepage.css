@@ -245,11 +245,13 @@ body {
 
     color: white;
 
-    font-size: 0.8rem;
+    font-size: 0.65rem;
 
     font-weight: bold;
 
     cursor: pointer;
+
+    padding: 0;
 }
 
 .ChangePhoto:hover {

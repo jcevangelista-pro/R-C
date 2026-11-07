@@ -462,6 +462,17 @@ Please read these Terms and Conditions carefully before placing an order with R&
         }
     });
 
+    // Real-time validation: Only allow numbers in the verification code input
+    verifyCodeInput.addEventListener('input', function(e) {
+        // Remove any non-digit characters
+        this.value = this.value.replace(/\D/g, '');
+        // Ensure maximum length of 6 digits
+        if (this.value.length > 6) {
+            this.value = this.value.slice(0, 6);
+        }
+        verifyError.style.display = 'none';
+    });
+
     document.getElementById('unverifiedModalOk').addEventListener('click', function() {
         unverifiedOverlay.hidden = true;
     });

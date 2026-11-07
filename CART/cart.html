@@ -227,7 +227,7 @@
  
             <div class="field-row two uneven">
                 <div class="field">
-                    <label>Address Details</label>
+                    <label>* Address Details</label>
                     <input type="text" id="fldAddress">
                 </div>
                 <div class="field small">
@@ -238,7 +238,7 @@
  
             <div class="field-row two">
                 <div class="field">
-                    <label>Preferred Delivery Date:</label>
+                    <label>* Preferred Delivery Date:</label>
                     <input type="date" id="fldDeliveryDate">
                 </div>
                 <div class="field">
@@ -411,7 +411,22 @@
  
     </div>
     </div>
- 
+
+    <!-- ================= WARNING MODAL ================= -->
+    <div class="modal-overlay" id="warningModalOverlay">
+        <div class="delivery-modal-card" id="warningModal">
+            <button class="side-back-btn" id="warningBackBtn">‹</button>
+            <h2 class="delivery-title">Information Missing</h2>
+            <hr class="side-divider">
+            <div class="terms-modal-body" id="warningMessage" style="text-align:center;">
+                Please complete the required information to proceed.
+            </div>
+            <div class="terms-modal-actions">
+                <button type="button" class="terms-modal-btn" id="warningOkBtn">OK</button>
+            </div>
+        </div>
+    </div>
+
 </main>
  
 <script src="cartdata.js?v=2"></script>
@@ -432,6 +447,66 @@ if (navUser && userDropdown) {
 .user-dropdown.show { display:flex; flex-direction:column; }
 .user-dropdown a { padding:10px 16px; font-size:13px; color:#1E3163!important; text-decoration:none; font-weight:600!important; display:block; }
 .user-dropdown a:hover { background:#ffe4f0; }
+
+/* Warning Modal Styles */
+#warningModalOverlay {
+    position: fixed;
+    inset: 0;
+    z-index: 10001;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: rgba(30, 49, 99, 0.5);
+}
+#warningModalOverlay.hidden {
+    display: none;
+}
+#warningModal {
+    position: relative;
+    width: min(420px, 100%);
+    background: #fff;
+    border-radius: 16px;
+    padding: 30px 28px;
+    box-shadow: 0 20px 60px rgba(30, 49, 99, 0.3);
+}
+.delivery-title {
+    margin: 0 0 20px 0;
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #1E3163;
+    text-align: center;
+}
+.side-divider {
+    border: 0;
+    border-top: 1px solid #e5e7eb;
+    margin: 0 0 20px 0;
+}
+.terms-modal-body {
+    font-size: 15px;
+    line-height: 1.6;
+    color: #374151;
+    min-height: 60px;
+}
+.terms-modal-actions {
+    display: flex;
+    justify-content: center;
+    margin-top: 24px;
+}
+.terms-modal-btn {
+    min-width: 120px;
+    padding: 12px 24px;
+    border-radius: 9px;
+    border: none;
+    background: #F868AA;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+}
+.terms-modal-btn:hover {
+    background: #e14f95;
+}
 </style>
 <script src="../CART/cart_badge.js"></script>
  

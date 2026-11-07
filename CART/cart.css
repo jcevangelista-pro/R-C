@@ -108,6 +108,9 @@ body{
   font-weight:700;
   letter-spacing:0.3px;
 }
+.header-delivery-toggle.saved span{
+  color: #22c55e;
+}
  
 .header-delivery-toggle .chevron{
   font-size: 16px;

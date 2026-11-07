@@ -58,9 +58,30 @@ editButton.addEventListener('click', function() {
         input.disabled = false;
     });
     editButton.style.display = 'none';
-    saveButton.disabled = false;
-    if (cancelButton) cancelButton.style.display = 'inline-block';
+    saveButton.disabled = true;
+
+    // Allow editing fields, photo can only be changed if file is selected
+    if (selectedPhotoFile && cancelButton) cancelButton.style.display = 'inline-block';
+
+    selectedPhotoFile = null;
+    document.getElementById('profilePicture').src = originalProfile.photo_url || '../imgs/user.png';
+    const photoInputEl = document.getElementById('photoInput');
+    if (photoInputEl) photoInputEl.value = '';
 });
+
+// Change Photo button text
+const changePhotoBtn = document.getElementById('changePhotoBtn');
+const photoInput = document.getElementById('photoInput');
+
+if (changePhotoBtn && photoInput) {
+    photoInput.addEventListener('change', function() {
+        if (this.value || selectedPhotoFile) {
+            changePhotoBtn.textContent = 'Photo Selected';
+        } else {
+            changePhotoBtn.textContent = 'Change Photo';
+        }
+    });
+}
 
 if (cancelButton) {
     cancelButton.addEventListener('click', function() {
@@ -69,17 +90,24 @@ if (cancelButton) {
         document.getElementById('email').value = originalProfile.email;
         document.getElementById('phone').value = originalProfile.phone_num;
 
+        // Reset photo to original
         selectedPhotoFile = null;
         document.getElementById('profilePicture').src = originalProfile.photo_url || '../imgs/user.png';
         const photoInputEl = document.getElementById('photoInput');
         if (photoInputEl) photoInputEl.value = '';
 
+        // Reset form inputs
         profileInputs.forEach(function(input) {
             input.disabled = true;
         });
         cancelButton.style.display = 'none';
         saveButton.disabled = true;
         editButton.style.display = 'inline-block';
+
+        // Reset save button state
+        if (saveButton) {
+            saveButton.disabled = true;
+        }
     });
 }
 
@@ -205,18 +233,49 @@ document.getElementById('passwordForm').addEventListener('submit', async functio
    PROFILE PHOTO
 ========================== */
 
+// Show confirmation modal for photo change
+function showPhotoChangeConfirmation() {
+    if (selectedPhotoFile) {
+        const confirmation = confirm('You are about to change your profile photo. This action cannot be undone.');
+        return confirmation;
+    }
+    return true;
+}
+
+// Handle photo file selection
 document.getElementById('photoInput').addEventListener('change', function(event) {
+    if (!showPhotoChangeConfirmation()) {
+        event.target.value = '';
+        selectedPhotoFile = null;
+        if (changePhotoBtn) changePhotoBtn.textContent = 'Change Photo';
+        return;
+    }
+
     const file = event.target.files[0];
     if (!file) return;
     if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type) || file.size > 5 * 1024 * 1024) {
         alert('Select a valid JPG, PNG, or WebP image up to 5 MB.');
         event.target.value = '';
+        selectedPhotoFile = null;
+        if (changePhotoBtn) changePhotoBtn.textContent = 'Change Photo';
         return;
     }
 
     selectedPhotoFile = file;
     const picture = document.getElementById('profilePicture');
     picture.src = URL.createObjectURL(file);
+
+    if (changePhotoBtn) changePhotoBtn.textContent = 'Photo Selected';
+
+    // Enable save button
+    if (saveButton) {
+        saveButton.disabled = false;
+    }
+
+    // Show cancel button if not already visible
+    if (cancelButton && cancelButton.style.display === 'none') {
+        cancelButton.style.display = 'inline-block';
+    }
 });
 
 /* =========================
