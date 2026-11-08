@@ -53,8 +53,9 @@ try {
     foreach ($allCustomers as &$customer) {
         if ($customer['customer_id']) {
             $ordStmt = $pdo->prepare("
-                SELECT 
+                SELECT
                     od.order_detail_id,
+                    o.order_id,
                     p.name AS name,
                     p.type_of_product AS category,
                     p.image_path AS image,
@@ -63,10 +64,14 @@ try {
                     o.order_status AS status,
                     o.payment_status, o.delivery_method, o.delivery_date, o.delivery_fee,
                     o.discount_percent, o.total_amount, o.amount_paid, o.is_rush,
-                    o.date_requested, o.date_accepted, o.date_finished
+                    o.date_requested, o.date_accepted, o.date_finished,
+                    c.phone_num, c.address,
+                    CONCAT(u.first_name, ' ', u.last_name) AS customer_name
                 FROM orders o
                 JOIN order_details od ON od.order_id = o.order_id
                 JOIN products p ON p.product_id = od.product_id
+                JOIN customers c ON o.customer_id = c.customer_id
+                JOIN users u ON c.user_id = u.user_id
                 WHERE o.customer_id = ?
                 ORDER BY o.date_requested DESC
             ");

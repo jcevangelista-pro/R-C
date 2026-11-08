@@ -262,6 +262,78 @@ body {
 
 
 /* ==================================================
+   PHOTO ACTION BUTTONS
+================================================== */
+
+.PhotoActions {
+    display: flex;
+
+    gap: 6px;
+
+    margin-top: 7px;
+}
+
+
+.PhotoSaveBtn,
+.PhotoCancelBtn {
+    border: none;
+
+    border-radius: 8px;
+
+    padding: 5px 13px;
+
+    font-family: Arial, sans-serif;
+
+    font-size: 0.72rem;
+
+    font-weight: bold;
+
+    cursor: pointer;
+
+    transition: 0.2s ease;
+}
+
+
+.PhotoSaveBtn {
+    background: #F868AA;
+
+    color: white;
+}
+
+
+.PhotoSaveBtn:hover {
+    background: #e94f96;
+
+    transform: translateY(-1px);
+}
+
+
+.PhotoSaveBtn:disabled {
+    background: #ccc;
+
+    color: #777;
+
+    cursor: not-allowed;
+
+    transform: none;
+}
+
+
+.PhotoCancelBtn {
+    background: #e2e8f0;
+
+    color: #475569;
+}
+
+
+.PhotoCancelBtn:hover {
+    background: #cbd5e1;
+
+    transform: translateY(-1px);
+}
+
+
+/* ==================================================
    PROFILE HEADER INFORMATION
 ================================================== */
 
@@ -619,14 +691,14 @@ body {
 .ShowPassword {
     position: absolute;
 
-    right: 10px;
+    right: 8px;
 
     top: 50%;
 
     transform: translateY(-50%);
 
-    width: 30px;
-    height: 30px;
+    width: 16px;
+    height: 16px;
 
     border: none;
 
@@ -634,14 +706,45 @@ body {
 
     cursor: pointer;
 
-    font-size: 1rem;
+    font-size: 0.8rem;
 
     border-radius: 50%;
+
+    padding: 0;
+
+    margin: 0;
+
+    line-height: 0;
+
+    flex-shrink: 0;
 }
 
+.ShowPassword img {
+    width: 100%;
+    height: 100%;
 
-.ShowPassword:hover {
-    background: rgba(167, 139, 250, 0.15);
+    object-fit: contain;
+
+    pointer-events: none;
+
+    display: block;
+
+    opacity: 1;
+
+    transition: opacity 0.2s ease;
+}
+
+.ShowPassword:hover img {
+    opacity: 0.6;
+}
+
+.ShowPassword.password-revealed img {
+    opacity: 0.5;
+}
+
+.ShowPassword img {
+    opacity: 1;
+    transition: opacity 0.2s ease;
 }
 
 

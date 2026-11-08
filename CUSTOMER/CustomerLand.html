@@ -7,6 +7,7 @@
   <link rel="icon" type="image/x-icon" href="../imgs/image 2.png">
   <link rel="stylesheet" href="CustomerLand.css">
   <link rel="stylesheet" href="../UserSystem/UserSystem.css">
+  <link rel="stylesheet" href="../OrderProcess/MyOrderProcess/MyOrderProcess.css">
 </head>
 <body>
 
@@ -278,17 +279,121 @@
                         <p class="stat-value green" id="summaryStatusRight">COMPLETED</p>
                     </div>
                 </div>
- 
+
+    <!-- ---- PAGE 3: Order Receipt Modal View ---- -->
+    <div class="order-modal summary-modal" id="orderReceiptView" style="display:none; max-width:650px;">
+        <button class="back-btn" id="receiptBackBtn">‹</button>
+        <h2 class="order-modal-title">Order Receipt</h2>
+        <hr class="order-modal-divider">
+
+        <div style="max-height: 75vh; overflow-y: auto; padding-right: 5px;">
+            <div class="bs-calltoaction bs-calltoaction-primary" style="margin-bottom:0;">
+                <div class="ORstatus-card">
+                    <div class="HeaderRowType">
+                        <p>ORDER RECEIPT</p>
+                    </div>
+
+                    <div class="OrdReceiptRowContainer">
+                        <div class="CategoryText"><p>R&C PRINTING SERVICES PAYMENT RECEIPT</p></div>
+                        <div class="OrdReceipt-Stat-Row-Cont">
+                            <div class="OrdReceipt-Stat-Row">
+                                <p class="OrdReceiptText">Receipt No:</p>
+                                <p class="OrdReceiptStat" id="rReceiptNo">—</p>
+                            </div>
+                            <div class="OrdReceipt-Stat-Row">
+                                <p class="OrdReceiptText">Order ID:</p>
+                                <p class="OrdReceiptStat" id="rOrderId">—</p>
+                            </div>
+                            <div class="OrdReceipt-Stat-Row">
+                                <p class="OrdReceiptText">Date:</p>
+                                <p class="OrdReceiptStat" id="rReceiptDate">—</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="OrdCustRowContainer">
+                        <div class="CategoryText"><p>CUSTOMER INFORMATION</p></div>
+                        <div class="OrdCust-Stat-Row-Cont">
+                            <div class="OrdCust-Stat-Row">
+                                <p class="OrdCustText">Customer Name:</p>
+                                <p class="OrdCustInfo" id="rCustomerName">—</p>
+                            </div>
+                            <div class="OrdReceipt-Stat-Row">
+                                <p class="OrdCustText">Contact Number:</p>
+                                <p class="OrdCustInfo" id="rCustomerContact">—</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="OrdProdRowContainer">
+                        <div class="CategoryText"><p>PRODUCT DETAILS</p></div>
+                        <div class="OrdProd-Stat-Row-Cont">
+                            <div class="OrdProd-Stat-Row">
+                                <p class="OrdProdText">Product:</p>
+                                <p class="OrdProdInfo" id="rProduct">—</p>
+                            </div>
+                            <div class="OrdProd-Stat-Row">
+                                <p class="OrdProdText">Quantity:</p>
+                                <p class="OrdProdInfo" id="rQuantity">—</p>
+                            </div>
+                            <div class="OrdProd-Stat-Row">
+                                <p class="OrdProdText">Customization Type:</p>
+                                <p class="OrdProdInfo" id="rCustomization">—</p>
+                            </div>
+                            <div class="OrdProd-Stat-Row">
+                                <p class="OrdProdText">Delivery Method:</p>
+                                <p class="OrdProdInfo" id="rDeliveryMethod">—</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="OrdPaymRowContainer">
+                        <div class="CategoryText"><p>PAYMENT DETAILS</p></div>
+                        <div class="OrdPaym-Stat-Row-Cont">
+                            <div class="OrdPaym-Stat-Row">
+                                <p class="OrdPaymText">Payment Type:</p>
+                                <p class="OrdPaymInfo" id="rPaymentType">—</p>
+                            </div>
+                            <div class="OrdPaym-Stat-Row">
+                                <p class="OrdPaymText">Payment Method:</p>
+                                <p class="OrdPaymInfo" id="rPaymentMethod">—</p>
+                            </div>
+                            <div class="OrdPaym-Stat-Row">
+                                <p class="OrdPaymText">Amount Paid:</p>
+                                <p class="OrdPaymInfo" id="rAmountPaid">₱0.00</p>
+                            </div>
+                            <div class="OrdPaym-Stat-Row">
+                                <p class="OrdPaymText">Remaining Balance:</p>
+                                <p class="OrdPaymInfo" id="rRemaining">₱0.00</p>
+                            </div>
+                            <div class="OrdPaym-Stat-Row">
+                                <p class="OrdPaymText">Reference Number:</p>
+                                <p class="OrdPaymInfo" id="rReference">—</p>
+                            </div>
+                            <div class="OrdPaym-Stat-Row">
+                                <p class="OrdPaymText">Payment Status:</p>
+                                <p class="OrdPaymInfo" id="rPaymentStatusDetail">—</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="HeaderRowType">
+                        <div class="BusinessText"><p>Processed By: R&C Printing Services</p></div>
+                        <div class="ReceiptMessage">
+                            <p>This serves as proof that your order transaction has been completed successfully. Thank you for choosing R&C Printing Services.</p>
+                        </div>
+                    </div>
+                </div>
             </div>
- 
         </div>
- 
+
     </div>
- 
+
 </div>
- 
-<script src="script.js?v=2"></script>
+
+<script src="script.js?v=3"></script>
 <script src="../Registration/admin_session.js"></script>
+    </div>
  
 </body>
 </html>

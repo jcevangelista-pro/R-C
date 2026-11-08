@@ -517,8 +517,12 @@
         </div>
         <!-- Products loaded dynamically -->
       </div>
-      <div id="seeAllWrap" style="display:none;text-align:center;margin-top:16px;">
-        <button type="button" id="seeAllBtn" style="background:#ec4899;color:#fff;border:none;border-radius:8px;padding:10px 24px;font-weight:700;font-size:14px;cursor:pointer;">See All Products</button>
+      <div class="table-pagination" style="margin-top: 20px; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #f0f0f0; padding-top: 15px;">
+        <span id="productPageInfo" class="table-pagination-info" style="font-size: 13px; color: #6b7280; font-weight: 600;">Showing 0 products</span>
+        <div class="table-pagination-buttons" style="display: flex; gap: 10px;">
+          <button type="button" id="productPrevBtn" class="pagination-btn" onclick="changeProductPage(-1)" style="background: #fff; border: 1px solid #cbd5e1; color: #334155; padding: 8px 16px; border-radius: 6px; font-weight: 700; font-size: 13px; cursor: pointer;">Previous</button>
+          <button type="button" id="productNextBtn" class="pagination-btn" onclick="changeProductPage(1)" style="background: #ec4899; border: 1px solid #ec4899; color: #fff; padding: 8px 16px; border-radius: 6px; font-weight: 700; font-size: 13px; cursor: pointer;">Next Page</button>
+        </div>
       </div>
     </div>
 
@@ -739,9 +743,9 @@ document.getElementById('archivedContainer').addEventListener('click', async (e)
   }
 });
 
-const PRODUCT_DISPLAY_LIMIT = 20;
+const PRODUCTS_PER_PAGE = 11;
 let allProducts = [];
-let showingAllProducts = false;
+let productCurrentPage = 1;
 let productSearchTerm = '';
 
 function createProductCard(p) {
@@ -769,7 +773,7 @@ function createProductCard(p) {
 
 function renderProducts(products) {
   allProducts = products || [];
-  showingAllProducts = false;
+  productCurrentPage = 1;
   drawProducts();
 }
 
@@ -788,30 +792,55 @@ function drawProducts() {
         (p.type_of_product || '').toLowerCase().includes(q))
     : allProducts;
 
-  const visible = showingAllProducts
-    ? matched
-    : matched.slice(0, PRODUCT_DISPLAY_LIMIT);
+  const totalItems = matched.length;
+  const totalPages = Math.ceil(totalItems / PRODUCTS_PER_PAGE) || 1;
 
-  visible.forEach(p => container.appendChild(createProductCard(p)));
+  if (productCurrentPage > totalPages) productCurrentPage = totalPages;
+  if (productCurrentPage < 1) productCurrentPage = 1;
+
+  const start = (productCurrentPage - 1) * PRODUCTS_PER_PAGE;
+  const pageProducts = matched.slice(start, start + PRODUCTS_PER_PAGE);
+
+  updateProductPaginationUI(productCurrentPage, totalPages, totalItems, start, pageProducts.length);
+
+  pageProducts.forEach(p => container.appendChild(createProductCard(p)));
 
   // Empty-state note when a search yields nothing.
   if (q && matched.length === 0) {
     const note = document.createElement('p');
-    note.style.cssText = 'color:#9ca3af;font-size:14px;padding:12px;';
+    note.style.cssText = 'color:#9ca3af;font-size:14px;padding:12px;grid-column:1/-1;text-align:center;';
     note.textContent = 'No products match your search.';
     container.appendChild(note);
   }
+}
 
-  // Show the toggle button whenever there are more products than the limit.
-  // Label it "See All" when collapsed and "Show Less" when expanded.
-  const wrap = document.getElementById('seeAllWrap');
-  const btn = document.getElementById('seeAllBtn');
-  if (matched.length > PRODUCT_DISPLAY_LIMIT) {
-    wrap.style.display = '';
-    btn.textContent = showingAllProducts ? 'Show Less' : `See All Products (${matched.length})`;
-  } else {
-    wrap.style.display = 'none';
+function updateProductPaginationUI(page, totalPages, totalItems, start, count) {
+  const infoEl = document.getElementById('productPageInfo');
+  const prevBtn = document.getElementById('productPrevBtn');
+  const nextBtn = document.getElementById('productNextBtn');
+
+  if (!infoEl || !prevBtn || !nextBtn) return;
+
+  if (totalItems === 0) {
+    infoEl.textContent = 'Showing 0 products';
+    prevBtn.disabled = true;
+    prevBtn.style.opacity = '0.5';
+    nextBtn.disabled = true;
+    nextBtn.style.opacity = '0.5';
+    return;
   }
+
+  const end = start + count;
+  infoEl.textContent = `Showing ${start + 1}-${end} of ${totalItems} products (Page ${page} of ${totalPages})`;
+  prevBtn.disabled = page <= 1;
+  prevBtn.style.opacity = page <= 1 ? '0.5' : '1';
+  nextBtn.disabled = page >= totalPages;
+  nextBtn.style.opacity = page >= totalPages ? '0.5' : '1';
+}
+
+function changeProductPage(direction) {
+  productCurrentPage += direction;
+  drawProducts();
 }
 
 // ── Product search ──────────────────────────────────────────
@@ -819,16 +848,7 @@ const productSearchInput = document.getElementById('productSearchInput');
 if (productSearchInput) {
   productSearchInput.addEventListener('input', function() {
     productSearchTerm = this.value;
-    showingAllProducts = false;   // collapse to the limit for the new result set
-    drawProducts();
-  });
-}
-
-// Toggle between all products and the limited view when the button is clicked.
-const seeAllBtnEl = document.getElementById('seeAllBtn');
-if (seeAllBtnEl) {
-  seeAllBtnEl.addEventListener('click', function() {
-    showingAllProducts = !showingAllProducts;
+    productCurrentPage = 1;
     drawProducts();
   });
 }

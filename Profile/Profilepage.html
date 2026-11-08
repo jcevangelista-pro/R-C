@@ -100,6 +100,7 @@
                     <button
                         type="button"
                         class="ChangePhoto"
+                        id="changePhotoBtn"
                         onclick="document.getElementById('photoInput').click()"
                     >
                         Change Photo
@@ -112,6 +113,29 @@
                         accept="image/*"
                         hidden
                     >
+
+
+                    <!-- PHOTO ACTION BUTTONS (shown only after a photo is staged) -->
+
+                    <div class="PhotoActions" id="photoActions" style="display:none;">
+
+                        <button
+                            type="button"
+                            class="PhotoSaveBtn"
+                            id="savePhotoBtn"
+                        >
+                            Save
+                        </button>
+
+                        <button
+                            type="button"
+                            class="PhotoCancelBtn"
+                            id="cancelPhotoBtn"
+                        >
+                            Cancel
+                        </button>
+
+                    </div>
 
 
                 </div>
@@ -368,7 +392,7 @@
                                     this
                                 )"
                             >
-                                👁
+                                <img src="../imgs/hidden.png" alt="">
                             </button>
 
 
@@ -407,7 +431,7 @@
                                     this
                                 )"
                             >
-                                👁
+                                <img src="../imgs/hidden.png" alt="">
                             </button>
 
 
@@ -446,7 +470,7 @@
                                     this
                                 )"
                             >
-                                👁
+                                <img src="../imgs/hidden.png" alt="">
                             </button>
 
 

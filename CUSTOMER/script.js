@@ -299,6 +299,54 @@ function openOrderSummary(customer, orderIndex){
   document.getElementById('summaryTotalPaid').textContent = money(details.totalPaid);
   document.getElementById('summaryStatusRight').textContent = details.orderStatus;
 
+  const receiptSection = document.getElementById('receiptSection');
+  const viewReceiptBtn = document.getElementById('viewReceiptBtn');
+  const orderSummaryViewEl = document.getElementById('orderSummaryView');
+  const orderReceiptViewEl = document.getElementById('orderReceiptView');
+  const receiptBackBtn = document.getElementById('receiptBackBtn');
+
+  if (receiptSection && viewReceiptBtn) {
+    const isCompleted = String(order.status).toLowerCase() === 'completed';
+    if (isCompleted && order.order_id) {
+      receiptSection.style.display = 'block';
+      viewReceiptBtn.onclick = () => {
+        // Populate step 8 / receipt view fields
+        const setText = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+        const peso = v => '₱' + (Number(v) || 0).toFixed(2);
+
+        setText('rReceiptNo', order.receipt_no || ('RC-' + String(order.order_id || '').replace(/^ORD-/, '')));
+        setText('rOrderId', order.order_id || '—');
+        setText('rReceiptDate', order.date_finished ? new Date(order.date_finished).toLocaleDateString('en-PH', {month:'short', day:'numeric', year:'numeric'}) : '—');
+        setText('rCustomerName', customer.name || '—');
+        setText('rCustomerContact', customer.phone_num || '—');
+        setText('rProduct', order.name || '—');
+        setText('rQuantity', String(order.qty || 1));
+        setText('rCustomization', order.customization_type || 'Standard');
+        setText('rDeliveryMethod', (order.delivery_method || 'Pickup') === 'Pickup' ? 'Pickup at store' : 'Delivery');
+        setText('rPaymentType', order.payment_type || '—');
+        setText('rPaymentMethod', order.payment_method || '—');
+        setText('rAmountPaid', peso(order.amount_paid));
+        setText('rRemaining', peso(order.remaining_balance || 0));
+        setText('rReference', order.reference_number || '—');
+        const payStatusMap = { Paid: 'Fully Paid', Partial: 'Partially Paid', Unpaid: 'Unpaid' };
+        setText('rPaymentStatusDetail', payStatusMap[order.payment_status] || (order.payment_status || '—'));
+
+        if (orderSummaryViewEl) orderSummaryViewEl.style.display = 'none';
+        if (orderReceiptViewEl) orderReceiptViewEl.style.display = '';
+        if (orderReceiptViewEl) orderReceiptViewEl.scrollTop = 0;
+      };
+    } else {
+      receiptSection.style.display = 'none';
+    }
+  }
+
+  if (receiptBackBtn && orderSummaryViewEl && orderReceiptViewEl) {
+    receiptBackBtn.onclick = () => {
+      orderReceiptViewEl.style.display = 'none';
+      orderSummaryViewEl.style.display = '';
+    };
+  }
+
   showSummaryView();
   orderSummaryView.scrollTop = 0;
 }

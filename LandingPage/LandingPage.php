@@ -113,20 +113,16 @@
       <p class="lead">Have a question? Message us.</p>
       <div class="info">
         <div><i class="ic-text">📍</i>Cabuyao, Laguna</div>
-        <div><i><img src="../imgs/viber.png" alt="Viber"></i>0992-XXX-XXXX</div>
+        <div><i><img src="../imgs/viber.png" alt="Viber"></i>0954-245-8943</div>
         <div><i class="ic-text">✉️</i><a href="">randcprintingservices@gmail.com</a></div>
         <div><i><img src="../imgs/fb.png" alt="Facebook"></i><a href="https://www.facebook.com/RCpartybuddy">R&C Printing Services</a></div>
         <div><i><img src="../imgs/ig.png" alt="Tiktok"></i><a href="https://www.instagram.com/rc_printing_services/">ecclang</a></div>
         <div><i class="ic-text">🕒</i>8:00 am - 5:00 pm</div>
       </div>
     </div>
-    <form id="f" novalidate>
-      <input type="text" placeholder="Your Name" aria-label="Your Name" required>
-      <input type="email" placeholder="Email" aria-label="Email" required>
-      <textarea placeholder="Message" aria-label="Message" required></textarea>
-      <button type="submit">SEND MESSAGE</button>
-      <div id="sent" role="status">Thanks! Your message was received.</div>
-    </form>
+    <div class="bir-image-wrap" style="display:flex;justify-content:center;align-items:center;">
+      <img src="../imgs/BIR.png" alt="BIR Registration" style="width:75%;max-width:420px;height:auto;border-radius:22px;box-shadow:0 10px 30px rgba(80,50,150,.12);background:#fff;padding:10px;">
+    </div>
   </div>
 </section>
 
@@ -134,13 +130,6 @@
   <span>© 2026 R&amp;C Printing Services. All rights reserved.</span>
 </footer>
 
-<script>
-document.getElementById('f').addEventListener('submit',function(e){
-  e.preventDefault();
-  document.getElementById('sent').style.display='block';
-  this.reset();
-});
-</script>
 
     <script>
     // Prevent showing cached page after logout (back button)

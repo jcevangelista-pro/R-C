@@ -239,8 +239,12 @@ function build_inventory_report(PDO $pdo, string $start, string $end, string $mo
 // ── Shared HTML fragments ───────────────────────────────────
 function report_header(string $title, string $monthLabel): string
 {
-    $logoPath = realpath(__DIR__ . '/../imgs/image 2.png');
-    $logo = $logoPath ? '<img src="' . htmlspecialchars($logoPath) . '" class="logo">' : '';
+    $logoPath = __DIR__ . '/../imgs/image 2.png';
+    $logo = '';
+    if (file_exists($logoPath)) {
+        $logoData = base64_encode(file_get_contents($logoPath));
+        $logo = '<img src="data:image/png;base64,' . $logoData . '" class="logo" style="height:36px;vertical-align:middle;margin-right:10px;">';
+    }
     return '<h1>' . $logo . 'R&amp;C PRINTING SERVICES</h1>'
         . '<div class="subtitle">' . htmlspecialchars($title) . ' — ' . htmlspecialchars($monthLabel) . '</div>'
         . '<div class="generated">Generated on ' . date('F d, Y h:i A') . '</div>';

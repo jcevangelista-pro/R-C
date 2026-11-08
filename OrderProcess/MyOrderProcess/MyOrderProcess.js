@@ -799,6 +799,36 @@ async function sendMessage(stepNumber) {
 
 document.addEventListener('DOMContentLoaded', function() {
 
+    function isGCashSelected(cardId) {
+        const card = document.getElementById(cardId);
+        if (!card) return false;
+        const gcashLabel = card.querySelector('.checkbox-option[data-payment-method="GCash"]');
+        if (gcashLabel) {
+            const box = gcashLabel.querySelector('.box');
+            if (box && box.classList.contains('active')) return true;
+        }
+        const gcashBox = card.querySelector('.MoP-PT-Row .checkbox-option:nth-child(1) .box');
+        return gcashBox && gcashBox.classList.contains('active');
+    }
+
+    const step3Ref = document.getElementById('step3RefInput');
+    if (step3Ref) {
+        step3Ref.addEventListener('input', function() {
+            if (isGCashSelected('PaymentCard')) {
+                this.value = this.value.replace(/\D/g, '');
+            }
+        });
+    }
+
+    const step5Ref = document.getElementById('step5RefInput');
+    if (step5Ref) {
+        step5Ref.addEventListener('input', function() {
+            if (isGCashSelected('FinalPaymentCard')) {
+                this.value = this.value.replace(/\D/g, '');
+            }
+        });
+    }
+
     // Step 3: Initial Payment SUBMIT
     const step3SubmitBtns = document.querySelectorAll('#PaymentCard .done-btn');
     step3SubmitBtns.forEach(function(btn) {
@@ -826,6 +856,10 @@ document.addEventListener('DOMContentLoaded', function() {
             if (!paymentMethod) { alert('Please select a payment method (GCash or Bank).'); return; }
             if (!paymentType) { alert('Please select a payment type.'); return; }
             if (!referenceNumber) { alert('Please enter the payment reference number.'); return; }
+            if (paymentMethod === 'GCash' && !/^\d+$/.test(referenceNumber)) {
+                alert('Reference number must contain numbers only for GCash payments.');
+                return;
+            }
             const proof = document.querySelector('#PaymentCard input[type="file"]');
             if (!proof || !proof.files[0]) { alert('Please upload a screenshot of your payment.'); return; }
 
@@ -867,6 +901,10 @@ document.addEventListener('DOMContentLoaded', function() {
             const refInput = document.getElementById('step5RefInput');
             const referenceNumber = refInput ? refInput.value.trim() : '';
             if (!referenceNumber) { alert('Please enter the payment reference number.'); return; }
+            if (paymentMethod === 'GCash' && !/^\d+$/.test(referenceNumber)) {
+                alert('Reference number must contain numbers only for GCash payments.');
+                return;
+            }
             const proof = document.querySelector('#FinalPaymentCard input[type="file"]');
             if (!proof || !proof.files[0]) { alert('Please upload a screenshot of your payment.'); return; }
 

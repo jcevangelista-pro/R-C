@@ -215,6 +215,7 @@
           <option value="SUPPLY">SUPPLY</option>
           <option value="PEN">PEN</option>
           <option value="FANS">FANS</option>
+          <option value="INK">INK (Bottles)</option>
           <option value="OTHER">OTHER</option>
         </select>
       </div>

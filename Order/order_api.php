@@ -436,6 +436,66 @@ try {
             exit;
         }
 
+        // Reject payment for Step 3 or Step 5
+        if ($action === 'reject_payment') {
+            $orderId = trim($body['order_id'] ?? '');
+            $stepNumber = (int)($body['step_number'] ?? 0);
+            $reason = trim($body['reason'] ?? '');
+            $userId = $_SESSION['user_id'] ?? null;
+
+            if (!$orderId || !in_array($stepNumber, [3, 5], true)) {
+                api_error('Order ID and valid step number (3 or 5) required.', 422);
+            }
+
+            require_order_access($pdo, $orderId, true);
+            $pdo->beginTransaction();
+
+            $lock = $pdo->prepare("SELECT o.order_status, op.status FROM orders o JOIN order_process op ON op.order_id=o.order_id JOIN process_steps ps ON ps.process_step_id=op.process_step_id WHERE o.order_id=? AND ps.step_number=? FOR UPDATE");
+            $lock->execute([$orderId, $stepNumber]);
+            $state = $lock->fetch();
+            if (!$state || $state['order_status'] !== 'In Progress' || $state['status'] !== 'In Progress') {
+                $pdo->rollBack();
+                api_error('This is not the current active order step.', 409);
+            }
+
+            $paymentTypes = $stepNumber === 3 ? ['Full Payment', '50% Down Payment'] : ['Final Payment'];
+            $marks = implode(',', array_fill(0, count($paymentTypes), '?'));
+            $params = array_merge([$orderId], $paymentTypes);
+            $payStmt = $pdo->prepare("SELECT payment_id FROM payments WHERE order_id=? AND payment_type IN ($marks) AND status='Submitted' ORDER BY created_at DESC LIMIT 1");
+            $payStmt->execute($params);
+            $paymentId = $payStmt->fetchColumn();
+
+            if (!$paymentId) {
+                $pdo->rollBack();
+                api_error('No submitted payment found to reject for this step.', 409);
+            }
+
+            $updPay = $pdo->prepare("UPDATE payments SET status='Rejected', verified_by=?, verified_at=NOW(), rejection_reason=? WHERE payment_id=?");
+            $updPay->execute([$userId, $reason ?: null, $paymentId]);
+
+            $pdo->prepare("UPDATE orders SET payment_screenshot=NULL, reference_number=NULL WHERE order_id=?")->execute([$orderId]);
+
+            $procStmt = $pdo->prepare("SELECT op.process_id FROM order_process op JOIN process_steps ps ON ps.process_step_id=op.process_step_id WHERE op.order_id=? AND ps.step_number=?");
+            $procStmt->execute([$orderId, $stepNumber]);
+            $processId = $procStmt->fetchColumn();
+
+            $custStmt = $pdo->prepare("SELECT c.user_id FROM orders o JOIN customers c ON c.customer_id=o.customer_id WHERE o.order_id=?");
+            $custStmt->execute([$orderId]);
+            $customerUserId = $custStmt->fetchColumn();
+
+            if ($customerUserId) {
+                $notifMsg = "Your payment was rejected." . ($reason ? " Reason: {$reason}" : "") . " Please resubmit your payment input.";
+                $notifStmt = $pdo->prepare("INSERT INTO notifications (process_id, user_id, sent_by, title, message) VALUES (?, ?, ?, ?, ?)");
+                $notifStmt->execute([$processId ?: null, $customerUserId, $userId, 'Payment Rejected', $notifMsg]);
+            }
+
+            audit_event($pdo, 'payment.rejected', $orderId, ['step_number' => $stepNumber, 'reason' => $reason]);
+            $pdo->commit();
+
+            echo json_encode(['success' => true, 'message' => 'Payment rejected successfully.']);
+            exit;
+        }
+
         // Advance to next step
         if ($action === 'advance_step') {
             $orderId = $body['order_id'] ?? '';

@@ -463,15 +463,23 @@ function renderStepDetail(stepNum) {
         document.getElementById('reviewStepNotes').value = stepData.notes || '';
 
         // Show advance button only for the current active step
+        const rejectBtn = document.getElementById('reviewRejectBtn');
         if (stepData.status === 'In Progress' || stepData.status === 'Pending') {
             const prevCompleted = reviewSteps.filter(s => parseInt(s.step_number) < stepNum).every(s => ['Completed', 'Skipped'].includes(s.status));
             if (prevCompleted && stepData.status !== 'Completed') {
                 actionRow.style.display = 'flex';
+                if ([3, 5].includes(stepNum) && rejectBtn) {
+                    rejectBtn.style.display = '';
+                } else if (rejectBtn) {
+                    rejectBtn.style.display = 'none';
+                }
             } else {
                 actionRow.style.display = 'none';
+                if (rejectBtn) rejectBtn.style.display = 'none';
             }
         } else {
             actionRow.style.display = 'none';
+            if (rejectBtn) rejectBtn.style.display = 'none';
         }
 
         // Show verification details for Step 2
@@ -561,6 +569,27 @@ document.getElementById('reviewAdvanceBtn').addEventListener('click', async func
         loadOrders(); // Refresh the main tables
     } else {
         alert(data.error);
+    }
+});
+
+document.getElementById('reviewRejectBtn').addEventListener('click', async function() {
+    if (!reviewOrderId || !reviewViewingStep) return;
+    if (![3, 5].includes(reviewViewingStep)) return;
+    const reason = prompt('Enter reason for payment rejection:');
+    if (reason === null) return;
+
+    const res = await fetch(ORDER_API, {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({ action: 'reject_payment', order_id: reviewOrderId, step_number: reviewViewingStep, reason: reason })
+    });
+    const data = await res.json();
+    if (data.success) {
+        alert('Payment rejected successfully.');
+        openOrderReviewModal(reviewOrderId);
+        loadOrders();
+    } else {
+        alert(data.error || 'Failed to reject payment.');
     }
 });
 
