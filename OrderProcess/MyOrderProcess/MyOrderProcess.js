@@ -816,6 +816,11 @@ document.addEventListener('DOMContentLoaded', function() {
         step3Ref.addEventListener('input', function() {
             if (isGCashSelected('PaymentCard')) {
                 this.value = this.value.replace(/\D/g, '');
+                if (this.value.length > 13) this.value = this.value.slice(0, 13);
+                this.maxLength = 13;
+            } else {
+                if (this.value.length > 22) this.value = this.value.slice(0, 22);
+                this.maxLength = 22;
             }
         });
     }
@@ -825,6 +830,11 @@ document.addEventListener('DOMContentLoaded', function() {
         step5Ref.addEventListener('input', function() {
             if (isGCashSelected('FinalPaymentCard')) {
                 this.value = this.value.replace(/\D/g, '');
+                if (this.value.length > 13) this.value = this.value.slice(0, 13);
+                this.maxLength = 13;
+            } else {
+                if (this.value.length > 22) this.value = this.value.slice(0, 22);
+                this.maxLength = 22;
             }
         });
     }
@@ -985,7 +995,15 @@ document.addEventListener('DOMContentLoaded', function() {
                     const isGCash = method === 'GCash';
 
                     const step3Ref = document.getElementById('step3RefInput');
-                    if (step3Ref) step3Ref.placeholder = isGCash ? '0000123456789' : 'XXXXXXXXXXXXXXXXXXXXXX';
+                    if (step3Ref) {
+                        step3Ref.placeholder = isGCash ? '0000123456789' : 'XXXXXXXXXXXXXXXXXXXXXX';
+                        step3Ref.maxLength = isGCash ? 13 : 22;
+                        if (isGCash) {
+                            step3Ref.value = step3Ref.value.replace(/\D/g, '').slice(0, 13);
+                        } else {
+                            if (step3Ref.value.length > 22) step3Ref.value = step3Ref.value.slice(0, 22);
+                        }
+                    }
 
                     if (qrImage) {
                         qrImage.src = isGCash
@@ -1022,7 +1040,15 @@ document.addEventListener('DOMContentLoaded', function() {
                     const accountNumber = document.getElementById('finalPaymentAccountNumber');
 
                     const step5Ref = document.getElementById('step5RefInput');
-                    if (step5Ref) step5Ref.placeholder = isGCash ? '0000123456789' : 'XXXXXXXXXXXXXXXXXXXXXX';
+                    if (step5Ref) {
+                        step5Ref.placeholder = isGCash ? '0000123456789' : 'XXXXXXXXXXXXXXXXXXXXXX';
+                        step5Ref.maxLength = isGCash ? 13 : 22;
+                        if (isGCash) {
+                            step5Ref.value = step5Ref.value.replace(/\D/g, '').slice(0, 13);
+                        } else {
+                            if (step5Ref.value.length > 22) step5Ref.value = step5Ref.value.slice(0, 22);
+                        }
+                    }
 
                     if (qrImage) {
                         qrImage.src = isGCash
