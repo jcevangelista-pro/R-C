@@ -1,10 +1,7 @@
 <?php
 declare(strict_types=1);
 
-// Align PHP's timezone with the database server's local time so timestamps
-// written by PHP (date()/NOW-in-PHP) match those written by MySQL NOW()/
-// CURRENT_TIMESTAMP. Without this, PHP defaults to UTC and produces times
-// that are offset (e.g. 8 hours behind for Philippine time).
+
 date_default_timezone_set(getenv('APP_TIMEZONE') ?: 'Asia/Manila');
 
 function load_local_environment(string $file): void
@@ -16,8 +13,7 @@ function load_local_environment(string $file): void
         [$name, $value] = array_map('trim', explode('=', $line, 2));
         if (!preg_match('/^[A-Z][A-Z0-9_]*$/', $name)) continue;
 
-        // Web-server values take precedence over the local file. Some shared
-        // hosts disable putenv(), so configuration must not depend on it.
+        
         $hasServerValue = array_key_exists($name, $_ENV) || array_key_exists($name, $_SERVER);
         $hasProcessValue = function_exists('getenv') && getenv($name) !== false;
         if ($hasServerValue || $hasProcessValue) continue;

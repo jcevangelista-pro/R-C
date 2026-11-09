@@ -1,10 +1,5 @@
 <?php
-// ============================================================
-// Monthly Report Generator (admin/owner only)
-// ?report=sales      -> Monthly Total Sales PDF
-// ?report=inventory  -> Monthly Inventory Sales PDF
-// Streams a PDF for the current calendar month.
-// ============================================================
+
 
 require_once __DIR__ . '/../database/api_bootstrap.php';
 require_role(['admin', 'owner']);

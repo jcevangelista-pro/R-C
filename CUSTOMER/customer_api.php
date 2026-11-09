@@ -1,9 +1,6 @@
 <?php
-// ============================================================
-// Customer API — returns customer list with their orders
-// Used by CustomerLand.html
-// ============================================================
 
+// Customer API — returns customer list with their orders
 require_once __DIR__ . '/../database/api_bootstrap.php';
 require_role(['admin', 'owner']);
 
@@ -23,7 +20,7 @@ try {
     ");
     $customers = $stmt->fetchAll();
 
-    // Also include customer-role users who haven't filled in the customers table yet
+    
     $stmt2 = $pdo->query("
         SELECT
             u.user_id,
@@ -38,7 +35,7 @@ try {
     ");
     $unclaimed = $stmt2->fetchAll();
 
-    // Merge: customers with profile first, then users without customer profile
+    
     $allCustomers = array_merge($customers, array_map(function($u) {
         return [
             'customer_id' => null,

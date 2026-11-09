@@ -450,17 +450,17 @@
       </div>
     </div>
   </div>
-  <!-- ===== END ADDED: Create Item Modal ===== -->
+
 
   <script>
 
     
 // edit function
-    /* ===== ADDED: state for the ADD/DEDUCT toggle and quantity stepper ===== */
+    
     let stockMode = 'add';       // 'add' or 'deduct'
     let stockQuantity = 10;
     let stockCurrentStock = 0;
-    /* ===== END ADDED ===== */
+
 
     function openModal(itemName, currentStock) {
       // document.getElementById('modalItemName').textContent = itemName;
@@ -483,7 +483,7 @@
     }
 
     /* ===== ADDED: ADD/DEDUCT toggle + quantity stepper functions ===== */
-    /* ============================================================ */
+    
     function selectStockMode(mode) {
       stockMode = mode;
       document.getElementById('radioAddBox').classList.toggle('filled', mode === 'add');
@@ -547,9 +547,8 @@
       document.getElementById('detailOverlay').classList.remove('show');
     }
 
-        /* ============================================================ */
     /* ===== ADDED: Create Item modal functions ===== */
-    /* ============================================================ */
+    
     function openCreateItemModal() {
       // Reset the form fields each time the modal is opened
       document.getElementById('createItemName').value = '';
@@ -567,9 +566,8 @@
       document.getElementById('createItemOverlay').classList.remove('show');
     }
  
-    // Placeholder handler for the CREATE button.
-    // TODO: replace this with an actual POST request to the Laravel
-    // backend (e.g. POST /api/inventory) once the API is wired up.
+
+    
     function submitCreateItem() {
       const newItem = {
         name: document.getElementById('createItemName').value,
@@ -587,7 +585,7 @@
       console.log('New item to create:', newItem);
       closeCreateItemModal();
     }
-    /* ===== END ADDED: Create Item modal functions ===== */
+    
   </script>
 
   <script src="../Registration/admin_session.js"></script>

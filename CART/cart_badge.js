@@ -1,15 +1,7 @@
-// ============================================================
+
 // Cart, Notification & Order Badges + Mobile Nav
-// Include on all customer-facing pages
-// ============================================================
 (function() {
     var sessionState = { checked: false, loggedIn: false };
-
-    // Resolve the project root from this script's own URL so the paths below
-    // work no matter how deep the including page sits (e.g. /CART/cart.html or
-    // /OrderProcess/MyOrderProcess/MyOrderProcess.html). This script always
-    // lives at "<root>/CART/cart_badge.js", so stripping that suffix yields the
-    // absolute root prefix. Falls back to "../" for legacy one-level pages.
     function resolveSiteRoot() {
         var script = document.currentScript;
         var src = script && script.src ? script.src : '';
@@ -239,7 +231,7 @@
         }
     });
 
-    // ── Badges ──────────────────────────────────────────────
+    // ── Badges 
 
     // Cart badge
     var cartLink = document.querySelector('a[href*="cart.html"]');

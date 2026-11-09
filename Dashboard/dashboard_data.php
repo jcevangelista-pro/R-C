@@ -1,8 +1,6 @@
 <?php
-// ============================================================
 // Dashboard Data API
-// Returns JSON with all stats needed by Dashboard.html
-// ============================================================
+
 
 require_once __DIR__ . '/../database/api_bootstrap.php';
 require_role(['admin', 'owner']);

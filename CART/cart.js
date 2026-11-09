@@ -10,9 +10,6 @@ let deliveryInfo = {
   email: ""
 };
 
-// Pre-populate delivery/customer info from the logged-in customer so the
-// order summary shows the real name, address, phone, and email even before
-// the delivery form is opened (previously it defaulted to "Guest Customer").
 function prefillDeliveryInfo(){
   fetch('cart_api.php', {
     method: 'POST',
@@ -34,8 +31,7 @@ function prefillDeliveryInfo(){
 }
 prefillDeliveryInfo();
 
-// Restrict the Preferred Delivery / Pickup date pickers so the earliest
-// selectable day is tomorrow (a day after today).
+
 function setMinDeliveryDate(){
   const tomorrow = new Date();
   tomorrow.setDate(tomorrow.getDate() + 1);
@@ -314,7 +310,7 @@ function renderOrderModal(){
     photoIcon.style.display = '';
   }
 
-  // Show size dropdown only for products that use a SHIRTS inventory material
+
   const isTshirt = item.needsSize === true;
   const sizeRow = document.getElementById('sizeRow');
   const sizeSelect = document.getElementById('odSizeSelect');
@@ -708,8 +704,7 @@ summaryCheckoutBtn.addEventListener('click', async () => {
   }
 });
  
-/* ================= INIT ================= */
-// renderCartRows is called by cartdata.js after data loads from DB
+
  
 
 

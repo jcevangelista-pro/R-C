@@ -282,8 +282,7 @@ try {
             if (!in_array($paymentMethod, ['GCash','Bank'], true)) api_error('Select a valid payment method.', 422);
 
             // Final payment is only allowed while Step 5 is the active step.
-            // Once approved (Completed/Skipped) no further payment is accepted,
-            // and a pending Final Payment cannot be resubmitted.
+           
             $stepCheck = $pdo->prepare("
                 SELECT op.status
                 FROM order_process op

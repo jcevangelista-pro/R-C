@@ -67,11 +67,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Switch to a step when its tab is clicked (only if unlocked)
     tabs.forEach(function (tab, index) {
-        // Block Bootstrap's own data-toggle="tab" handler for locked steps.
-        // Bootstrap binds to the inner <a>, so we intercept in the capture
-        // phase and stop the event before its delegated handler can run.
-        // Without this, clicking a locked step's circle would still switch to
-        // the (shadowed) next step even though it has not been approved.
+        
         const anchor = tab.querySelector('a[data-toggle="tab"]');
         if (anchor) {
             anchor.addEventListener('click', function (e) {
@@ -103,17 +99,10 @@ document.addEventListener('DOMContentLoaded', function () {
         const panes = document.querySelectorAll('.tab-content > .tab-pane');
         if (!tabs || !panes || !tabs.length) return;
 
-        // A freshly checked-out order is still "Pending" and has no process
-        // rows yet (those are created when the admin accepts it). In that case
-        // only Step 1 (Order Details) is viewable and every later step must be
-        // locked — otherwise all steps would appear accessible.
+        
         const hasSteps = orderSteps && orderSteps.length > 0;
 
-        // Determine how far the customer may navigate. A step counts as
-        // "approved" only once admin/owner marks it Completed (or Skipped).
-        // Approving the current step is what sets the NEXT step to In Progress,
-        // so the current In Progress step is the furthest accessible step.
-        // Everything beyond it stays locked until the admin approves.
+        
         let highestApproved = 0;   // highest Completed/Skipped step number
         let currentActiveStep = 0; // the single In Progress step, if any
 
@@ -129,11 +118,7 @@ document.addEventListener('DOMContentLoaded', function () {
             });
         }
 
-        // Accessible range:
-        //  - all approved steps (Completed/Skipped), and
-        //  - the current In Progress step (reached only because the previous
-        //    step was approved).
-        // With no process rows yet (just checked out) only Step 1 is open.
+        
         let maxAccessible = currentActiveStep > 0 ? currentActiveStep : highestApproved;
         if (!hasSteps) maxAccessible = 1;
 
@@ -330,24 +315,22 @@ async function loadOrderProcess() {
             applyStepLocks();
         }
 
-        // Fill each step's "Submitted" date with the real approval/submission
-        // date for that specific step.
+        
         populateStepDates();
 
-        // Lock down interactive controls on steps that are already completed,
-        // so (for example) a submitted & approved payment cannot be resubmitted.
+        
         applyStepReadOnly();
 
-        // Populate and lock submitted payment steps (Step 3 & Step 5)
+        
         populatePayments();
 
-        // Fill Step 7 (Order Received) with the real product and customer info.
+        
         populateStep7();
 
-        // Fill Step 8 (Order Completed) summary/receipt with real order data.
+        
         populateStep8();
 
-        // Update each step's status badge to reflect its real status.
+        
         populateStepBadges();
 
     } catch (err) {
@@ -356,7 +339,6 @@ async function loadOrderProcess() {
 }
 
 // ── Step dates ──────────────────────────────────────────────
-// Format a DB datetime (e.g. "2026-08-10 07:42:00") like "August 10, 2026 | 7:42 AM".
 function formatStepDate(value) {
     if (!value) return null;
     // Normalize "YYYY-MM-DD HH:MM:SS" to an ISO-ish string so Date parses it
@@ -369,9 +351,7 @@ function formatStepDate(value) {
 }
 
 // Return the real date for a given step number:
-//   - Completed/Skipped -> completed_at (the approved date)
-//   - In Progress       -> created_at (when the step became active)
-//   - otherwise         -> null (not reached yet)
+
 function stepDateFor(stepNumber) {
     if (stepNumber === 8 && orderData && orderData.date_finished) {
         return formatStepDate(orderData.date_finished);
@@ -426,9 +406,7 @@ function populateStepDates() {
     });
 }
 
-// Disable interactive controls inside any step that is already Completed or
-// Skipped. A finished step is read-only: no more payments, messages, uploads,
-// or option toggles. Viewing the step's content remains possible.
+
 function applyStepReadOnly() {
     for (let n = 1; n <= 8; n++) {
         const pane = document.getElementById('step' + n);
@@ -445,8 +423,7 @@ function applyStepReadOnly() {
                 // hidden/managed separately and only shows in steps 1-2.
                 el.disabled = true;
             });
-            // Neutralize the custom checkbox/option toggles (they are <div>s,
-            // not form controls) by blocking pointer interaction.
+            
             pane.querySelectorAll('.checkbox-option, .photo-upload').forEach(function(el) {
                 el.style.pointerEvents = 'none';
             });
@@ -564,8 +541,7 @@ function populatePayments() {
     }
 }
 
-// Populate Step 7 (Order Received Confirmation) with the real customer and
-// product information from the loaded order.
+
 function populateStep7() {
     const setText = (id, value) => { const el = document.getElementById(id); if (el) el.textContent = value; };
     const peso = v => 'P' + (Number(v) || 0).toFixed(2);
@@ -595,9 +571,7 @@ function populateStep7() {
         setText('s7TotalPaid', peso(o.amount_paid));
     }
 
-    // Product information. The layout shows one product block, so summarise:
-    // name/category/image from the first item, quantity as the total across
-    // items, and prices from the order totals.
+    
     if (orderItems && orderItems.length) {
         const first = orderItems[0];
         const totalQty = orderItems.reduce((sum, it) => sum + (parseInt(it.quantity) || 0), 0);
@@ -620,8 +594,7 @@ function populateStep7() {
         }
     }
 
-    // If the customer already submitted a receipt photo, show it in the upload
-    // preview so the confirmation is visible on return visits.
+    
     const step7 = (orderSteps || []).find(s => parseInt(s.step_number) === 7);
     if (step7 && step7.image) {
         const preview = document.getElementById('s7PhotoPreview');
@@ -686,11 +659,7 @@ function populateStep8() {
     }
 }
 
-// Update each step's status badge (below the step description) to reflect the
-// step's real status:
-//   Completed/Skipped -> "COMPLETED"
-//   In Progress       -> "IN PROCESS" (the current step)
-//   otherwise         -> the original "Available after ..." pending message.
+
 function populateStepBadges() {
     for (let n = 1; n <= 8; n++) {
         const pane = document.getElementById('step' + n);
@@ -795,7 +764,7 @@ async function sendMessage(stepNumber) {
 }
 
 // ── Payment Submission (Step 3) ─────────────────────────────
-// Wire up the SUBMIT buttons in PaymentCard and FinalPaymentCard
+
 
 document.addEventListener('DOMContentLoaded', function() {
 
